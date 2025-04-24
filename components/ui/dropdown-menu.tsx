@@ -14,6 +14,7 @@ interface DropdownMenuProps {
 interface DropdownMenuTriggerProps {
   children: React.ReactNode
   asChild?: boolean
+  onClick?: (event: React.MouseEvent) => void
 }
 
 interface DropdownMenuContentProps {
@@ -42,7 +43,7 @@ export function DropdownMenu({ children }: DropdownMenuProps) {
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
           if (child.type === DropdownMenuTrigger) {
-            return React.cloneElement(child as React.ReactElement<DropdownMenuTriggerProps>, {
+            return React.cloneElement(child as React.ReactElement<any>, {
               onClick: () => setOpen(!open),
             })
           }
@@ -103,7 +104,7 @@ export function DropdownMenuItem({
   ...props 
 }: DropdownMenuItemProps & React.HTMLAttributes<HTMLDivElement>) {
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, { 
+    return React.cloneElement(children as React.ReactElement<any>, { 
       className: `relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 ${className}`,
       ...props 
     })

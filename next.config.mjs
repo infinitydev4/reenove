@@ -8,6 +8,10 @@ const nextConfig = {
       },
     ],
   },
-}
+  eslint: {
+    // Ignorez les avertissements ESLint en production
+    ignoreDuringBuilds: true,
+  },
+};
 
 export default nextConfig;

@@ -526,8 +526,8 @@ export default function ArtisanProfilePage({ params }: { params: { slug: string 
                               <span className="text-sm">{rating}</span>
                               <Star className="h-3.5 w-3.5 ml-1 fill-yellow-500 text-yellow-500" />
                             </div>
-                            <Progress value={ratingPercentages[rating]} className="h-2" />
-                            <span className="text-xs text-muted-foreground w-8">{artisan.ratingBreakdown[rating]}</span>
+                            <Progress value={ratingPercentages[rating as keyof typeof ratingPercentages]} className="h-2" />
+                            <span className="text-xs text-muted-foreground w-8">{artisan.ratingBreakdown[rating as keyof typeof artisan.ratingBreakdown]}</span>
                           </div>
                         ))}
                       </div>
