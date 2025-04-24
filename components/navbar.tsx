@@ -89,7 +89,7 @@ export function Navbar() {
                 Connexion
               </Link>
               <Button asChild size="sm">
-                <Link href="/auth?tab=register">Inscription</Link>
+                <Link href="/register/role">Inscription</Link>
               </Button>
             </>
           )}

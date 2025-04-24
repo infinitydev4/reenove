@@ -1,0 +1,638 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { 
+  Check, 
+  Download, 
+  Filter,
+  MoreHorizontal, 
+  Search, 
+  SlidersHorizontal, 
+  Trash2,
+  Users,
+  MessageSquare,
+  FileText,
+  Eye,
+  Phone,
+  Mail,
+  MapPin,
+  CalendarDays,
+  CircleDollarSign,
+  Hammer,
+  BadgeCheck,
+  Star
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { cn } from "@/lib/utils"
+import { Progress } from "@/components/ui/progress"
+
+// Données fictives pour la démo
+const mockArtisans = [
+  {
+    id: "A-2024-001",
+    name: "Thomas Bernard",
+    email: "thomas.bernard@exemple.fr",
+    phone: "06 12 34 56 78",
+    address: "15 rue des Artisans, 69000 Lyon",
+    status: "actif",
+    speciality: "Plomberie",
+    rating: 4.8,
+    projectsCompleted: 35,
+    currentProjects: 3,
+    totalEarnings: "68500€",
+    availability: "disponible",
+    startDate: "15 janvier 2022",
+    avatar: "/placeholder.svg",
+    verified: true,
+  },
+  {
+    id: "A-2024-002",
+    name: "Sophie Martin",
+    email: "sophie.martin@exemple.fr",
+    phone: "07 23 45 67 89",
+    address: "8 rue Centrale, 75016 Paris",
+    status: "actif",
+    speciality: "Électricité",
+    rating: 4.5,
+    projectsCompleted: 28,
+    currentProjects: 2,
+    totalEarnings: "52300€",
+    availability: "disponible",
+    startDate: "3 mars 2022",
+    avatar: "/placeholder.svg",
+    verified: true,
+  },
+  {
+    id: "A-2024-003",
+    name: "Michel Roux",
+    email: "michel.roux@exemple.fr",
+    phone: "06 78 90 12 34",
+    address: "23 avenue des Pins, 13000 Marseille",
+    status: "actif",
+    speciality: "Maçonnerie",
+    rating: 4.9,
+    projectsCompleted: 42,
+    currentProjects: 4,
+    totalEarnings: "92400€",
+    availability: "occupé",
+    startDate: "10 décembre 2021",
+    avatar: "/placeholder.svg",
+    verified: true,
+  },
+  {
+    id: "A-2024-004",
+    name: "Camille Dubois",
+    email: "camille.dubois@exemple.fr",
+    phone: "06 98 76 54 32",
+    address: "42 rue du Faubourg, 33000 Bordeaux",
+    status: "inactif",
+    speciality: "Peinture",
+    rating: 4.2,
+    projectsCompleted: 15,
+    currentProjects: 0,
+    totalEarnings: "22800€",
+    availability: "indisponible",
+    startDate: "5 juin 2022",
+    avatar: "/placeholder.svg",
+    verified: false,
+  },
+  {
+    id: "A-2024-005",
+    name: "Antoine Moreau",
+    email: "antoine.moreau@exemple.fr",
+    phone: "07 65 43 21 09",
+    address: "17 rue des Tilleuls, 59000 Lille",
+    status: "actif",
+    speciality: "Menuiserie",
+    rating: 4.7,
+    projectsCompleted: 31,
+    currentProjects: 2,
+    totalEarnings: "64300€",
+    availability: "disponible",
+    startDate: "20 avril 2022",
+    avatar: "/placeholder.svg",
+    verified: true,
+  },
+  {
+    id: "A-2024-006",
+    name: "Valérie Petit",
+    email: "valerie.petit@exemple.fr",
+    phone: "06 54 32 10 98",
+    address: "5 rue des Capucines, 31000 Toulouse",
+    status: "actif",
+    speciality: "Carrelage",
+    rating: 4.6,
+    projectsCompleted: 24,
+    currentProjects: 3,
+    totalEarnings: "48900€",
+    availability: "occupé",
+    startDate: "15 novembre 2022",
+    avatar: "/placeholder.svg",
+    verified: true,
+  },
+  {
+    id: "A-2024-007",
+    name: "Laurent Girard",
+    email: "laurent.girard@exemple.fr",
+    phone: "06 45 67 89 01",
+    address: "28 boulevard des Océans, 44000 Nantes",
+    status: "inactif",
+    speciality: "Plomberie",
+    rating: 4.3,
+    projectsCompleted: 19,
+    currentProjects: 0,
+    totalEarnings: "37100€",
+    availability: "indisponible",
+    startDate: "2 février 2022",
+    avatar: "/placeholder.svg",
+    verified: true,
+  },
+]
+
+// Liste des spécialités 
+const specialities = [
+  "Plomberie",
+  "Électricité",
+  "Maçonnerie",
+  "Peinture",
+  "Menuiserie",
+  "Carrelage"
+]
+
+export default function AdminArtisansPage() {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
+  const [selectedSpeciality, setSelectedSpeciality] = useState<string | null>(null)
+  const [selectedAvailability, setSelectedAvailability] = useState<string | null>(null)
+  const [artisans, setArtisans] = useState(mockArtisans)
+
+  // Filtrer les artisans selon les critères
+  const filteredArtisans = artisans.filter(artisan => {
+    // Filtre de recherche
+    const matchesSearch = 
+      artisan.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      artisan.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      artisan.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      artisan.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      artisan.id.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    // Filtre par statut
+    const matchesStatus = selectedStatus ? artisan.status === selectedStatus : true
+    
+    // Filtre par spécialité
+    const matchesSpeciality = selectedSpeciality ? artisan.speciality === selectedSpeciality : true
+    
+    // Filtre par disponibilité
+    const matchesAvailability = selectedAvailability ? artisan.availability === selectedAvailability : true
+    
+    return matchesSearch && matchesStatus && matchesSpeciality && matchesAvailability
+  })
+  
+  const handleDeleteArtisan = (artisanId: string) => {
+    // Dans une vraie application, une confirmation serait demandée
+    // et une requête API serait effectuée pour supprimer l'artisan
+    setArtisans(artisans.filter(artisan => artisan.id !== artisanId))
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "actif":
+        return <Badge className="bg-green-500">Actif</Badge>
+      case "inactif":
+        return <Badge variant="outline" className="border-gray-500 text-gray-500">Inactif</Badge>
+      default:
+        return <Badge variant="outline">Inconnu</Badge>
+    }
+  }
+
+  const getAvailabilityBadge = (availability: string) => {
+    switch (availability) {
+      case "disponible":
+        return <Badge className="bg-green-500">Disponible</Badge>
+      case "occupé":
+        return <Badge className="bg-amber-500">Occupé</Badge>
+      case "indisponible":
+        return <Badge variant="outline" className="border-red-500 text-red-500">Indisponible</Badge>
+      default:
+        return <Badge variant="outline">Inconnu</Badge>
+    }
+  }
+
+  const renderRating = (rating: number) => {
+    return (
+      <div className="flex items-center">
+        <span className="font-medium mr-1">{rating}</span>
+        <div className="flex">
+          {[...Array(5)].map((_, i) => (
+            <Star 
+              key={i} 
+              className={cn(
+                "h-3 w-3", 
+                i < Math.floor(rating) ? "fill-amber-400 text-amber-400" : 
+                i < rating ? "fill-amber-400/50 text-amber-400/50" : "text-gray-300"
+              )} 
+            />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Artisans</h1>
+          <p className="text-muted-foreground">
+            Gérez tous les artisans partenaires de la plateforme.
+          </p>
+        </div>
+        <Button>
+          <Hammer className="mr-2 h-4 w-4" />
+          Ajouter un artisan
+        </Button>
+      </div>
+
+      {/* Vue d'ensemble des artisans */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Total des artisans
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{artisans.length}</div>
+            <p className="text-xs text-muted-foreground">
+              {artisans.filter(a => a.status === "actif").length} artisans actifs
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Projets en cours
+            </CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {artisans.reduce((sum, a) => sum + a.currentProjects, 0)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Sur {artisans.reduce((sum, a) => sum + a.projectsCompleted, 0)} projets complétés
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Chiffre d'affaires généré
+            </CardTitle>
+            <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {artisans.reduce((sum, a) => {
+                const value = parseInt(a.totalEarnings.replace("€", "").replace(" ", ""))
+                return sum + value
+              }, 0).toLocaleString()}€
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Note moyenne: {(artisans.reduce((sum, a) => sum + a.rating, 0) / artisans.length).toFixed(1)}/5
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+            <div className="relative w-full md:max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <Input
+                type="search"
+                placeholder="Rechercher par nom, email, téléphone..."
+                className="w-full pl-9"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            
+            <div className="flex gap-2 flex-wrap">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Statut
+                    {selectedStatus && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel>Filtrer par statut</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", !selectedStatus && "font-bold")}
+                    onClick={() => setSelectedStatus(null)}
+                  >
+                    Tous
+                    {!selectedStatus && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", selectedStatus === "actif" && "font-bold")}
+                    onClick={() => setSelectedStatus("actif")}
+                  >
+                    Actifs
+                    {selectedStatus === "actif" && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", selectedStatus === "inactif" && "font-bold")}
+                    onClick={() => setSelectedStatus("inactif")}
+                  >
+                    Inactifs
+                    {selectedStatus === "inactif" && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <SlidersHorizontal className="mr-2 h-4 w-4" />
+                    Spécialité
+                    {selectedSpeciality && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel>Filtrer par spécialité</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", !selectedSpeciality && "font-bold")}
+                    onClick={() => setSelectedSpeciality(null)}
+                  >
+                    Toutes
+                    {!selectedSpeciality && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  {specialities.map(speciality => (
+                    <DropdownMenuItem 
+                      key={speciality}
+                      className={cn("flex items-center gap-2 cursor-pointer", selectedSpeciality === speciality && "font-bold")}
+                      onClick={() => setSelectedSpeciality(speciality)}
+                    >
+                      {speciality}
+                      {selectedSpeciality === speciality && <Check className="ml-auto h-4 w-4" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <SlidersHorizontal className="mr-2 h-4 w-4" />
+                    Disponibilité
+                    {selectedAvailability && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel>Filtrer par disponibilité</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", !selectedAvailability && "font-bold")}
+                    onClick={() => setSelectedAvailability(null)}
+                  >
+                    Toutes
+                    {!selectedAvailability && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "disponible" && "font-bold")}
+                    onClick={() => setSelectedAvailability("disponible")}
+                  >
+                    Disponible
+                    {selectedAvailability === "disponible" && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "occupé" && "font-bold")}
+                    onClick={() => setSelectedAvailability("occupé")}
+                  >
+                    Occupé
+                    {selectedAvailability === "occupé" && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "indisponible" && "font-bold")}
+                    onClick={() => setSelectedAvailability("indisponible")}
+                  >
+                    Indisponible
+                    {selectedAvailability === "indisponible" && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <Button variant="outline" size="sm" onClick={() => {
+                setSearchQuery("")
+                setSelectedStatus(null)
+                setSelectedSpeciality(null)
+                setSelectedAvailability(null)
+              }}>
+                Réinitialiser
+              </Button>
+              
+              <Button variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" />
+                Exporter
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Artisan</TableHead>
+                  <TableHead className="hidden md:table-cell">Contact</TableHead>
+                  <TableHead className="hidden md:table-cell">Spécialité</TableHead>
+                  <TableHead className="hidden lg:table-cell">Activité</TableHead>
+                  <TableHead className="hidden lg:table-cell">Performance</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredArtisans.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                      Aucun artisan ne correspond aux critères de recherche
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  filteredArtisans.map((artisan) => (
+                    <TableRow key={artisan.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9">
+                            <AvatarImage src={artisan.avatar} alt={artisan.name} />
+                            <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="flex items-center">
+                              <Link 
+                                href={`/admin/artisans/${artisan.id}`}
+                                className="font-medium hover:underline"
+                              >
+                                {artisan.name}
+                              </Link>
+                              {artisan.verified && (
+                                <BadgeCheck className="h-4 w-4 ml-1 text-blue-500" />
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                              <span>{artisan.id}</span>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                {getStatusBadge(artisan.status)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="space-y-1">
+                          <div className="flex items-center text-sm">
+                            <Mail className="mr-2 h-3 w-3 text-muted-foreground" />
+                            <span>{artisan.email}</span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <Phone className="mr-2 h-3 w-3 text-muted-foreground" />
+                            <span>{artisan.phone}</span>
+                          </div>
+                          <div className="flex items-center text-sm">
+                            <MapPin className="mr-2 h-3 w-3 text-muted-foreground" />
+                            <span className="truncate max-w-[200px]">{artisan.address}</span>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="space-y-2">
+                          <Badge variant="outline" className="border-purple-500 text-purple-500">
+                            {artisan.speciality}
+                          </Badge>
+                          <div>
+                            {getAvailabilityBadge(artisan.availability)}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <div className="space-y-1">
+                          <div className="text-sm">
+                            <span className="font-medium">{artisan.projectsCompleted}</span> projets complétés
+                          </div>
+                          <div className="text-sm">
+                            <span className="font-medium">{artisan.currentProjects}</span> projets en cours
+                          </div>
+                          <div className="text-sm font-medium">
+                            Gains totaux: {artisan.totalEarnings}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <div className="space-y-2">
+                          <div className="text-sm flex items-center">
+                            <CalendarDays className="mr-2 h-3 w-3 text-muted-foreground" />
+                            <span>Depuis: {artisan.startDate}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {renderRating(artisan.rating)}
+                          </div>
+                          <div className="w-full">
+                            <Progress 
+                              value={Math.min(artisan.projectsCompleted * 2, 100)} 
+                              className="h-2" 
+                            />
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/artisans/${artisan.id}`} className="flex items-center">
+                                <Eye className="mr-2 h-4 w-4" />
+                                Voir profil
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/artisans/${artisan.id}/edit`} className="flex items-center">
+                                <FileText className="mr-2 h-4 w-4" />
+                                Modifier
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/artisans/${artisan.id}/projets`} className="flex items-center">
+                                <FileText className="mr-2 h-4 w-4" />
+                                Projets
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/artisans/${artisan.id}/messages`} className="flex items-center">
+                                <MessageSquare className="mr-2 h-4 w-4" />
+                                Messages
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-red-500 cursor-pointer"
+                              onClick={() => handleDeleteArtisan(artisan.id)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Supprimer
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="mt-4 flex items-center justify-end">
+            <p className="text-sm text-muted-foreground">
+              Affichage de {filteredArtisans.length} sur {artisans.length} artisans
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+} 

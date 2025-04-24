@@ -1,16 +1,25 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { Role } from "@/lib/generated/prisma"
 import bcrypt from "bcrypt"
+import { Role } from "@/lib/generated/prisma"
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, email, password, role = Role.USER } = body
+    const { 
+      email, 
+      password, 
+      firstName, 
+      lastName, 
+      company = "", 
+      phone = "", 
+      role = "USER" 
+    } = body
 
-    if (!name || !email || !password) {
+    // Vérification des données requises
+    if (!email || !password || !firstName || !lastName) {
       return NextResponse.json(
-        { message: "Tous les champs sont requis" },
+        { error: "Informations d'inscription incomplètes" },
         { status: 400 }
       )
     }
@@ -22,39 +31,57 @@ export async function POST(request: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { message: "Cet email est déjà utilisé" },
-        { status: 400 }
+        { error: "Cet email est déjà utilisé" },
+        { status: 409 }
       )
     }
 
-    // Hasher le mot de passe
-    const saltRounds = 10
-    const hashedPassword = await bcrypt.hash(password, saltRounds)
+    // Conversion du rôle (string) en type Role de Prisma
+    let userRole: Role
+    switch (role.toLowerCase()) {
+      case "artisan":
+        userRole = Role.ARTISAN
+        break
+      case "agent":
+        userRole = Role.AGENT
+        break
+      default:
+        userRole = Role.USER
+    }
 
-    // Créer l'utilisateur
-    const user = await prisma.user.create({
+    // Hashage du mot de passe
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    // Création du nom complet
+    const name = `${firstName} ${lastName}`
+
+    // Création de l'utilisateur
+    const newUser = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role,
+        role: userRole,
+        // Vous pourriez stocker d'autres infos dans des champs personnalisés
+        // si vous les ajoutez au modèle User
       },
     })
 
-    // Ne pas renvoyer le mot de passe
-    const { password: _, ...userWithoutPassword } = user
+    // Ne pas retourner le mot de passe hashé
+    const { password: _, ...userWithoutPassword } = newUser
 
     return NextResponse.json(
       { 
-        message: "Utilisateur créé avec succès",
+        message: "Utilisateur créé avec succès", 
         user: userWithoutPassword 
-      },
+      }, 
       { status: 201 }
     )
+
   } catch (error) {
-    console.error("Erreur d'inscription:", error)
+    console.error("Erreur lors de l'inscription:", error)
     return NextResponse.json(
-      { message: "Une erreur s'est produite lors de l'inscription" },
+      { error: "Erreur lors de la création du compte. Veuillez réessayer." },
       { status: 500 }
     )
   }
