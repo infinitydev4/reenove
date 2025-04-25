@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import ArtisanCard from "@/components/artisan-card"
 import CategoryCard from "@/components/category-card"
 import { ImageGallery } from "@/components/image-gallery"
-import { Navbar } from "@/components/navbar"
+import Navbar from "@/components/navbar"
 
 export default function Home() {
   return (
@@ -178,7 +178,7 @@ export default function Home() {
                 </ul>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button asChild>
-                    <Link href="/register">
+                    <Link href="/register/role">
                       Commencer maintenant
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>

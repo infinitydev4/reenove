@@ -21,11 +21,11 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
         <AuthProvider>
-          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
             <ToastProvider>
-              {children}
+          {children}
             </ToastProvider>
-          </ThemeProvider>
+        </ThemeProvider>
         </AuthProvider>
       </body>
     </html>
