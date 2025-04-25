@@ -21,6 +21,47 @@ enum Role {
   ADMIN
 }
 
+enum ProjectStatus {
+  DRAFT        // En cours de création
+  PENDING      // En attente de devis
+  PUBLISHED    // Publié et visible par les artisans
+  ASSIGNED     // Attribué à un artisan
+  IN_PROGRESS  // Travaux en cours
+  COMPLETED    // Terminé
+  CANCELLED    // Annulé
+}
+
+enum ProjectVisibility {
+  PUBLIC       // Visible par tous les artisans
+  PRIVATE      // Visible seulement par invitation
+}
+
+enum PropertyType {
+  HOUSE
+  APARTMENT
+  COMMERCIAL
+}
+
+enum AccessibilityLevel {
+  EASY
+  MODERATE
+  DIFFICULT
+}
+
+enum UrgencyLevel {
+  NORMAL     // Dans les 30 jours
+  SOON       // Dans les 15 jours
+  URGENT     // Dans les 7 jours
+}
+
+enum PreferredTime {
+  ANY
+  MORNING
+  AFTERNOON
+  EVENING
+  WEEKEND
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -29,10 +70,213 @@ model User {
   password      String?
   image         String?
   role          Role      @default(USER)
+  phone         String?
+  address       String?
+  city          String?
+  postalCode    String?
+  bio           String?   @db.Text
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  projects      Project[]
+  quotes        Quote[]   @relation("QuoteProvider")
+  receivedQuotes Quote[]  @relation("QuoteClient")
+  notifications Notification[]
+  projectInvitations ProjectInvitation[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  icon        String?
+  slug        String    @unique
+  isActive    Boolean   @default(true)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  services    Service[]
+  projects    Project[]
+}
+
+model Service {
+  id          String    @id @default(cuid())
+  name        String    
+  description String?
+  slug        String    @unique
+  isActive    Boolean   @default(true)
+  order       Int       @default(0)
+  icon        String?
+  categoryId  String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  category    Category   @relation(fields: [categoryId], references: [id])
+  projects    Project[]
+  
+  @@unique([name, categoryId])
+}
+
+model Project {
+  id              String           @id @default(cuid())
+  title           String
+  description     String           @db.Text
+  budget          Float?
+  budgetType      String?          // Fixed, Hourly, Range
+  budgetMax       Float?           // Pour le cas d'une fourchette de budget
+  
+  // Détails de localisation
+  location        String?
+  postalCode      String?
+  city            String?
+  region          String?
+  accessibility   AccessibilityLevel? 
+  
+  // Détails de planification
+  startDate       DateTime?
+  endDate         DateTime?
+  urgencyLevel    UrgencyLevel?    
+  flexibleDates   Boolean?         @default(true)
+  preferredTime   PreferredTime?
+  
+  // Type de propriété
+  propertyType    PropertyType?
+  
+  // Statut et visibilité
+  status          ProjectStatus    @default(DRAFT)
+  visibility      ProjectVisibility @default(PUBLIC)
+  
+  // Relations obligatoires
+  userId          String
+  categoryId      String
+  serviceId       String
+  
+  // Timestamps
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  completedAt     DateTime?
+  
+  // Relations
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category        Category         @relation(fields: [categoryId], references: [id])
+  service         Service          @relation(fields: [serviceId], references: [id])
+  steps           ProjectStep[]
+  images          ProjectImage[]
+  quotes          Quote[]
+  invitations     ProjectInvitation[]
+  requirements    ProjectRequirement[]
+}
+
+model ProjectRequirement {
+  id          String    @id @default(cuid())
+  projectId   String
+  type        String    // material, skill, certification, etc.
+  name        String
+  description String?
+  isRequired  Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model ProjectStep {
+  id          String    @id @default(cuid())
+  stepNumber  Int
+  title       String
+  content     Json?
+  completed   Boolean   @default(false)
+  projectId   String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, stepNumber])
+}
+
+model ProjectImage {
+  id          String    @id @default(cuid())
+  url         String
+  projectId   String
+  caption     String?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Quote {
+  id              String    @id @default(cuid())
+  amount          Float
+  description     String?   @db.Text
+  validUntil      DateTime?
+  status          String    @default("pending") // pending, accepted, rejected, expired
+  projectId       String
+  providerId      String
+  clientId        String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  materialsCost   Float?
+  laborCost       Float?
+  estimatedDays   Int?
+  startDate       DateTime?
+  
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  provider        User      @relation("QuoteProvider", fields: [providerId], references: [id])
+  client          User      @relation("QuoteClient", fields: [clientId], references: [id])
+  items           QuoteItem[]
+}
+
+model QuoteItem {
+  id          String    @id @default(cuid())
+  quoteId     String
+  description String
+  quantity    Float
+  unitPrice   Float
+  total       Float
+  
+  // Relations
+  quote       Quote     @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+}
+
+model ProjectInvitation {
+  id          String    @id @default(cuid())
+  projectId   String
+  userId      String
+  status      String    @default("pending") // pending, accepted, declined
+  message     String?
+  createdAt   DateTime  @default(now())
+  respondedAt DateTime?
+  
+  // Relations
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([projectId, userId])
+}
+
+model Notification {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  message     String
+  type        String    // info, success, warning, error
+  isRead      Boolean   @default(false)
+  link        String?
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // NextAuth models

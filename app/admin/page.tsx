@@ -11,7 +11,8 @@ import {
   Users, 
   UserX,
   AlertCircle,
-  Wrench
+  Wrench,
+  FileText
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -192,6 +193,14 @@ export default function AdminDashboardPage() {
               <Progress value={65} className="h-2" />
             </div>
           </CardContent>
+          <CardFooter className="px-4 pb-4 pt-0">
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <Link href="/admin/projets">
+                Gérer les projets
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardFooter>
         </Card>
         
         <Card>

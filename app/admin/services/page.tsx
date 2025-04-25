@@ -1,0 +1,514 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { useToast } from '@/components/ui/use-toast'
+import { 
+  Plus, 
+  Save, 
+  Trash2, 
+  Loader2, 
+  Check, 
+  AlertCircle,
+  PencilLine,
+  Filter
+} from "lucide-react"
+import { 
+  Card, 
+  CardContent, 
+  CardDescription, 
+  CardFooter, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table"
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogTrigger 
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Badge } from "@/components/ui/badge"
+import { IconPicker } from '@/components/ui/icon-picker'
+import { cn } from '@/lib/utils'
+
+// Types et interfaces
+interface Service {
+  id: string
+  name: string
+  description: string | null
+  icon: string | null
+  categoryId: string
+  category: Category
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+interface Category {
+  id: string
+  name: string
+  icon: string | null
+}
+
+// Schéma de validation pour le formulaire de service
+const formSchema = z.object({
+  name: z.string().min(3, {
+    message: 'Le nom doit contenir au moins 3 caractères',
+  }),
+  description: z.string().optional(),
+  categoryId: z.string().min(1, {
+    message: 'Une catégorie est requise',
+  }),
+  icon: z.string().optional(),
+})
+
+type ServiceFormValues = z.infer<typeof formSchema>
+
+export default function AdminServicesPage() {
+  const { toast } = useToast()
+  const [services, setServices] = useState<Service[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [editingService, setEditingService] = useState<Service | null>(null)
+  const [formOpen, setFormOpen] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+
+  // Initialisation du formulaire
+  const form = useForm<ServiceFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      categoryId: '',
+      icon: '',
+    },
+  })
+
+  // Récupération des catégories
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch('/api/admin/categories')
+      if (!response.ok) throw new Error('Erreur lors du chargement des catégories')
+      
+      const data = await response.json()
+      setCategories(data || [])
+      return data
+    } catch (err) {
+      console.error('Erreur:', err)
+      return []
+    }
+  }
+
+  // Récupération des services
+  const fetchServices = async (categoryId?: string) => {
+    setLoading(true)
+    try {
+      const url = categoryId && categoryId !== "all"
+        ? `/api/admin/services?categoryId=${categoryId}`
+        : '/api/admin/services'
+      
+      const response = await fetch(url)
+      if (!response.ok) throw new Error('Erreur lors du chargement des services')
+      
+      const data = await response.json()
+      setServices(data || [])
+      setError(null)
+    } catch (err: any) {
+      setError(err.message || 'Une erreur est survenue')
+      setServices([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Chargement initial
+  useEffect(() => {
+    Promise.all([
+      fetchCategories(),
+      fetchServices()
+    ]);
+  }, [])
+
+  // Mise à jour des services lorsque la catégorie sélectionnée change
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchServices(selectedCategory)
+    } else {
+      fetchServices()
+    }
+  }, [selectedCategory])
+
+  // Réinitialisation du formulaire lors de l'édition
+  useEffect(() => {
+    if (editingService) {
+      form.reset({
+        name: editingService.name,
+        description: editingService.description || '',
+        categoryId: editingService.categoryId,
+        icon: editingService.icon || '',
+      })
+      setFormOpen(true)
+    }
+  }, [editingService, form])
+
+  // Soumission du formulaire
+  const onSubmit = async (values: ServiceFormValues) => {
+    try {
+      setSubmitting(true)
+      
+      const url = editingService 
+        ? `/api/admin/services/${editingService.id}` 
+        : '/api/admin/services'
+      
+      const method = editingService ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Une erreur est survenue')
+      }
+      
+      const result = await response.json()
+      
+      toast({
+        title: "Succès",
+        description: editingService
+          ? "Service mis à jour avec succès"
+          : "Service créé avec succès",
+      })
+      
+      form.reset({
+        name: '',
+        description: '',
+        categoryId: '',
+        icon: '',
+      })
+      
+      setEditingService(null)
+      setFormOpen(false)
+      fetchServices(selectedCategory)
+    } catch (error: any) {
+      console.error('Erreur:', error)
+      toast({
+        variant: 'destructive',
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue",
+      })
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  // Gestion des actions
+  const handleEditService = (service: Service) => {
+    setEditingService(service)
+  }
+
+  const handleCancelEdit = () => {
+    setEditingService(null)
+    form.reset({
+      name: '',
+      description: '',
+      categoryId: '',
+      icon: '',
+    })
+    setFormOpen(false)
+  }
+
+  const handleDeleteService = async (id: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) return
+    
+    try {
+      const response = await fetch(`/api/admin/services?id=${id}`, {
+        method: 'DELETE',
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Une erreur est survenue')
+      }
+      
+      toast({
+        title: "Succès",
+        description: "Service supprimé avec succès",
+      })
+      
+      fetchServices(selectedCategory)
+    } catch (error: any) {
+      console.error('Erreur:', error)
+      toast({
+        variant: 'destructive',
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue",
+      })
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Gestion des services</h1>
+          <p className="text-muted-foreground">
+            Créez et gérez les services proposés aux artisans et clients.
+          </p>
+        </div>
+        <div className="flex items-center space-x-2 mt-4 md:mt-0">
+          <Dialog open={formOpen} onOpenChange={setFormOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => {
+                setEditingService(null);
+                form.reset({
+                  name: '',
+                  description: '',
+                  categoryId: '',
+                  icon: '',
+                });
+              }}>
+                <Plus className="mr-2 h-4 w-4" />
+                Ajouter un service
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingService ? 'Modifier un service' : 'Ajouter un service'}
+                </DialogTitle>
+                <DialogDescription>
+                  {editingService 
+                    ? 'Modifiez les informations du service'
+                    : 'Ajoutez un nouveau service à votre catalogue'}
+                </DialogDescription>
+              </DialogHeader>
+              
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Nom du service</Label>
+                  <Input 
+                    id="name" 
+                    placeholder="Ex: Installation de plomberie" 
+                    {...form.register('name')}
+                  />
+                  {form.formState.errors.name && (
+                    <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="categoryId">Catégorie</Label>
+                  <Select 
+                    onValueChange={(value) => form.setValue('categoryId', value)}
+                    defaultValue={form.getValues('categoryId')}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionner une catégorie" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Toutes les catégories</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {form.formState.errors.categoryId && (
+                    <p className="text-sm text-red-500">{form.formState.errors.categoryId.message}</p>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Description du service"
+                    className="resize-none h-20"
+                    {...form.register('description')}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="icon">Icône</Label>
+                  <IconPicker
+                    value={form.getValues('icon') || ''}
+                    onChange={(value) => form.setValue('icon', value)}
+                  />
+                </div>
+                
+                <DialogFooter className="pt-4">
+                  <Button variant="outline" type="button" onClick={handleCancelEdit}>
+                    Annuler
+                  </Button>
+                  <Button type="submit" disabled={submitting}>
+                    {submitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {editingService ? 'Mise à jour...' : 'Création...'}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" />
+                        {editingService ? 'Mettre à jour' : 'Créer'}
+                      </>
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      {/* Notification de succès */}
+      {success && (
+        <div className="p-3 bg-green-50 text-green-700 border border-green-200 rounded-md text-sm flex items-center">
+          <Check className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span>{success}</span>
+        </div>
+      )}
+      
+      {/* Notification d'erreur */}
+      {error && (
+        <div className="p-3 bg-red-50 text-red-700 border border-red-200 rounded-md text-sm flex items-center">
+          <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      <Card>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+          <div>
+            <CardTitle>Liste des services</CardTitle>
+            <CardDescription>
+              {selectedCategory 
+                ? `Services de la catégorie: ${categories.find(c => c.id === selectedCategory)?.name || selectedCategory}`
+                : 'Tous les services disponibles'}
+            </CardDescription>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Select 
+              value={selectedCategory} 
+              onValueChange={setSelectedCategory}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filtrer par catégorie" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes les catégories</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button variant="outline" onClick={() => fetchServices(selectedCategory)}>
+              <Filter className="h-4 w-4 mr-2" />
+              Filtrer
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex justify-center items-center h-40">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : services.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Catégorie</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {services.map((service) => (
+                  <TableRow key={service.id}>
+                    <TableCell className="font-medium">{service.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {service.category.name}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="max-w-[300px] truncate">
+                      {service.description || <span className="text-gray-400 italic">Aucune description</span>}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={service.isActive ? "default" : "secondary"}>
+                        {service.isActive ? 'Actif' : 'Inactif'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => handleEditService(service)}
+                          className="h-8 w-8"
+                        >
+                          <PencilLine className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                          onClick={() => handleDeleteService(service.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-10 text-muted-foreground">
+              <p>Aucun service trouvé</p>
+              {selectedCategory && (
+                <p className="text-sm mt-2">Essayez de sélectionner une autre catégorie ou créez un nouveau service</p>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+} 

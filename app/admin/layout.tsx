@@ -14,7 +14,10 @@ import {
   X, 
   ChevronDown,
   Bell,
-  Search
+  Search,
+  Grid,
+  Briefcase,
+  FileText
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -45,6 +48,21 @@ const mainNavItems = [
     title: "Artisans",
     href: "/admin/artisans",
     icon: Wrench,
+  },
+  {
+    title: "Projets",
+    href: "/admin/projets",
+    icon: FileText,
+  },
+  {
+    title: "Catégories",
+    href: "/admin/categories",
+    icon: Grid,
+  },
+  {
+    title: "Services",
+    href: "/admin/services",
+    icon: Briefcase,
   },
   {
     title: "Paramètres",

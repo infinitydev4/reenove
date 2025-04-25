@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
-import { ArrowRightCircle, User2, Inbox, UserCircle, HomeIcon, Wrench, LogOut, Settings, LayoutDashboard, ShieldQuestion } from "lucide-react"
+import { ArrowRightCircle, User2, Inbox, UserCircle, HomeIcon, Wrench, LogOut, Settings, LayoutDashboard, ShieldQuestion, PlusCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -69,6 +69,14 @@ export default function Navbar() {
             {/* Recherche ou autre contenu */}
           </div>
           <nav className="flex items-center">
+            <Link href="/create-project/category">
+              <Button variant="outline" className="mr-2">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Publier un projet</span>
+                <span className="sm:hidden">Publier</span>
+              </Button>
+            </Link>
+            
             {status === "authenticated" ? (
               <>
                 {session?.user?.role === Role.USER && (

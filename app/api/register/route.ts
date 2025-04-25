@@ -3,6 +3,47 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 import { Role } from "@/lib/generated/prisma"
 
+// Interface pour les données d'inscription
+interface UserRegistrationData {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  company?: string;
+  phone?: string;
+  role?: string;
+}
+
+// Types pour gestion des erreurs
+interface ApiError {
+  message: string;
+  code?: string;
+  details?: unknown;
+}
+
+// Fonction de validation des données d'entrée
+const validateInputData = (data: UserRegistrationData): string | null => {
+  if (!data.email || !data.password || !data.firstName || !data.lastName) {
+    return "Informations d'inscription incomplètes";
+  }
+  return null;
+};
+
+// Gestion des erreurs de l'API
+const handleApiError = (error: unknown): NextResponse<{ error: ApiError }> => {
+  console.error("Erreur d'inscription:", error);
+  
+  const apiError: ApiError = {
+    message: error instanceof Error ? error.message : "Une erreur s'est produite lors de l'inscription",
+  };
+  
+  if (error instanceof Error && 'code' in error) {
+    apiError.code = (error as { code: string }).code;
+  }
+  
+  return NextResponse.json({ error: apiError }, { status: 500 });
+};
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -79,10 +120,6 @@ export async function POST(request: NextRequest) {
     )
 
   } catch (error) {
-    console.error("Erreur lors de l'inscription:", error)
-    return NextResponse.json(
-      { error: "Erreur lors de la création du compte. Veuillez réessayer." },
-      { status: 500 }
-    )
+    return handleApiError(error)
   }
 } 
