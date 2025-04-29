@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { 
   Check, 
@@ -12,8 +12,11 @@ import {
   SlidersHorizontal, 
   Trash2,
   UserCircle2,
-  Filter
+  Filter,
+  Loader2
 } from "lucide-react"
+import { formatDistance } from "date-fns"
+import { fr } from "date-fns/locale"
 import { Role } from "@/lib/generated/prisma"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,111 +40,143 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { toast } from "@/components/ui/toast"
 
-// Données fictives pour la démo
-const mockUsers = [
-  {
-    id: "1",
-    name: "Sophie Martin",
-    email: "sophie.martin@exemple.fr",
-    role: Role.USER,
-    status: "active",
-    lastSeen: "il y a 5 minutes",
-    dateCreated: "15 mars 2024",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "2",
-    name: "Thomas Dubois",
-    email: "thomas.dubois@exemple.fr",
-    role: Role.ARTISAN,
-    status: "active",
-    lastSeen: "il y a 1 heure",
-    dateCreated: "10 mars 2024",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "3",
-    name: "Emma Petit",
-    email: "emma.petit@exemple.fr",
-    role: Role.USER,
-    status: "inactive",
-    lastSeen: "il y a 3 jours",
-    dateCreated: "5 mars 2024",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "4",
-    name: "Lucas Bernard",
-    email: "lucas.bernard@exemple.fr",
-    role: Role.ARTISAN,
-    status: "active",
-    lastSeen: "il y a 12 heures",
-    dateCreated: "28 février 2024",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "5",
-    name: "Julie Leroy",
-    email: "julie.leroy@exemple.fr",
-    role: Role.ADMIN,
-    status: "active",
-    lastSeen: "en ligne",
-    dateCreated: "15 février 2024",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "6",
-    name: "Alexandre Moreau",
-    email: "alexandre.moreau@exemple.fr",
-    role: Role.USER,
-    status: "blocked",
-    lastSeen: "il y a 1 mois",
-    dateCreated: "10 janvier 2024",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "7",
-    name: "Camille Fournier",
-    email: "camille.fournier@exemple.fr",
-    role: Role.USER,
-    status: "active",
-    lastSeen: "il y a 2 jours",
-    dateCreated: "5 janvier 2024",
-    avatar: "/placeholder.svg",
-  },
-]
+interface User {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
+  role: Role;
+  status: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PaginationInfo {
+  total: number;
+  pages: number;
+  page: number;
+  limit: number;
+}
 
 export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
-  const [users, setUsers] = useState(mockUsers)
-
-  // Filtrer les utilisateurs selon les critères
-  const filteredUsers = users.filter(user => {
-    // Filtre de recherche
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    
-    // Filtre par rôle
-    const matchesRole = selectedRole ? user.role === selectedRole : true
-    
-    // Filtre par statut
-    const matchesStatus = selectedStatus ? user.status === selectedStatus : true
-    
-    return matchesSearch && matchesRole && matchesStatus
+  const [users, setUsers] = useState<User[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    total: 0,
+    pages: 0,
+    page: 1,
+    limit: 10
   })
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
+
+  // Fonction pour charger les utilisateurs
+  const loadUsers = async () => {
+    setIsLoading(true)
+    try {
+      const params = new URLSearchParams()
+      if (searchQuery) params.append("search", searchQuery)
+      if (selectedRole) params.append("role", selectedRole)
+      if (selectedStatus) params.append("status", selectedStatus)
+      params.append("page", pagination.page.toString())
+      params.append("limit", pagination.limit.toString())
+
+      const response = await fetch(`/api/users?${params.toString()}`)
+      if (!response.ok) {
+        throw new Error("Erreur lors de la récupération des utilisateurs")
+      }
+
+      const data = await response.json()
+      setUsers(data.users)
+      setPagination(data.pagination)
+    } catch (error) {
+      console.error("Erreur:", error)
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les utilisateurs. Veuillez réessayer.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  // Charger les utilisateurs au chargement et lors des changements de filtres
+  useEffect(() => {
+    loadUsers()
+  }, [searchQuery, selectedRole, selectedStatus, pagination.page, pagination.limit])
+
+  // Formater la date relative
+  const formatRelativeDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString)
+      return formatDistance(date, new Date(), { addSuffix: true, locale: fr })
+    } catch (error) {
+      return "Date inconnue"
+    }
+  }
+
+  // Formater la date d'inscription
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString)
+      return date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      })
+    } catch (error) {
+      return "Date inconnue"
+    }
+  }
 
   const handleCopyEmail = (email: string) => {
+    if (!email) return
     navigator.clipboard.writeText(email)
-    // Idéalement, afficher un toast de confirmation ici
+    toast({
+      title: "Copié !",
+      description: "L'email a été copié dans le presse-papiers",
+    })
   }
   
-  const handleDeleteUser = (userId: string) => {
-    // Dans une vraie application, une confirmation serait demandée
-    // et une requête API serait effectuée pour supprimer l'utilisateur
-    setUsers(users.filter(user => user.id !== userId))
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.")) {
+      return
+    }
+
+    setIsDeleting(userId)
+    try {
+      const response = await fetch(`/api/users/${userId}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Erreur lors de la suppression de l'utilisateur")
+      }
+
+      toast({
+        title: "Utilisateur supprimé",
+        description: "L'utilisateur a été supprimé avec succès",
+        variant: "default",
+      })
+
+      // Recharger les utilisateurs après suppression
+      loadUsers()
+    } catch (error) {
+      console.error("Erreur:", error)
+      toast({
+        title: "Erreur",
+        description: error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression",
+        variant: "destructive",
+      })
+    } finally {
+      setIsDeleting(null)
+    }
   }
 
   const getRoleBadge = (role: Role) => {
@@ -159,7 +194,7 @@ export default function AdminUsersPage() {
     }
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string | null) => {
     switch (status) {
       case "active":
         return <Badge className="bg-green-500">Actif</Badge>
@@ -182,9 +217,11 @@ export default function AdminUsersPage() {
           </p>
         </div>
         <div className="mt-4 md:mt-0">
-          <Button>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Ajouter un utilisateur
+          <Button asChild>
+            <Link href="/admin/users/add">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Ajouter un utilisateur
+            </Link>
           </Button>
         </div>
       </div>
@@ -288,15 +325,29 @@ export default function AdminUsersPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              <Button variant="outline" size="sm" onClick={() => {
-                setSearchQuery("")
-                setSelectedRole(null)
-                setSelectedStatus(null)
-              }}>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  setSearchQuery("")
+                  setSelectedRole(null)
+                  setSelectedStatus(null)
+                }}
+              >
                 Réinitialiser
               </Button>
               
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                disabled={isLoading || users.length === 0}
+                onClick={() => {
+                  toast({
+                    title: "Export en cours",
+                    description: "Cette fonctionnalité sera disponible prochainement.",
+                  })
+                }}
+              >
                 <Download className="mr-2 h-4 w-4" />
                 Exporter
               </Button>
@@ -317,39 +368,50 @@ export default function AdminUsersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredUsers.length === 0 ? (
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center py-8">
+                      <div className="flex justify-center items-center">
+                        <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
+                        <span>Chargement des utilisateurs...</span>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : users.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       Aucun utilisateur ne correspond aux critères de recherche
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredUsers.map((user) => (
+                  users.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
-                            <AvatarImage src={user.avatar} alt={user.name} />
-                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={user.image || undefined} alt={user.name || ""} />
+                            <AvatarFallback>{user.name?.charAt(0) || "U"}</AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col">
-                            <div className="font-medium">{user.name}</div>
+                            <div className="font-medium">{user.name || "Utilisateur sans nom"}</div>
                             <div className="text-xs text-muted-foreground flex items-center gap-1">
-                              {user.email}
-                              <button 
-                                className="hover:text-primary transition-colors"
-                                onClick={() => handleCopyEmail(user.email)}
-                              >
-                                <Copy className="h-3 w-3" />
-                              </button>
+                              {user.email || "Email non défini"}
+                              {user.email && (
+                                <button 
+                                  className="hover:text-primary transition-colors"
+                                  onClick={() => handleCopyEmail(user.email || "")}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>{getRoleBadge(user.role)}</TableCell>
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
-                      <TableCell>{user.dateCreated}</TableCell>
-                      <TableCell className="hidden md:table-cell">{user.lastSeen}</TableCell>
+                      <TableCell>{formatDate(user.createdAt)}</TableCell>
+                      <TableCell className="hidden md:table-cell">{formatRelativeDate(user.updatedAt)}</TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -367,11 +429,23 @@ export default function AdminUsersPage() {
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              className="text-red-500 cursor-pointer"
+                              className={cn(
+                                "text-red-500 cursor-pointer",
+                                isDeleting === user.id && "opacity-50 cursor-not-allowed"
+                              )}
                               onClick={() => handleDeleteUser(user.id)}
                             >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Supprimer
+                              {isDeleting === user.id ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Suppression...
+                                </>
+                              ) : (
+                                <>
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Supprimer
+                                </>
+                              )}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -382,9 +456,29 @@ export default function AdminUsersPage() {
               </TableBody>
             </Table>
           </div>
-          <div className="mt-4 flex items-center justify-end">
+          <div className="mt-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.page <= 1 || isLoading}
+                onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+              >
+                Précédent
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={pagination.page >= pagination.pages || isLoading}
+                onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+              >
+                Suivant
+              </Button>
+            </div>
             <p className="text-sm text-muted-foreground">
-              Affichage de {filteredUsers.length} sur {users.length} utilisateurs
+              {isLoading 
+                ? "Chargement..." 
+                : `Page ${pagination.page}/${pagination.pages || 1} • ${pagination.total} utilisateur${pagination.total > 1 ? "s" : ""}`}
             </p>
           </div>
         </CardContent>

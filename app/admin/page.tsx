@@ -12,13 +12,16 @@ import {
   UserX,
   AlertCircle,
   Wrench,
-  FileText
+  FileText,
+  Bell
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { TestNotifications } from "@/components/admin/TestNotifications"
 
 // Cette fonction serait remplacée par un appel API dans une application réelle
 function getDashboardData() {
@@ -309,6 +312,22 @@ export default function AdminDashboardPage() {
           </CardFooter>
         </Card>
       </div>
+
+      {/* Section de test de notifications */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bell className="h-5 w-5 text-primary" />
+            Notifications Push
+          </CardTitle>
+          <CardDescription>
+            Envoyez des notifications push en temps réel à votre tableau de bord
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TestNotifications />
+        </CardContent>
+      </Card>
     </div>
   )
 } 

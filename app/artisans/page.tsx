@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import ArtisanCard from "@/components/artisan-card"
-
+import Navbar from "@/components/navbar"
 export default function ArtisansPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+      <Navbar />
       <div className="bg-white dark:bg-gray-950 border-b sticky top-0 z-10">
         <div className="container py-4 px-4 md:px-6">
           <div className="flex flex-col md:flex-row gap-4">

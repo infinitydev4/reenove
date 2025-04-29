@@ -10,14 +10,14 @@ import {
   MessageSquare,
   FileClock,
   Star,
-  Bell,
   ChevronRight,
   Users,
   Clock,
   CheckCircle,
   AlertCircle,
   Wrench,
-  MapPin
+  MapPin,
+  Send
 } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,10 +26,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
+import { TestNotificationsArtisan } from "@/components/artisan/TestNotificationsArtisan"
+import { useNotifications } from "@/lib/contexts/NotificationContext"
 
 export default function ArtisanDashboardPage() {
   const { data: session } = useSession()
   const [activeTab, setActiveTab] = useState("today")
+  const { unreadCount } = useNotifications()
 
   // Données fictives
   const pendingQuotes = [
@@ -106,10 +109,17 @@ export default function ArtisanDashboardPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm">
-            <Bell className="h-4 w-4 mr-2" />
-            Notifications
-          </Button>
+          <Link href="#notifications" className="inline-flex md:hidden">
+            <Button variant="outline" size="sm" className="relative">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Notifications
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+            </Button>
+          </Link>
           <Button>
             <FileClock className="h-4 w-4 mr-2" />
             Créer un devis
@@ -434,6 +444,24 @@ export default function ArtisanDashboardPage() {
                 </div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Section de test des notifications */}
+      <div id="notifications">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Send className="h-5 w-5 text-primary" />
+              Test des Notifications
+            </CardTitle>
+            <CardDescription>
+              Envoyez des notifications push pour tester le système
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TestNotificationsArtisan />
           </CardContent>
         </Card>
       </div>

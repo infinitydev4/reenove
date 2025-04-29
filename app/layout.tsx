@@ -1,15 +1,24 @@
-import type React from "react"
+import type { Metadata, Viewport } from "next"
 import "@/app/globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/components/auth-provider"
-import { ToastProvider } from "@/components/ui/toast-provider"
-
+import { ToastProvider } from "@/components/ui/toast"
+import Navbar from "@/components/navbar"
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata = {
-  title: "ArtiConnect - Mise en relation artisans et clients",
-  description: "Plateforme de mise en relation entre artisans qualifiés et clients pour tous types de projets",
+export const metadata: Metadata = {
+  title: "Renoveo - Trouvez les meilleurs artisans pour vos projets",
+  description: "Renoveo vous connecte avec des artisans qualifiés et vérifiés pour tous vos projets de rénovation et d'amélioration de l'habitat.",
+  keywords: "renoveo, artisans, rénovation, travaux, maison, qualité, habitat, construction"
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#ffffff"
 }
 
 export default function RootLayout({
@@ -21,11 +30,16 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
         <AuthProvider>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem={false}
+            storageKey="renoveo-theme"
+          >
             <ToastProvider>
-          {children}
+              {children}
             </ToastProvider>
-        </ThemeProvider>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

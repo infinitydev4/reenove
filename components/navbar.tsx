@@ -36,7 +36,7 @@ export default function Navbar() {
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Image src="/logo.svg" alt="Logo" width={32} height={32} />
             <span className="hidden font-bold sm:inline-block">
-              RenovEO
+              Reenove
             </span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
