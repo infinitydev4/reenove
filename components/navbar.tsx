@@ -40,7 +40,7 @@ export default function Navbar() {
             </span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
-            <Link
+            {/* <Link
               href="/artisans"
               className={`transition-colors hover:text-foreground/80 ${
                 pathname?.startsWith("/artisans")
@@ -59,7 +59,7 @@ export default function Navbar() {
               }`}
             >
               Projets
-            </Link>
+            </Link> */}
             {/* Liens supplémentaires si nécessaire */}
           </nav>
         </div>
