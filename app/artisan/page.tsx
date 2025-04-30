@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import {
   BarChart3,
@@ -30,9 +31,58 @@ import { TestNotificationsArtisan } from "@/components/artisan/TestNotifications
 import { useNotifications } from "@/lib/contexts/NotificationContext"
 
 export default function ArtisanDashboardPage() {
-  const { data: session } = useSession()
+  const router = useRouter()
+  const { data: session, status } = useSession()
   const [activeTab, setActiveTab] = useState("today")
   const { unreadCount } = useNotifications()
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Vérifier si l'onboarding est complété
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth?tab=login&redirect=/artisan")
+      return
+    }
+
+    if (status === "authenticated" && session?.user?.role === "ARTISAN") {
+      const checkOnboardingStatus = async () => {
+        try {
+          const response = await fetch("/api/artisan/onboarding/progress")
+          if (response.ok) {
+            const data = await response.json()
+            const { progress } = data
+            
+            // Vérifier si toutes les étapes obligatoires sont complétées
+            const isProfileComplete = progress.profile
+            const isSpecialtiesComplete = progress.specialties
+            const isDocumentsComplete = progress.documents
+            
+            // Si un des éléments essentiels n'est pas complété, rediriger vers l'onboarding
+            if (!isProfileComplete || !isSpecialtiesComplete || !isDocumentsComplete) {
+              router.push("/onboarding/artisan")
+            }
+          }
+        } catch (error) {
+          console.error("Erreur lors de la vérification de l'onboarding:", error)
+        } finally {
+          setIsLoading(false)
+        }
+      }
+      
+      checkOnboardingStatus()
+    } else {
+      setIsLoading(false)
+    }
+  }, [session, status, router])
+
+  // Afficher un état de chargement pendant la vérification
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   // Données fictives
   const pendingQuotes = [
@@ -418,7 +468,7 @@ export default function ArtisanDashboardPage() {
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm">Projet terminé pour <span className="font-medium">Marie Dubois</span></p>
-                      <p className="text-xs text-muted-foreground">Aujourd'hui à 14:30</p>
+                      <p className="text-xs text-muted-foreground">Aujourd&apos;hui à 14:30</p>
                     </div>
                   </div>
 

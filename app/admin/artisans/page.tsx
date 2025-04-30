@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { 
   Check, 
@@ -46,129 +46,26 @@ import {
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
+import { Skeleton } from "@/components/ui/skeleton"
 
-// Données fictives pour la démo
-const mockArtisans = [
-  {
-    id: "A-2024-001",
-    name: "Thomas Bernard",
-    email: "thomas.bernard@exemple.fr",
-    phone: "06 12 34 56 78",
-    address: "15 rue des Artisans, 69000 Lyon",
-    status: "actif",
-    speciality: "Plomberie",
-    rating: 4.8,
-    projectsCompleted: 35,
-    currentProjects: 3,
-    totalEarnings: "68500€",
-    availability: "disponible",
-    startDate: "15 janvier 2022",
-    avatar: "/placeholder.svg",
-    verified: true,
-  },
-  {
-    id: "A-2024-002",
-    name: "Sophie Martin",
-    email: "sophie.martin@exemple.fr",
-    phone: "07 23 45 67 89",
-    address: "8 rue Centrale, 75016 Paris",
-    status: "actif",
-    speciality: "Électricité",
-    rating: 4.5,
-    projectsCompleted: 28,
-    currentProjects: 2,
-    totalEarnings: "52300€",
-    availability: "disponible",
-    startDate: "3 mars 2022",
-    avatar: "/placeholder.svg",
-    verified: true,
-  },
-  {
-    id: "A-2024-003",
-    name: "Michel Roux",
-    email: "michel.roux@exemple.fr",
-    phone: "06 78 90 12 34",
-    address: "23 avenue des Pins, 13000 Marseille",
-    status: "actif",
-    speciality: "Maçonnerie",
-    rating: 4.9,
-    projectsCompleted: 42,
-    currentProjects: 4,
-    totalEarnings: "92400€",
-    availability: "occupé",
-    startDate: "10 décembre 2021",
-    avatar: "/placeholder.svg",
-    verified: true,
-  },
-  {
-    id: "A-2024-004",
-    name: "Camille Dubois",
-    email: "camille.dubois@exemple.fr",
-    phone: "06 98 76 54 32",
-    address: "42 rue du Faubourg, 33000 Bordeaux",
-    status: "inactif",
-    speciality: "Peinture",
-    rating: 4.2,
-    projectsCompleted: 15,
-    currentProjects: 0,
-    totalEarnings: "22800€",
-    availability: "indisponible",
-    startDate: "5 juin 2022",
-    avatar: "/placeholder.svg",
-    verified: false,
-  },
-  {
-    id: "A-2024-005",
-    name: "Antoine Moreau",
-    email: "antoine.moreau@exemple.fr",
-    phone: "07 65 43 21 09",
-    address: "17 rue des Tilleuls, 59000 Lille",
-    status: "actif",
-    speciality: "Menuiserie",
-    rating: 4.7,
-    projectsCompleted: 31,
-    currentProjects: 2,
-    totalEarnings: "64300€",
-    availability: "disponible",
-    startDate: "20 avril 2022",
-    avatar: "/placeholder.svg",
-    verified: true,
-  },
-  {
-    id: "A-2024-006",
-    name: "Valérie Petit",
-    email: "valerie.petit@exemple.fr",
-    phone: "06 54 32 10 98",
-    address: "5 rue des Capucines, 31000 Toulouse",
-    status: "actif",
-    speciality: "Carrelage",
-    rating: 4.6,
-    projectsCompleted: 24,
-    currentProjects: 3,
-    totalEarnings: "48900€",
-    availability: "occupé",
-    startDate: "15 novembre 2022",
-    avatar: "/placeholder.svg",
-    verified: true,
-  },
-  {
-    id: "A-2024-007",
-    name: "Laurent Girard",
-    email: "laurent.girard@exemple.fr",
-    phone: "06 45 67 89 01",
-    address: "28 boulevard des Océans, 44000 Nantes",
-    status: "inactif",
-    speciality: "Plomberie",
-    rating: 4.3,
-    projectsCompleted: 19,
-    currentProjects: 0,
-    totalEarnings: "37100€",
-    availability: "indisponible",
-    startDate: "2 février 2022",
-    avatar: "/placeholder.svg",
-    verified: true,
-  },
-]
+// Type pour un artisan
+type Artisan = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  address: string
+  status: string
+  speciality: string
+  rating: number
+  projectsCompleted: number
+  currentProjects: number
+  totalEarnings: string
+  availability: string
+  startDate: string
+  avatar: string
+  verified: boolean
+}
 
 // Liste des spécialités 
 const specialities = [
@@ -185,7 +82,34 @@ export default function AdminArtisansPage() {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
   const [selectedSpeciality, setSelectedSpeciality] = useState<string | null>(null)
   const [selectedAvailability, setSelectedAvailability] = useState<string | null>(null)
-  const [artisans, setArtisans] = useState(mockArtisans)
+  const [artisans, setArtisans] = useState<Artisan[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Charger les artisans depuis l'API
+  useEffect(() => {
+    const fetchArtisans = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch('/api/admin/artisans')
+        
+        if (!response.ok) {
+          throw new Error(`Erreur: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        setArtisans(data)
+        setError(null)
+      } catch (err) {
+        console.error("Erreur lors du chargement des artisans:", err)
+        setError("Impossible de charger les artisans. Veuillez réessayer plus tard.")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchArtisans()
+  }, [])
 
   // Filtrer les artisans selon les critères
   const filteredArtisans = artisans.filter(artisan => {
@@ -209,10 +133,22 @@ export default function AdminArtisansPage() {
     return matchesSearch && matchesStatus && matchesSpeciality && matchesAvailability
   })
   
-  const handleDeleteArtisan = (artisanId: string) => {
-    // Dans une vraie application, une confirmation serait demandée
-    // et une requête API serait effectuée pour supprimer l'artisan
-    setArtisans(artisans.filter(artisan => artisan.id !== artisanId))
+  const handleDeleteArtisan = async (artisanId: string) => {
+    // Confirmation avant suppression
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cet artisan ?")) {
+      return
+    }
+    
+    try {
+      // Dans une vraie application, une requête API serait effectuée pour supprimer l'artisan
+      // await fetch(`/api/admin/artisans/${artisanId}`, { method: 'DELETE' })
+      
+      // Pour le moment, juste une mise à jour locale
+      setArtisans(artisans.filter(artisan => artisan.id !== artisanId))
+    } catch (err) {
+      console.error("Erreur lors de la suppression:", err)
+      alert("Erreur lors de la suppression de l'artisan.")
+    }
   }
 
   const getStatusBadge = (status: string) => {
@@ -259,6 +195,19 @@ export default function AdminArtisansPage() {
     )
   }
 
+  // Calculer les totaux pour les cartes récapitulatives
+  const totalArtisans = artisans.length
+  const activeArtisans = artisans.filter(a => a.status === "actif").length
+  const totalCurrentProjects = artisans.reduce((sum, a) => sum + a.currentProjects, 0)
+  const totalCompletedProjects = artisans.reduce((sum, a) => sum + a.projectsCompleted, 0)
+  const totalEarnings = artisans.reduce((sum, a) => {
+    const value = parseInt(a.totalEarnings.replace("€", "").replace(" ", ""))
+    return sum + value
+  }, 0)
+  const averageRating = artisans.length > 0 
+    ? (artisans.reduce((sum, a) => sum + Number(a.rating), 0) / artisans.length).toFixed(1)
+    : "0.0"
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -284,10 +233,16 @@ export default function AdminArtisansPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{artisans.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {artisans.filter(a => a.status === "actif").length} artisans actifs
-            </p>
+            {isLoading ? (
+              <Skeleton className="h-7 w-16" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{totalArtisans}</div>
+                <p className="text-xs text-muted-foreground">
+                  {activeArtisans} artisans actifs
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
         
@@ -299,32 +254,41 @@ export default function AdminArtisansPage() {
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {artisans.reduce((sum, a) => sum + a.currentProjects, 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Sur {artisans.reduce((sum, a) => sum + a.projectsCompleted, 0)} projets complétés
-            </p>
+            {isLoading ? (
+              <Skeleton className="h-7 w-16" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {totalCurrentProjects}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Sur {totalCompletedProjects} projets complétés
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Chiffre d'affaires généré
+              Chiffre d&apos;affaires généré
             </CardTitle>
             <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {artisans.reduce((sum, a) => {
-                const value = parseInt(a.totalEarnings.replace("€", "").replace(" ", ""))
-                return sum + value
-              }, 0).toLocaleString()}€
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Note moyenne: {(artisans.reduce((sum, a) => sum + a.rating, 0) / artisans.length).toFixed(1)}/5
-            </p>
+            {isLoading ? (
+              <Skeleton className="h-7 w-16" />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {totalEarnings.toLocaleString()}€
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Note moyenne: {averageRating}/5
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -469,6 +433,12 @@ export default function AdminArtisansPage() {
           </div>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="p-4 mb-4 text-red-700 bg-red-100 rounded-md">
+              {error}
+            </div>
+          )}
+          
           <div className="rounded-md border">
             <Table>
               <TableHeader>
@@ -482,7 +452,46 @@ export default function AdminArtisansPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredArtisans.length === 0 ? (
+                {isLoading ? (
+                  // Affichage de squelettes de chargement
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={`skeleton-${index}`}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="h-9 w-9 rounded-full" />
+                          <div className="space-y-2">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-3 w-24" />
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="space-y-2">
+                          <Skeleton className="h-3 w-32" />
+                          <Skeleton className="h-3 w-24" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <Skeleton className="h-6 w-20" />
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <div className="space-y-2">
+                          <Skeleton className="h-3 w-28" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        <div className="space-y-2">
+                          <Skeleton className="h-3 w-32" />
+                          <Skeleton className="h-2 w-full" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Skeleton className="h-8 w-8 ml-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : filteredArtisans.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                       Aucun artisan ne correspond aux critères de recherche
@@ -510,7 +519,7 @@ export default function AdminArtisansPage() {
                               )}
                             </div>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <span>{artisan.id}</span>
+                              <span>{artisan.id.substring(0, 8)}...</span>
                               <span>•</span>
                               <span className="flex items-center gap-1">
                                 {getStatusBadge(artisan.status)}

@@ -103,10 +103,23 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         role: userRole,
+        phone,
         // Vous pourriez stocker d'autres infos dans des champs personnalisés
         // si vous les ajoutez au modèle User
       },
     })
+
+    // Si c'est un artisan, créer son profil par défaut
+    if (userRole === Role.ARTISAN) {
+      await prisma.artisanProfile.create({
+        data: {
+          userId: newUser.id,
+          companyName: company || "",
+          onboardingCompleted: false,
+          assessmentCompleted: false,
+        }
+      })
+    }
 
     // Ne pas retourner le mot de passe hashé
     const { password: _, ...userWithoutPassword } = newUser

@@ -22,21 +22,40 @@ export async function GET(request: NextRequest) {
     // Récupérer les paramètres de requête
     const url = new URL(request.url);
     const categoryId = url.searchParams.get("categoryId");
+    const page = parseInt(url.searchParams.get("page") || "1");
+    const limit = parseInt(url.searchParams.get("limit") || "10");
+    
+    // Pagination: calculer le nombre d'éléments à sauter
+    const skip = (page - 1) * limit;
     
     // Construire la requête avec filtre de catégorie si spécifié
     const whereClause = categoryId ? { categoryId } : {};
     
-    const services = await prisma.service.findMany({
-      where: whereClause,
-      include: {
-        category: true,
-      },
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    // Requête pour obtenir les services avec pagination
+    const [services, total] = await Promise.all([
+      prisma.service.findMany({
+        where: whereClause,
+        include: {
+          category: true,
+        },
+        orderBy: {
+          name: 'asc',
+        },
+        skip,
+        take: limit,
+      }),
+      prisma.service.count({
+        where: whereClause,
+      })
+    ]);
     
-    return NextResponse.json(services);
+    return NextResponse.json({
+      services,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (error) {
     console.error("Erreur lors de la récupération des services:", error);
     return NextResponse.json(

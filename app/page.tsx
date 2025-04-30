@@ -19,7 +19,7 @@ export default function Home() {
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                    Trouvez l'artisan idéal pour votre projet
+                    Trouvez l&apos;artisan idéal pour votre projet
                   </h1>
                   <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
                     Connectez-vous avec des professionnels qualifiés pour tous vos besoins de rénovation, construction
@@ -91,7 +91,7 @@ export default function Home() {
                 profession="Menuisier"
                 rating={4.9}
                 reviews={124}
-                image="https://images.unsplash.com/photo-1617103996702-96ff29b1c467?q=80&w=2532"
+                image="/images/craftsman.png"
                 location="Lyon"
               />
               <ArtisanCard
@@ -99,7 +99,7 @@ export default function Home() {
                 profession="Électricienne"
                 rating={4.8}
                 reviews={98}
-                image="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=2070"
+                image="/images/electrician.png"
                 location="Paris"
               />
               <ArtisanCard
@@ -107,7 +107,7 @@ export default function Home() {
                 profession="Plombier"
                 rating={4.7}
                 reviews={156}
-                image="https://images.unsplash.com/photo-1564223288351-a96bae6ff3ee?q=80&w=3132"
+                image="/images/plumber.png"
                 location="Marseille"
               />
             </div>
@@ -127,7 +127,7 @@ export default function Home() {
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="mx-auto w-full max-w-[500px] lg:max-w-none order-2 lg:order-1">
                 <Image
-                  src="https://images.unsplash.com/photo-1617103996702-96ff29b1c467?q=80&w=2532"
+                  src="/images/artisan-app.png"
                   alt="Client consultant des profils d'artisans"
                   className="w-full h-auto rounded-xl object-cover"
                   width={550}
@@ -189,7 +189,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="py-12 px-4">
+        {/* <section className="py-12 px-4">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-4xl font-bold text-center mb-8">
               Découvrez nos réalisations
@@ -199,11 +199,11 @@ export default function Home() {
             </p>
             <ImageGallery />
           </div>
-        </section>
+        </section> */}
       </main>
       <footer className="w-full border-t py-6 md:py-0">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 md:h-16">
-          <p className="text-sm text-gray-500 dark:text-gray-400">© 2024 ArtiConnect. Tous droits réservés.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">© 2024 Reenove. Tous droits réservés.</p>
           <nav className="flex gap-4 sm:gap-6">
             <Link href="/about" className="text-sm font-medium">
               À propos

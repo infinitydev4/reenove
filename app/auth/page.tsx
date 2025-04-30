@@ -72,7 +72,7 @@ export default function AuthPage() {
     <div className="container flex flex-col items-center justify-center h-screen max-w-md py-10">
       <div className="w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">ArtiConnect</h1>
+          <h1 className="text-3xl font-bold">Reenove</h1>
           <p className="text-gray-500">Connexion à la plateforme</p>
         </div>
 
@@ -121,7 +121,7 @@ export default function AuthPage() {
           </div>
           
           <div className="text-center space-y-2">
-            <p className="text-sm text-muted-foreground">Vous n'avez pas encore de compte ?</p>
+            <p className="text-sm text-muted-foreground">Vous n&apos;avez pas encore de compte ?</p>
             <Button asChild variant="outline" className="w-full">
               <Link href="/register/role">
                 Créer un compte

@@ -3,25 +3,10 @@ import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { slugify } from '@/lib/utils'
-
-// Type pour les catégories et services
-type Category = {
-  id: string
-  name: string
-  icon: string | null
-  description: string | null
-  slug?: string
-}
-
-type Service = {
-  id: string
-  name: string
-  description: string | null
-  slug?: string
-}
+import { CategoryData, ServiceData } from '@/lib/data/categories'
 
 type ServicesMap = {
-  [categoryId: string]: Service[]
+  [categoryId: string]: ServiceData[]
 }
 
 export async function POST(req: Request) {
@@ -56,41 +41,60 @@ export async function POST(req: Request) {
     }
     
     // Préparer les données avec les slugs
-    const preparedCategories = categories.map(category => ({
+    const preparedCategories = categories.map((category: CategoryData) => ({
       ...category,
-      slug: category.slug || slugify(category.name)
+      slug: slugify(category.name)
     }))
     
-    const preparedServices: Record<string, Service[]> = {}
+    const preparedServices: Record<string, any[]> = {}
     for (const categoryId in services) {
-      preparedServices[categoryId] = services[categoryId].map((service: any) => ({
+      preparedServices[categoryId] = services[categoryId].map((service: ServiceData) => ({
         ...service,
-        slug: service.slug || slugify(service.name)
+        slug: `${categoryId}-${slugify(service.name)}`
       }))
     }
     
     // Commencer une transaction pour garantir la cohérence des données
     const result = await prisma.$transaction(async (tx) => {
-      const createdCategories: Category[] = []
-      const createdServices: Service[] = []
+      const createdCategories: CategoryData[] = []
+      const createdServices: ServiceData[] = []
+      const skippedCategories: string[] = []
+      const skippedServices: string[] = []
       
       // Créer les catégories
       for (const category of preparedCategories) {
-        const existingCategory = await tx.category.findUnique({
-          where: { id: category.id }
+        // Vérifier si la catégorie existe déjà
+        const existingCategory = await tx.category.findFirst({
+          where: {
+            OR: [
+              { id: category.id },
+              { slug: category.slug }
+            ]
+          }
         })
         
         if (!existingCategory) {
-          const newCategory = await tx.category.create({
-            data: {
-              id: category.id,
-              name: category.name,
-              icon: category.icon,
-              description: category.description,
-              slug: category.slug || slugify(category.name)
-            }
-          })
-          createdCategories.push(newCategory)
+          try {
+            const newCategory = await tx.category.create({
+              data: {
+                id: category.id,
+                name: category.name,
+                icon: category.icon,
+                description: category.description,
+                slug: slugify(category.name),
+                isActive: true,
+                order: 0
+              }
+            })
+            createdCategories.push(newCategory as unknown as CategoryData)
+          } catch (err) {
+            console.warn(`Impossible de créer la catégorie ${category.name} (${category.id}): `, err);
+            skippedCategories.push(category.name);
+            // Continuer avec la catégorie suivante
+            continue;
+          }
+        } else {
+          skippedCategories.push(category.name);
         }
       }
       
@@ -100,21 +104,38 @@ export async function POST(req: Request) {
         
         if (Array.isArray(categoryServices)) {
           for (const service of categoryServices) {
-            const existingService = await tx.service.findUnique({
-              where: { id: service.id }
+            // Vérifier si le service existe déjà par ID ou par slug
+            const existingService = await tx.service.findFirst({
+              where: {
+                OR: [
+                  { id: service.id },
+                  { slug: service.slug }
+                ]
+              }
             })
             
             if (!existingService) {
-              const newService = await tx.service.create({
-                data: {
-                  id: service.id,
-                  name: service.name,
-                  description: service.description,
-                  categoryId: categoryId,
-                  slug: service.slug || slugify(service.name)
-                }
-              })
-              createdServices.push(newService)
+              try {
+                const newService = await tx.service.create({
+                  data: {
+                    id: service.id,
+                    name: service.name,
+                    description: service.description,
+                    categoryId: categoryId,
+                    slug: service.slug,
+                    isActive: true,
+                    order: 0
+                  }
+                })
+                createdServices.push(newService as unknown as ServiceData)
+              } catch (err) {
+                console.warn(`Impossible de créer le service ${service.name} (${service.id}): `, err);
+                skippedServices.push(service.name);
+                // Continuer avec le prochain service
+                continue;
+              }
+            } else {
+              skippedServices.push(service.name);
             }
           }
         }
@@ -122,13 +143,15 @@ export async function POST(req: Request) {
       
       return {
         categoriesCount: createdCategories.length,
-        servicesCount: createdServices.length
+        servicesCount: createdServices.length,
+        skippedCategoriesCount: skippedCategories.length,
+        skippedServicesCount: skippedServices.length
       }
     })
     
     return NextResponse.json({
       success: true,
-      message: `Importation réussie: ${result.categoriesCount} catégories et ${result.servicesCount} services créés`,
+      message: `Importation réussie: ${result.categoriesCount} catégories et ${result.servicesCount} services créés. ${result.skippedCategoriesCount} catégories et ${result.skippedServicesCount} services ignorés (déjà existants ou erreurs).`,
       data: result
     })
     

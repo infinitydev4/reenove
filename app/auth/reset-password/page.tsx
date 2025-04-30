@@ -103,7 +103,7 @@ export default function ResetPasswordPage() {
 
       <footer className="py-6 border-t bg-background">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">© 2024 ArtiConnect. Tous droits réservés.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">© 2024 Reenove. Tous droits réservés.</p>
           <nav className="flex gap-4 sm:gap-6">
             <Link
               href="/about"

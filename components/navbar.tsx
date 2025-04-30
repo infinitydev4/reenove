@@ -34,7 +34,7 @@ export default function Navbar() {
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Image src="/logo.svg" alt="Logo" width={32} height={32} />
+            {/* <Image src="/logo.svg" alt="Logo" width={32} height={32} /> */}
             <span className="hidden font-bold sm:inline-block">
               Reenove
             </span>
@@ -172,12 +172,12 @@ export default function Navbar() {
                     <span>Connexion</span>
                   </Button>
                 </Link>
-                <Link href="/register/role">
+                {/* <Link href="/register/role">
                   <Button>
                     <ArrowRightCircle className="mr-2 h-4 w-4" />
                     <span>Inscription</span>
                   </Button>
-                </Link>
+                </Link> */}
               </>
             )}
           </nav>

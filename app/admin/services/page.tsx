@@ -99,6 +99,11 @@ export default function AdminServicesPage() {
   const [editingService, setEditingService] = useState<Service | null>(null)
   const [formOpen, setFormOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalServices, setTotalServices] = useState(0)
+  const itemsPerPage = 10
 
   // Initialisation du formulaire
   const form = useForm<ServiceFormValues>({
@@ -126,19 +131,26 @@ export default function AdminServicesPage() {
     }
   }
 
-  // Récupération des services
-  const fetchServices = async (categoryId?: string) => {
+  // Récupération des services avec pagination
+  const fetchServices = async (categoryId?: string, page: number = 1) => {
     setLoading(true)
     try {
-      const url = categoryId && categoryId !== "all"
-        ? `/api/admin/services?categoryId=${categoryId}`
-        : '/api/admin/services'
+      // Construire l'URL avec les paramètres de pagination
+      let url = '/api/admin/services?'
+      if (categoryId && categoryId !== "all") {
+        url += `categoryId=${categoryId}&`
+      }
+      url += `page=${page}&limit=${itemsPerPage}`
       
       const response = await fetch(url)
       if (!response.ok) throw new Error('Erreur lors du chargement des services')
       
       const data = await response.json()
-      setServices(data || [])
+      
+      // Mettre à jour les services et le nombre total
+      setServices(data.services || [])
+      setTotalServices(data.total || 0)
+      setCurrentPage(page)
       setError(null)
     } catch (err: any) {
       setError(err.message || 'Une erreur est survenue')
@@ -152,17 +164,13 @@ export default function AdminServicesPage() {
   useEffect(() => {
     Promise.all([
       fetchCategories(),
-      fetchServices()
+      fetchServices(selectedCategory, currentPage)
     ]);
   }, [])
 
   // Mise à jour des services lorsque la catégorie sélectionnée change
   useEffect(() => {
-    if (selectedCategory) {
-      fetchServices(selectedCategory)
-    } else {
-      fetchServices()
-    }
+    fetchServices(selectedCategory, 1) // Reset to page 1 when category changes
   }, [selectedCategory])
 
   // Réinitialisation du formulaire lors de l'édition
@@ -276,6 +284,42 @@ export default function AdminServicesPage() {
         description: error.message || "Une erreur est survenue",
       })
     }
+  }
+
+  // Gestionnaires de pagination
+  const handleNextPage = () => {
+    const nextPage = currentPage + 1
+    setCurrentPage(nextPage)
+    fetchServices(selectedCategory, nextPage)
+  }
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      const prevPage = currentPage - 1
+      setCurrentPage(prevPage)
+      fetchServices(selectedCategory, prevPage)
+    }
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    fetchServices(selectedCategory, page)
+  }
+
+  // Calcul des pages à afficher
+  const totalPages = Math.ceil(totalServices / itemsPerPage)
+  const pageNumbers = []
+  
+  // Logique pour afficher un nombre limité de pages avec ellipsis
+  let startPage = Math.max(1, currentPage - 2)
+  const endPage = Math.min(totalPages, startPage + 4)
+  
+  if (endPage - startPage < 4) {
+    startPage = Math.max(1, endPage - 4)
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    pageNumbers.push(i)
   }
 
   return (
@@ -448,57 +492,123 @@ export default function AdminServicesPage() {
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : services.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nom</TableHead>
-                  <TableHead>Catégorie</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {services.map((service) => (
-                  <TableRow key={service.id}>
-                    <TableCell className="font-medium">{service.name}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {service.category.name}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="max-w-[300px] truncate">
-                      {service.description || <span className="text-gray-400 italic">Aucune description</span>}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={service.isActive ? "default" : "secondary"}>
-                        {service.isActive ? 'Actif' : 'Inactif'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => handleEditService(service)}
-                          className="h-8 w-8"
-                        >
-                          <PencilLine className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
-                          onClick={() => handleDeleteService(service.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nom</TableHead>
+                    <TableHead>Catégorie</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {services.map((service) => (
+                    <TableRow key={service.id}>
+                      <TableCell className="font-medium">{service.name}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline">
+                          {service.category.name}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-[300px] truncate">
+                        {service.description || <span className="text-gray-400 italic">Aucune description</span>}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={service.isActive ? "default" : "secondary"}>
+                          {service.isActive ? 'Actif' : 'Inactif'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            onClick={() => handleEditService(service)}
+                            className="h-8 w-8"
+                          >
+                            <PencilLine className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                            onClick={() => handleDeleteService(service.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-1 mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                  >
+                    Précédent
+                  </Button>
+                  
+                  {startPage > 1 && (
+                    <>
+                      <Button
+                        variant={currentPage === 1 ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(1)}
+                      >
+                        1
+                      </Button>
+                      {startPage > 2 && <span className="mx-1">...</span>}
+                    </>
+                  )}
+                  
+                  {pageNumbers.map(page => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                  
+                  {endPage < totalPages && (
+                    <>
+                      {endPage < totalPages - 1 && <span className="mx-1">...</span>}
+                      <Button
+                        variant={currentPage === totalPages ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        {totalPages}
+                      </Button>
+                    </>
+                  )}
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Suivant
+                  </Button>
+                </div>
+              )}
+              
+              <div className="mt-4 text-sm text-muted-foreground text-center">
+                Affichage de {(currentPage - 1) * itemsPerPage + 1} à {Math.min(currentPage * itemsPerPage, totalServices)} sur {totalServices} services
+              </div>
+            </>
           ) : (
             <div className="text-center py-10 text-muted-foreground">
               <p>Aucun service trouvé</p>

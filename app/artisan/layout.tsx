@@ -55,7 +55,7 @@ export default function ArtisanDashboardLayout({ children }: PropsWithChildren) 
         <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-900 border-b">
           <Link href="/" className="flex items-center">
             <Home className="h-6 w-6 text-primary mr-2" />
-            <span className="font-semibold">ArtiConnect</span>
+            <span className="font-semibold">Reenove</span>
           </Link>
           <div className="flex items-center gap-2">
             <NotificationDropdown />
@@ -82,7 +82,7 @@ export default function ArtisanDashboardLayout({ children }: PropsWithChildren) 
           <div className="p-4 flex justify-between items-center border-b">
             <Link href="/" className="flex items-center">
               <Home className="h-6 w-6 text-primary mr-2" />
-              <span className="font-semibold">ArtiConnect</span>
+              <span className="font-semibold">Reenove</span>
             </Link>
             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)}>
               <X className="h-5 w-5" />
@@ -156,7 +156,7 @@ export default function ArtisanDashboardLayout({ children }: PropsWithChildren) 
             <div className="p-4 flex items-center border-b">
               <Link href="/" className="flex items-center">
                 <Home className="h-6 w-6 text-primary mr-2" />
-                <span className="font-semibold">ArtiConnect</span>
+                <span className="font-semibold">Reenove</span>
               </Link>
             </div>
 

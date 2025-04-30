@@ -1,21 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { 
-  Check, 
-  ChevronsUpDown, 
-  Home, 
-  Wrench, 
-  Zap, 
-  Hammer, 
-  Paintbrush, 
-  HardHat, 
-  Bath, 
-  DoorOpen, 
-  Trees, 
-  Briefcase,
-  Search
-} from "lucide-react"
+import { Check, ChevronsUpDown, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -24,31 +10,15 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
+  CommandSeparator,
 } from "@/components/ui/command"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-
-const iconMap: Record<string, React.ReactNode> = {
-  Home: <Home className="h-4 w-4" />,
-  Wrench: <Wrench className="h-4 w-4" />,
-  Zap: <Zap className="h-4 w-4" />,
-  Hammer: <Hammer className="h-4 w-4" />,
-  Paintbrush: <Paintbrush className="h-4 w-4" />,
-  Construction: <HardHat className="h-4 w-4" />,
-  Bath: <Bath className="h-4 w-4" />,
-  DoorOpen: <DoorOpen className="h-4 w-4" />,
-  Trees: <Trees className="h-4 w-4" />,
-  Briefcase: <Briefcase className="h-4 w-4" />,
-}
-
-const icons = Object.keys(iconMap).map((name) => ({
-  value: name,
-  label: name,
-  icon: iconMap[name],
-}))
+import { iconCategories, recommendedCategoryIcons, getIconByName } from "@/lib/data/icons"
 
 export interface IconPickerProps {
   value?: string
@@ -57,10 +27,10 @@ export interface IconPickerProps {
 
 export function IconPicker({ value, onChange }: IconPickerProps) {
   const [open, setOpen] = React.useState(false)
+  const [searchQuery, setSearchQuery] = React.useState("")
 
-  const selectedIcon = React.useMemo(() => {
-    return icons.find((icon) => icon.value === value)
-  }, [value])
+  // Récupérer l'icône sélectionnée
+  const IconComponent = value ? getIconByName(value) : null
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -71,10 +41,10 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {selectedIcon ? (
+          {value ? (
             <div className="flex items-center gap-2">
-              {selectedIcon.icon}
-              <span>{selectedIcon.label}</span>
+              {React.createElement(IconComponent || getIconByName("HelpCircle"), { className: "h-4 w-4" })}
+              <span>{value}</span>
             </div>
           ) : (
             <span>Sélectionner une icône</span>
@@ -82,33 +52,88 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-[280px] p-0" align="start">
         <Command>
-          <CommandInput placeholder="Rechercher une icône..." />
+          <div className="flex items-center border-b px-3">
+            <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+            <CommandInput 
+              placeholder="Rechercher une icône..." 
+              className="border-0 focus:ring-0 h-9 px-0" 
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+            />
+          </div>
           <CommandEmpty>Aucune icône trouvée.</CommandEmpty>
-          <CommandGroup className="max-h-60 overflow-auto">
-            {icons.map((icon) => (
-              <CommandItem
-                key={icon.value}
-                value={icon.value}
-                onSelect={(currentValue: string) => {
-                  onChange?.(currentValue)
-                  setOpen(false)
-                }}
-              >
-                <div className="flex items-center gap-2">
-                  {icon.icon}
-                  <span>{icon.label}</span>
-                </div>
-                <Check
-                  className={cn(
-                    "ml-auto h-4 w-4",
-                    value === icon.value ? "opacity-100" : "opacity-0"
-                  )}
-                />
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          <CommandList className="max-h-[300px] overflow-auto">
+            {/* Icônes recommandées */}
+            <CommandGroup heading="Recommandées">
+              <div className="grid grid-cols-5 gap-1 p-2">
+                {recommendedCategoryIcons.map((iconName) => {
+                  const IconComponent = getIconByName(iconName);
+                  return (
+                    <CommandItem
+                      key={iconName}
+                      value={iconName}
+                      onSelect={() => {
+                        onChange?.(iconName);
+                        setOpen(false);
+                      }}
+                      className="px-2 py-1 cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        {React.createElement(IconComponent, { className: "h-5 w-5" })}
+                        {value === iconName && (
+                          <Check className="h-3 w-3 absolute bottom-1 right-1 text-green-500" />
+                        )}
+                      </div>
+                    </CommandItem>
+                  );
+                })}
+              </div>
+            </CommandGroup>
+            
+            <CommandSeparator />
+            
+            {/* Catégories d'icônes */}
+            {iconCategories.map((category) => {
+              // Filtrer par la recherche si une requête est présente
+              const filteredIcons = searchQuery
+                ? category.icons.filter(icon => 
+                    icon.toLowerCase().includes(searchQuery.toLowerCase())
+                  )
+                : category.icons;
+                
+              if (filteredIcons.length === 0) return null;
+              
+              return (
+                <CommandGroup key={category.name} heading={category.name}>
+                  <div className="grid grid-cols-5 gap-1 p-2">
+                    {filteredIcons.map((iconName) => {
+                      const IconComponent = getIconByName(iconName);
+                      return (
+                        <CommandItem
+                          key={iconName}
+                          value={iconName}
+                          onSelect={() => {
+                            onChange?.(iconName);
+                            setOpen(false);
+                          }}
+                          className="px-2 py-1 cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
+                        >
+                          <div className="flex flex-col items-center gap-1">
+                            {React.createElement(IconComponent, { className: "h-5 w-5" })}
+                            {value === iconName && (
+                              <Check className="h-3 w-3 absolute bottom-1 right-1 text-green-500" />
+                            )}
+                          </div>
+                        </CommandItem>
+                      );
+                    })}
+                  </div>
+                </CommandGroup>
+              );
+            })}
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>

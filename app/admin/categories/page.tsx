@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useToast } from '@/components/ui/use-toast'
+import * as LucideIcons from "lucide-react"
 import { 
   Plus, 
   Save, 
@@ -53,43 +54,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { IconPicker } from '@/components/ui/icon-picker'
 import { cn } from '@/lib/utils'
-
-// Données statiques de démonstration (celles actuellement utilisées dans l'application)
-const staticCategories = [
-  { id: "plumbing", name: "Plomberie", icon: "Wrench", description: "Installation, réparation et entretien de systèmes de plomberie" },
-  { id: "electricity", name: "Électricité", icon: "Zap", description: "Installation et dépannage électrique" },
-  { id: "carpentry", name: "Menuiserie", icon: "Hammer", description: "Fabrication et installation de mobilier et structures en bois" },
-  { id: "painting", name: "Peinture", icon: "Paintbrush", description: "Travaux de peinture intérieure et extérieure" },
-  { id: "masonry", name: "Maçonnerie", icon: "Construction", description: "Construction et rénovation de structures en pierre, brique ou béton" },
-  { id: "bathroom", name: "Salle de bain", icon: "Bath", description: "Rénovation et installation de salles de bain" },
-  { id: "doors", name: "Portes et fenêtres", icon: "DoorOpen", description: "Installation et réparation de portes et fenêtres" },
-  { id: "landscaping", name: "Jardinage", icon: "Trees", description: "Aménagement paysager et entretien d'espaces verts" },
-  { id: "renovation", name: "Rénovation générale", icon: "Home", description: "Rénovation complète ou partielle de bâtiments" },
-  { id: "other", name: "Autre", icon: "Briefcase", description: "Autres types de travaux non listés" },
-]
-
-// Définir une interface pour les services
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-}
-
-const staticServices: Record<string, Service[]> = {
-  plumbing: [
-    { id: "plumb-install", name: "Installation de plomberie", description: "Installation de tuyauterie, robinetterie, etc." },
-    { id: "plumb-repair", name: "Réparation de fuite", description: "Détection et réparation de fuites d'eau" },
-    { id: "plumb-heating", name: "Installation chauffage", description: "Installation et entretien de systèmes de chauffage" },
-    { id: "plumb-bathroom", name: "Plomberie salle de bain", description: "Installation de sanitaires et robinetterie" },
-  ],
-  electricity: [
-    { id: "elec-install", name: "Installation électrique", description: "Installation de circuits électriques" },
-    { id: "elec-repair", name: "Dépannage électrique", description: "Résolution de pannes électriques" },
-    { id: "elec-upgrade", name: "Mise aux normes", description: "Mise en conformité des installations électriques" },
-    { id: "elec-automation", name: "Domotique", description: "Installation de systèmes domotiques" },
-  ],
-  // autres services...
-}
+import { staticCategories, staticServices, CategoryData, ServiceData } from '@/lib/data/categories'
 
 // Définition du schéma de validation pour le formulaire
 const formSchema = z.object({
@@ -114,7 +79,7 @@ interface Category {
 export default function AdminCategoriesPage() {
   const { toast } = useToast()
   const [categories, setCategories] = useState<Category[]>([])
-  const [services, setServices] = useState<Record<string, Service[]>>({})
+  const [services, setServices] = useState<Record<string, ServiceData[]>>({})
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -141,9 +106,17 @@ export default function AdminCategoriesPage() {
       if (!response.ok) throw new Error('Erreur lors du chargement des catégories')
       
       const data = await response.json()
-      setCategories(data.data || [])
+      if (Array.isArray(data)) {
+        setCategories(data)
+      } else if (data.data && Array.isArray(data.data)) {
+        setCategories(data.data)
+      } else {
+        console.log("Format de réponse inattendu:", data)
+        setCategories(data || [])
+      }
       setError(null)
     } catch (err: any) {
+      console.error("Erreur lors du chargement des catégories:", err)
       setError(err.message || 'Une erreur est survenue')
       setCategories([])
     } finally {
@@ -338,7 +311,7 @@ export default function AdminCategoriesPage() {
               <DialogHeader>
                 <DialogTitle>Importer les données statiques</DialogTitle>
                 <DialogDescription>
-                  Cette action va créer toutes les catégories et services actuellement codés en dur dans l'application. Cette opération est irréversible.
+                  Cette action va créer toutes les catégories et services actuellement codés en dur dans l&apos;application. Cette opération est irréversible.
                 </DialogDescription>
               </DialogHeader>
               
@@ -448,7 +421,11 @@ export default function AdminCategoriesPage() {
                     <TableRow key={category.id}>
                       <TableCell>
                         <div className="flex items-center justify-center bg-muted w-10 h-10 rounded-full">
-                          <span className="text-xl">{category.icon}</span>
+                          {React.createElement(
+                            // @ts-expect-error - Dynamically access the icon from Lucide
+                            LucideIcons[category.icon] || LucideIcons.HelpCircle,
+                            { className: "h-5 w-5" }
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="font-medium">

@@ -19,6 +19,26 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
 /**
+ * Model ArtisanProfile
+ * 
+ */
+export type ArtisanProfile = $Result.DefaultSelection<Prisma.$ArtisanProfilePayload>
+/**
+ * Model ArtisanSpecialty
+ * 
+ */
+export type ArtisanSpecialty = $Result.DefaultSelection<Prisma.$ArtisanSpecialtyPayload>
+/**
+ * Model ArtisanDocument
+ * 
+ */
+export type ArtisanDocument = $Result.DefaultSelection<Prisma.$ArtisanDocumentPayload>
+/**
+ * Model ArtisanSkill
+ * 
+ */
+export type ArtisanSkill = $Result.DefaultSelection<Prisma.$ArtisanSkillPayload>
+/**
  * Model Category
  * 
  */
@@ -156,6 +176,25 @@ export const PreferredTime: {
 
 export type PreferredTime = (typeof PreferredTime)[keyof typeof PreferredTime]
 
+
+export const ArtisanLevel: {
+  BEGINNER: 'BEGINNER',
+  INTERMEDIATE: 'INTERMEDIATE',
+  CONFIRMED: 'CONFIRMED',
+  EXPERT: 'EXPERT'
+};
+
+export type ArtisanLevel = (typeof ArtisanLevel)[keyof typeof ArtisanLevel]
+
+
+export const ArtisanVerificationStatus: {
+  PENDING: 'PENDING',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED'
+};
+
+export type ArtisanVerificationStatus = (typeof ArtisanVerificationStatus)[keyof typeof ArtisanVerificationStatus]
+
 }
 
 export type Role = $Enums.Role
@@ -185,6 +224,14 @@ export const UrgencyLevel: typeof $Enums.UrgencyLevel
 export type PreferredTime = $Enums.PreferredTime
 
 export const PreferredTime: typeof $Enums.PreferredTime
+
+export type ArtisanLevel = $Enums.ArtisanLevel
+
+export const ArtisanLevel: typeof $Enums.ArtisanLevel
+
+export type ArtisanVerificationStatus = $Enums.ArtisanVerificationStatus
+
+export const ArtisanVerificationStatus: typeof $Enums.ArtisanVerificationStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -320,6 +367,46 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.artisanProfile`: Exposes CRUD operations for the **ArtisanProfile** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ArtisanProfiles
+    * const artisanProfiles = await prisma.artisanProfile.findMany()
+    * ```
+    */
+  get artisanProfile(): Prisma.ArtisanProfileDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.artisanSpecialty`: Exposes CRUD operations for the **ArtisanSpecialty** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ArtisanSpecialties
+    * const artisanSpecialties = await prisma.artisanSpecialty.findMany()
+    * ```
+    */
+  get artisanSpecialty(): Prisma.ArtisanSpecialtyDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.artisanDocument`: Exposes CRUD operations for the **ArtisanDocument** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ArtisanDocuments
+    * const artisanDocuments = await prisma.artisanDocument.findMany()
+    * ```
+    */
+  get artisanDocument(): Prisma.ArtisanDocumentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.artisanSkill`: Exposes CRUD operations for the **ArtisanSkill** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ArtisanSkills
+    * const artisanSkills = await prisma.artisanSkill.findMany()
+    * ```
+    */
+  get artisanSkill(): Prisma.ArtisanSkillDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.category`: Exposes CRUD operations for the **Category** model.
@@ -508,8 +595,8 @@ export namespace Prisma {
   export import Exact = $Public.Exact
 
   /**
-   * Prisma Client JS version: 6.6.0
-   * Query Engine version: f676762280b54cd07c770017ed3711ddde35f37a
+   * Prisma Client JS version: 6.7.0
+   * Query Engine version: 3cff47a7f5d65c3ea74883f1d736e41d68ce91ed
    */
   export type PrismaVersion = {
     client: string
@@ -891,6 +978,10 @@ export namespace Prisma {
 
   export const ModelName: {
     User: 'User',
+    ArtisanProfile: 'ArtisanProfile',
+    ArtisanSpecialty: 'ArtisanSpecialty',
+    ArtisanDocument: 'ArtisanDocument',
+    ArtisanSkill: 'ArtisanSkill',
     Category: 'Category',
     Service: 'Service',
     Project: 'Project',
@@ -922,7 +1013,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "category" | "service" | "project" | "projectRequirement" | "projectStep" | "projectImage" | "quote" | "quoteItem" | "projectInvitation" | "notification" | "account" | "session" | "verificationToken"
+      modelProps: "user" | "artisanProfile" | "artisanSpecialty" | "artisanDocument" | "artisanSkill" | "category" | "service" | "project" | "projectRequirement" | "projectStep" | "projectImage" | "quote" | "quoteItem" | "projectInvitation" | "notification" | "account" | "session" | "verificationToken"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -997,6 +1088,302 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      ArtisanProfile: {
+        payload: Prisma.$ArtisanProfilePayload<ExtArgs>
+        fields: Prisma.ArtisanProfileFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ArtisanProfileFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ArtisanProfileFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>
+          }
+          findFirst: {
+            args: Prisma.ArtisanProfileFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ArtisanProfileFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>
+          }
+          findMany: {
+            args: Prisma.ArtisanProfileFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>[]
+          }
+          create: {
+            args: Prisma.ArtisanProfileCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>
+          }
+          createMany: {
+            args: Prisma.ArtisanProfileCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ArtisanProfileCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>[]
+          }
+          delete: {
+            args: Prisma.ArtisanProfileDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>
+          }
+          update: {
+            args: Prisma.ArtisanProfileUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>
+          }
+          deleteMany: {
+            args: Prisma.ArtisanProfileDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ArtisanProfileUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ArtisanProfileUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>[]
+          }
+          upsert: {
+            args: Prisma.ArtisanProfileUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanProfilePayload>
+          }
+          aggregate: {
+            args: Prisma.ArtisanProfileAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateArtisanProfile>
+          }
+          groupBy: {
+            args: Prisma.ArtisanProfileGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ArtisanProfileGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ArtisanProfileCountArgs<ExtArgs>
+            result: $Utils.Optional<ArtisanProfileCountAggregateOutputType> | number
+          }
+        }
+      }
+      ArtisanSpecialty: {
+        payload: Prisma.$ArtisanSpecialtyPayload<ExtArgs>
+        fields: Prisma.ArtisanSpecialtyFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ArtisanSpecialtyFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ArtisanSpecialtyFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>
+          }
+          findFirst: {
+            args: Prisma.ArtisanSpecialtyFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ArtisanSpecialtyFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>
+          }
+          findMany: {
+            args: Prisma.ArtisanSpecialtyFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>[]
+          }
+          create: {
+            args: Prisma.ArtisanSpecialtyCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>
+          }
+          createMany: {
+            args: Prisma.ArtisanSpecialtyCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ArtisanSpecialtyCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>[]
+          }
+          delete: {
+            args: Prisma.ArtisanSpecialtyDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>
+          }
+          update: {
+            args: Prisma.ArtisanSpecialtyUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>
+          }
+          deleteMany: {
+            args: Prisma.ArtisanSpecialtyDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ArtisanSpecialtyUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ArtisanSpecialtyUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>[]
+          }
+          upsert: {
+            args: Prisma.ArtisanSpecialtyUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSpecialtyPayload>
+          }
+          aggregate: {
+            args: Prisma.ArtisanSpecialtyAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateArtisanSpecialty>
+          }
+          groupBy: {
+            args: Prisma.ArtisanSpecialtyGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ArtisanSpecialtyGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ArtisanSpecialtyCountArgs<ExtArgs>
+            result: $Utils.Optional<ArtisanSpecialtyCountAggregateOutputType> | number
+          }
+        }
+      }
+      ArtisanDocument: {
+        payload: Prisma.$ArtisanDocumentPayload<ExtArgs>
+        fields: Prisma.ArtisanDocumentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ArtisanDocumentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ArtisanDocumentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>
+          }
+          findFirst: {
+            args: Prisma.ArtisanDocumentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ArtisanDocumentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>
+          }
+          findMany: {
+            args: Prisma.ArtisanDocumentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>[]
+          }
+          create: {
+            args: Prisma.ArtisanDocumentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>
+          }
+          createMany: {
+            args: Prisma.ArtisanDocumentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ArtisanDocumentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>[]
+          }
+          delete: {
+            args: Prisma.ArtisanDocumentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>
+          }
+          update: {
+            args: Prisma.ArtisanDocumentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>
+          }
+          deleteMany: {
+            args: Prisma.ArtisanDocumentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ArtisanDocumentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ArtisanDocumentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>[]
+          }
+          upsert: {
+            args: Prisma.ArtisanDocumentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanDocumentPayload>
+          }
+          aggregate: {
+            args: Prisma.ArtisanDocumentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateArtisanDocument>
+          }
+          groupBy: {
+            args: Prisma.ArtisanDocumentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ArtisanDocumentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ArtisanDocumentCountArgs<ExtArgs>
+            result: $Utils.Optional<ArtisanDocumentCountAggregateOutputType> | number
+          }
+        }
+      }
+      ArtisanSkill: {
+        payload: Prisma.$ArtisanSkillPayload<ExtArgs>
+        fields: Prisma.ArtisanSkillFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ArtisanSkillFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ArtisanSkillFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>
+          }
+          findFirst: {
+            args: Prisma.ArtisanSkillFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ArtisanSkillFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>
+          }
+          findMany: {
+            args: Prisma.ArtisanSkillFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>[]
+          }
+          create: {
+            args: Prisma.ArtisanSkillCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>
+          }
+          createMany: {
+            args: Prisma.ArtisanSkillCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ArtisanSkillCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>[]
+          }
+          delete: {
+            args: Prisma.ArtisanSkillDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>
+          }
+          update: {
+            args: Prisma.ArtisanSkillUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>
+          }
+          deleteMany: {
+            args: Prisma.ArtisanSkillDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ArtisanSkillUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ArtisanSkillUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>[]
+          }
+          upsert: {
+            args: Prisma.ArtisanSkillUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtisanSkillPayload>
+          }
+          aggregate: {
+            args: Prisma.ArtisanSkillAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateArtisanSkill>
+          }
+          groupBy: {
+            args: Prisma.ArtisanSkillGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ArtisanSkillGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ArtisanSkillCountArgs<ExtArgs>
+            result: $Utils.Optional<ArtisanSkillCountAggregateOutputType> | number
           }
         }
       }
@@ -2047,6 +2434,10 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    artisanProfile?: ArtisanProfileOmit
+    artisanSpecialty?: ArtisanSpecialtyOmit
+    artisanDocument?: ArtisanDocumentOmit
+    artisanSkill?: ArtisanSkillOmit
     category?: CategoryOmit
     service?: ServiceOmit
     project?: ProjectOmit
@@ -2161,6 +2552,8 @@ export namespace Prisma {
     receivedQuotes: number
     notifications: number
     projectInvitations: number
+    artisanSpecialties: number
+    artisanDocuments: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2171,6 +2564,8 @@ export namespace Prisma {
     receivedQuotes?: boolean | UserCountOutputTypeCountReceivedQuotesArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     projectInvitations?: boolean | UserCountOutputTypeCountProjectInvitationsArgs
+    artisanSpecialties?: boolean | UserCountOutputTypeCountArtisanSpecialtiesArgs
+    artisanDocuments?: boolean | UserCountOutputTypeCountArtisanDocumentsArgs
   }
 
   // Custom InputTypes
@@ -2233,6 +2628,51 @@ export namespace Prisma {
     where?: ProjectInvitationWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountArtisanSpecialtiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtisanSpecialtyWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountArtisanDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtisanDocumentWhereInput
+  }
+
+
+  /**
+   * Count Type ArtisanProfileCountOutputType
+   */
+
+  export type ArtisanProfileCountOutputType = {
+    skills: number
+  }
+
+  export type ArtisanProfileCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    skills?: boolean | ArtisanProfileCountOutputTypeCountSkillsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ArtisanProfileCountOutputType without action
+   */
+  export type ArtisanProfileCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfileCountOutputType
+     */
+    select?: ArtisanProfileCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanProfileCountOutputType without action
+   */
+  export type ArtisanProfileCountOutputTypeCountSkillsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtisanSkillWhereInput
+  }
+
 
   /**
    * Count Type CategoryCountOutputType
@@ -2280,10 +2720,12 @@ export namespace Prisma {
 
   export type ServiceCountOutputType = {
     projects: number
+    artisanSpecialties: number
   }
 
   export type ServiceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | ServiceCountOutputTypeCountProjectsArgs
+    artisanSpecialties?: boolean | ServiceCountOutputTypeCountArtisanSpecialtiesArgs
   }
 
   // Custom InputTypes
@@ -2302,6 +2744,13 @@ export namespace Prisma {
    */
   export type ServiceCountOutputTypeCountProjectsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ProjectWhereInput
+  }
+
+  /**
+   * ServiceCountOutputType without action
+   */
+  export type ServiceCountOutputTypeCountArtisanSpecialtiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtisanSpecialtyWhereInput
   }
 
 
@@ -2650,6 +3099,9 @@ export namespace Prisma {
     receivedQuotes?: boolean | User$receivedQuotesArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     projectInvitations?: boolean | User$projectInvitationsArgs<ExtArgs>
+    artisanProfile?: boolean | User$artisanProfileArgs<ExtArgs>
+    artisanSpecialties?: boolean | User$artisanSpecialtiesArgs<ExtArgs>
+    artisanDocuments?: boolean | User$artisanDocumentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2713,6 +3165,9 @@ export namespace Prisma {
     receivedQuotes?: boolean | User$receivedQuotesArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     projectInvitations?: boolean | User$projectInvitationsArgs<ExtArgs>
+    artisanProfile?: boolean | User$artisanProfileArgs<ExtArgs>
+    artisanSpecialties?: boolean | User$artisanSpecialtiesArgs<ExtArgs>
+    artisanDocuments?: boolean | User$artisanDocumentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2728,6 +3183,9 @@ export namespace Prisma {
       receivedQuotes: Prisma.$QuotePayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       projectInvitations: Prisma.$ProjectInvitationPayload<ExtArgs>[]
+      artisanProfile: Prisma.$ArtisanProfilePayload<ExtArgs> | null
+      artisanSpecialties: Prisma.$ArtisanSpecialtyPayload<ExtArgs>[]
+      artisanDocuments: Prisma.$ArtisanDocumentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3145,6 +3603,9 @@ export namespace Prisma {
     receivedQuotes<T extends User$receivedQuotesArgs<ExtArgs> = {}>(args?: Subset<T, User$receivedQuotesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     projectInvitations<T extends User$projectInvitationsArgs<ExtArgs> = {}>(args?: Subset<T, User$projectInvitationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectInvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    artisanProfile<T extends User$artisanProfileArgs<ExtArgs> = {}>(args?: Subset<T, User$artisanProfileArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    artisanSpecialties<T extends User$artisanSpecialtiesArgs<ExtArgs> = {}>(args?: Subset<T, User$artisanSpecialtiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    artisanDocuments<T extends User$artisanDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, User$artisanDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3744,6 +4205,73 @@ export namespace Prisma {
   }
 
   /**
+   * User.artisanProfile
+   */
+  export type User$artisanProfileArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    where?: ArtisanProfileWhereInput
+  }
+
+  /**
+   * User.artisanSpecialties
+   */
+  export type User$artisanSpecialtiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    where?: ArtisanSpecialtyWhereInput
+    orderBy?: ArtisanSpecialtyOrderByWithRelationInput | ArtisanSpecialtyOrderByWithRelationInput[]
+    cursor?: ArtisanSpecialtyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ArtisanSpecialtyScalarFieldEnum | ArtisanSpecialtyScalarFieldEnum[]
+  }
+
+  /**
+   * User.artisanDocuments
+   */
+  export type User$artisanDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    where?: ArtisanDocumentWhereInput
+    orderBy?: ArtisanDocumentOrderByWithRelationInput | ArtisanDocumentOrderByWithRelationInput[]
+    cursor?: ArtisanDocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ArtisanDocumentScalarFieldEnum | ArtisanDocumentScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3759,6 +4287,4555 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ArtisanProfile
+   */
+
+  export type AggregateArtisanProfile = {
+    _count: ArtisanProfileCountAggregateOutputType | null
+    _avg: ArtisanProfileAvgAggregateOutputType | null
+    _sum: ArtisanProfileSumAggregateOutputType | null
+    _min: ArtisanProfileMinAggregateOutputType | null
+    _max: ArtisanProfileMaxAggregateOutputType | null
+  }
+
+  export type ArtisanProfileAvgAggregateOutputType = {
+    yearsOfExperience: number | null
+    projectsCompleted: number | null
+    preferredRadius: number | null
+    averageRating: number | null
+    assessmentScore: number | null
+  }
+
+  export type ArtisanProfileSumAggregateOutputType = {
+    yearsOfExperience: number | null
+    projectsCompleted: number | null
+    preferredRadius: number | null
+    averageRating: number | null
+    assessmentScore: number | null
+  }
+
+  export type ArtisanProfileMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    companyName: string | null
+    siret: string | null
+    yearsOfExperience: number | null
+    projectsCompleted: number | null
+    preferredRadius: number | null
+    level: $Enums.ArtisanLevel | null
+    averageRating: number | null
+    verificationStatus: $Enums.ArtisanVerificationStatus | null
+    onboardingCompleted: boolean | null
+    availableForWork: boolean | null
+    assessmentCompleted: boolean | null
+    assessmentScore: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ArtisanProfileMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    companyName: string | null
+    siret: string | null
+    yearsOfExperience: number | null
+    projectsCompleted: number | null
+    preferredRadius: number | null
+    level: $Enums.ArtisanLevel | null
+    averageRating: number | null
+    verificationStatus: $Enums.ArtisanVerificationStatus | null
+    onboardingCompleted: boolean | null
+    availableForWork: boolean | null
+    assessmentCompleted: boolean | null
+    assessmentScore: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ArtisanProfileCountAggregateOutputType = {
+    id: number
+    userId: number
+    companyName: number
+    siret: number
+    yearsOfExperience: number
+    projectsCompleted: number
+    preferredRadius: number
+    level: number
+    averageRating: number
+    verificationStatus: number
+    onboardingCompleted: number
+    availableForWork: number
+    assessmentCompleted: number
+    assessmentScore: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ArtisanProfileAvgAggregateInputType = {
+    yearsOfExperience?: true
+    projectsCompleted?: true
+    preferredRadius?: true
+    averageRating?: true
+    assessmentScore?: true
+  }
+
+  export type ArtisanProfileSumAggregateInputType = {
+    yearsOfExperience?: true
+    projectsCompleted?: true
+    preferredRadius?: true
+    averageRating?: true
+    assessmentScore?: true
+  }
+
+  export type ArtisanProfileMinAggregateInputType = {
+    id?: true
+    userId?: true
+    companyName?: true
+    siret?: true
+    yearsOfExperience?: true
+    projectsCompleted?: true
+    preferredRadius?: true
+    level?: true
+    averageRating?: true
+    verificationStatus?: true
+    onboardingCompleted?: true
+    availableForWork?: true
+    assessmentCompleted?: true
+    assessmentScore?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ArtisanProfileMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    companyName?: true
+    siret?: true
+    yearsOfExperience?: true
+    projectsCompleted?: true
+    preferredRadius?: true
+    level?: true
+    averageRating?: true
+    verificationStatus?: true
+    onboardingCompleted?: true
+    availableForWork?: true
+    assessmentCompleted?: true
+    assessmentScore?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ArtisanProfileCountAggregateInputType = {
+    id?: true
+    userId?: true
+    companyName?: true
+    siret?: true
+    yearsOfExperience?: true
+    projectsCompleted?: true
+    preferredRadius?: true
+    level?: true
+    averageRating?: true
+    verificationStatus?: true
+    onboardingCompleted?: true
+    availableForWork?: true
+    assessmentCompleted?: true
+    assessmentScore?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ArtisanProfileAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtisanProfile to aggregate.
+     */
+    where?: ArtisanProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanProfiles to fetch.
+     */
+    orderBy?: ArtisanProfileOrderByWithRelationInput | ArtisanProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ArtisanProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ArtisanProfiles
+    **/
+    _count?: true | ArtisanProfileCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ArtisanProfileAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ArtisanProfileSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ArtisanProfileMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ArtisanProfileMaxAggregateInputType
+  }
+
+  export type GetArtisanProfileAggregateType<T extends ArtisanProfileAggregateArgs> = {
+        [P in keyof T & keyof AggregateArtisanProfile]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateArtisanProfile[P]>
+      : GetScalarType<T[P], AggregateArtisanProfile[P]>
+  }
+
+
+
+
+  export type ArtisanProfileGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtisanProfileWhereInput
+    orderBy?: ArtisanProfileOrderByWithAggregationInput | ArtisanProfileOrderByWithAggregationInput[]
+    by: ArtisanProfileScalarFieldEnum[] | ArtisanProfileScalarFieldEnum
+    having?: ArtisanProfileScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ArtisanProfileCountAggregateInputType | true
+    _avg?: ArtisanProfileAvgAggregateInputType
+    _sum?: ArtisanProfileSumAggregateInputType
+    _min?: ArtisanProfileMinAggregateInputType
+    _max?: ArtisanProfileMaxAggregateInputType
+  }
+
+  export type ArtisanProfileGroupByOutputType = {
+    id: string
+    userId: string
+    companyName: string | null
+    siret: string | null
+    yearsOfExperience: number | null
+    projectsCompleted: number
+    preferredRadius: number | null
+    level: $Enums.ArtisanLevel | null
+    averageRating: number | null
+    verificationStatus: $Enums.ArtisanVerificationStatus
+    onboardingCompleted: boolean
+    availableForWork: boolean
+    assessmentCompleted: boolean
+    assessmentScore: number | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ArtisanProfileCountAggregateOutputType | null
+    _avg: ArtisanProfileAvgAggregateOutputType | null
+    _sum: ArtisanProfileSumAggregateOutputType | null
+    _min: ArtisanProfileMinAggregateOutputType | null
+    _max: ArtisanProfileMaxAggregateOutputType | null
+  }
+
+  type GetArtisanProfileGroupByPayload<T extends ArtisanProfileGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ArtisanProfileGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ArtisanProfileGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ArtisanProfileGroupByOutputType[P]>
+            : GetScalarType<T[P], ArtisanProfileGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ArtisanProfileSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    companyName?: boolean
+    siret?: boolean
+    yearsOfExperience?: boolean
+    projectsCompleted?: boolean
+    preferredRadius?: boolean
+    level?: boolean
+    averageRating?: boolean
+    verificationStatus?: boolean
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    skills?: boolean | ArtisanProfile$skillsArgs<ExtArgs>
+    _count?: boolean | ArtisanProfileCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanProfile"]>
+
+  export type ArtisanProfileSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    companyName?: boolean
+    siret?: boolean
+    yearsOfExperience?: boolean
+    projectsCompleted?: boolean
+    preferredRadius?: boolean
+    level?: boolean
+    averageRating?: boolean
+    verificationStatus?: boolean
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanProfile"]>
+
+  export type ArtisanProfileSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    companyName?: boolean
+    siret?: boolean
+    yearsOfExperience?: boolean
+    projectsCompleted?: boolean
+    preferredRadius?: boolean
+    level?: boolean
+    averageRating?: boolean
+    verificationStatus?: boolean
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanProfile"]>
+
+  export type ArtisanProfileSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    companyName?: boolean
+    siret?: boolean
+    yearsOfExperience?: boolean
+    projectsCompleted?: boolean
+    preferredRadius?: boolean
+    level?: boolean
+    averageRating?: boolean
+    verificationStatus?: boolean
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ArtisanProfileOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "companyName" | "siret" | "yearsOfExperience" | "projectsCompleted" | "preferredRadius" | "level" | "averageRating" | "verificationStatus" | "onboardingCompleted" | "availableForWork" | "assessmentCompleted" | "assessmentScore" | "createdAt" | "updatedAt", ExtArgs["result"]["artisanProfile"]>
+  export type ArtisanProfileInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    skills?: boolean | ArtisanProfile$skillsArgs<ExtArgs>
+    _count?: boolean | ArtisanProfileCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type ArtisanProfileIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ArtisanProfileIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ArtisanProfilePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ArtisanProfile"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      skills: Prisma.$ArtisanSkillPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      companyName: string | null
+      siret: string | null
+      yearsOfExperience: number | null
+      projectsCompleted: number
+      preferredRadius: number | null
+      level: $Enums.ArtisanLevel | null
+      averageRating: number | null
+      verificationStatus: $Enums.ArtisanVerificationStatus
+      onboardingCompleted: boolean
+      availableForWork: boolean
+      assessmentCompleted: boolean
+      assessmentScore: number | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["artisanProfile"]>
+    composites: {}
+  }
+
+  type ArtisanProfileGetPayload<S extends boolean | null | undefined | ArtisanProfileDefaultArgs> = $Result.GetResult<Prisma.$ArtisanProfilePayload, S>
+
+  type ArtisanProfileCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ArtisanProfileFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ArtisanProfileCountAggregateInputType | true
+    }
+
+  export interface ArtisanProfileDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ArtisanProfile'], meta: { name: 'ArtisanProfile' } }
+    /**
+     * Find zero or one ArtisanProfile that matches the filter.
+     * @param {ArtisanProfileFindUniqueArgs} args - Arguments to find a ArtisanProfile
+     * @example
+     * // Get one ArtisanProfile
+     * const artisanProfile = await prisma.artisanProfile.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ArtisanProfileFindUniqueArgs>(args: SelectSubset<T, ArtisanProfileFindUniqueArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ArtisanProfile that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ArtisanProfileFindUniqueOrThrowArgs} args - Arguments to find a ArtisanProfile
+     * @example
+     * // Get one ArtisanProfile
+     * const artisanProfile = await prisma.artisanProfile.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ArtisanProfileFindUniqueOrThrowArgs>(args: SelectSubset<T, ArtisanProfileFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtisanProfile that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanProfileFindFirstArgs} args - Arguments to find a ArtisanProfile
+     * @example
+     * // Get one ArtisanProfile
+     * const artisanProfile = await prisma.artisanProfile.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ArtisanProfileFindFirstArgs>(args?: SelectSubset<T, ArtisanProfileFindFirstArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtisanProfile that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanProfileFindFirstOrThrowArgs} args - Arguments to find a ArtisanProfile
+     * @example
+     * // Get one ArtisanProfile
+     * const artisanProfile = await prisma.artisanProfile.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ArtisanProfileFindFirstOrThrowArgs>(args?: SelectSubset<T, ArtisanProfileFindFirstOrThrowArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ArtisanProfiles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanProfileFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ArtisanProfiles
+     * const artisanProfiles = await prisma.artisanProfile.findMany()
+     * 
+     * // Get first 10 ArtisanProfiles
+     * const artisanProfiles = await prisma.artisanProfile.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const artisanProfileWithIdOnly = await prisma.artisanProfile.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ArtisanProfileFindManyArgs>(args?: SelectSubset<T, ArtisanProfileFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ArtisanProfile.
+     * @param {ArtisanProfileCreateArgs} args - Arguments to create a ArtisanProfile.
+     * @example
+     * // Create one ArtisanProfile
+     * const ArtisanProfile = await prisma.artisanProfile.create({
+     *   data: {
+     *     // ... data to create a ArtisanProfile
+     *   }
+     * })
+     * 
+     */
+    create<T extends ArtisanProfileCreateArgs>(args: SelectSubset<T, ArtisanProfileCreateArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ArtisanProfiles.
+     * @param {ArtisanProfileCreateManyArgs} args - Arguments to create many ArtisanProfiles.
+     * @example
+     * // Create many ArtisanProfiles
+     * const artisanProfile = await prisma.artisanProfile.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ArtisanProfileCreateManyArgs>(args?: SelectSubset<T, ArtisanProfileCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ArtisanProfiles and returns the data saved in the database.
+     * @param {ArtisanProfileCreateManyAndReturnArgs} args - Arguments to create many ArtisanProfiles.
+     * @example
+     * // Create many ArtisanProfiles
+     * const artisanProfile = await prisma.artisanProfile.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ArtisanProfiles and only return the `id`
+     * const artisanProfileWithIdOnly = await prisma.artisanProfile.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ArtisanProfileCreateManyAndReturnArgs>(args?: SelectSubset<T, ArtisanProfileCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ArtisanProfile.
+     * @param {ArtisanProfileDeleteArgs} args - Arguments to delete one ArtisanProfile.
+     * @example
+     * // Delete one ArtisanProfile
+     * const ArtisanProfile = await prisma.artisanProfile.delete({
+     *   where: {
+     *     // ... filter to delete one ArtisanProfile
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ArtisanProfileDeleteArgs>(args: SelectSubset<T, ArtisanProfileDeleteArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ArtisanProfile.
+     * @param {ArtisanProfileUpdateArgs} args - Arguments to update one ArtisanProfile.
+     * @example
+     * // Update one ArtisanProfile
+     * const artisanProfile = await prisma.artisanProfile.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ArtisanProfileUpdateArgs>(args: SelectSubset<T, ArtisanProfileUpdateArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ArtisanProfiles.
+     * @param {ArtisanProfileDeleteManyArgs} args - Arguments to filter ArtisanProfiles to delete.
+     * @example
+     * // Delete a few ArtisanProfiles
+     * const { count } = await prisma.artisanProfile.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ArtisanProfileDeleteManyArgs>(args?: SelectSubset<T, ArtisanProfileDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtisanProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanProfileUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ArtisanProfiles
+     * const artisanProfile = await prisma.artisanProfile.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ArtisanProfileUpdateManyArgs>(args: SelectSubset<T, ArtisanProfileUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtisanProfiles and returns the data updated in the database.
+     * @param {ArtisanProfileUpdateManyAndReturnArgs} args - Arguments to update many ArtisanProfiles.
+     * @example
+     * // Update many ArtisanProfiles
+     * const artisanProfile = await prisma.artisanProfile.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ArtisanProfiles and only return the `id`
+     * const artisanProfileWithIdOnly = await prisma.artisanProfile.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ArtisanProfileUpdateManyAndReturnArgs>(args: SelectSubset<T, ArtisanProfileUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ArtisanProfile.
+     * @param {ArtisanProfileUpsertArgs} args - Arguments to update or create a ArtisanProfile.
+     * @example
+     * // Update or create a ArtisanProfile
+     * const artisanProfile = await prisma.artisanProfile.upsert({
+     *   create: {
+     *     // ... data to create a ArtisanProfile
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ArtisanProfile we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ArtisanProfileUpsertArgs>(args: SelectSubset<T, ArtisanProfileUpsertArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ArtisanProfiles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanProfileCountArgs} args - Arguments to filter ArtisanProfiles to count.
+     * @example
+     * // Count the number of ArtisanProfiles
+     * const count = await prisma.artisanProfile.count({
+     *   where: {
+     *     // ... the filter for the ArtisanProfiles we want to count
+     *   }
+     * })
+    **/
+    count<T extends ArtisanProfileCountArgs>(
+      args?: Subset<T, ArtisanProfileCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ArtisanProfileCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ArtisanProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanProfileAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ArtisanProfileAggregateArgs>(args: Subset<T, ArtisanProfileAggregateArgs>): Prisma.PrismaPromise<GetArtisanProfileAggregateType<T>>
+
+    /**
+     * Group by ArtisanProfile.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanProfileGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ArtisanProfileGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ArtisanProfileGroupByArgs['orderBy'] }
+        : { orderBy?: ArtisanProfileGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ArtisanProfileGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetArtisanProfileGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ArtisanProfile model
+   */
+  readonly fields: ArtisanProfileFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ArtisanProfile.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ArtisanProfileClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    skills<T extends ArtisanProfile$skillsArgs<ExtArgs> = {}>(args?: Subset<T, ArtisanProfile$skillsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ArtisanProfile model
+   */
+  interface ArtisanProfileFieldRefs {
+    readonly id: FieldRef<"ArtisanProfile", 'String'>
+    readonly userId: FieldRef<"ArtisanProfile", 'String'>
+    readonly companyName: FieldRef<"ArtisanProfile", 'String'>
+    readonly siret: FieldRef<"ArtisanProfile", 'String'>
+    readonly yearsOfExperience: FieldRef<"ArtisanProfile", 'Int'>
+    readonly projectsCompleted: FieldRef<"ArtisanProfile", 'Int'>
+    readonly preferredRadius: FieldRef<"ArtisanProfile", 'Int'>
+    readonly level: FieldRef<"ArtisanProfile", 'ArtisanLevel'>
+    readonly averageRating: FieldRef<"ArtisanProfile", 'Float'>
+    readonly verificationStatus: FieldRef<"ArtisanProfile", 'ArtisanVerificationStatus'>
+    readonly onboardingCompleted: FieldRef<"ArtisanProfile", 'Boolean'>
+    readonly availableForWork: FieldRef<"ArtisanProfile", 'Boolean'>
+    readonly assessmentCompleted: FieldRef<"ArtisanProfile", 'Boolean'>
+    readonly assessmentScore: FieldRef<"ArtisanProfile", 'Int'>
+    readonly createdAt: FieldRef<"ArtisanProfile", 'DateTime'>
+    readonly updatedAt: FieldRef<"ArtisanProfile", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ArtisanProfile findUnique
+   */
+  export type ArtisanProfileFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanProfile to fetch.
+     */
+    where: ArtisanProfileWhereUniqueInput
+  }
+
+  /**
+   * ArtisanProfile findUniqueOrThrow
+   */
+  export type ArtisanProfileFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanProfile to fetch.
+     */
+    where: ArtisanProfileWhereUniqueInput
+  }
+
+  /**
+   * ArtisanProfile findFirst
+   */
+  export type ArtisanProfileFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanProfile to fetch.
+     */
+    where?: ArtisanProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanProfiles to fetch.
+     */
+    orderBy?: ArtisanProfileOrderByWithRelationInput | ArtisanProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtisanProfiles.
+     */
+    cursor?: ArtisanProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtisanProfiles.
+     */
+    distinct?: ArtisanProfileScalarFieldEnum | ArtisanProfileScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanProfile findFirstOrThrow
+   */
+  export type ArtisanProfileFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanProfile to fetch.
+     */
+    where?: ArtisanProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanProfiles to fetch.
+     */
+    orderBy?: ArtisanProfileOrderByWithRelationInput | ArtisanProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtisanProfiles.
+     */
+    cursor?: ArtisanProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanProfiles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtisanProfiles.
+     */
+    distinct?: ArtisanProfileScalarFieldEnum | ArtisanProfileScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanProfile findMany
+   */
+  export type ArtisanProfileFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanProfiles to fetch.
+     */
+    where?: ArtisanProfileWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanProfiles to fetch.
+     */
+    orderBy?: ArtisanProfileOrderByWithRelationInput | ArtisanProfileOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ArtisanProfiles.
+     */
+    cursor?: ArtisanProfileWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanProfiles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanProfiles.
+     */
+    skip?: number
+    distinct?: ArtisanProfileScalarFieldEnum | ArtisanProfileScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanProfile create
+   */
+  export type ArtisanProfileCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ArtisanProfile.
+     */
+    data: XOR<ArtisanProfileCreateInput, ArtisanProfileUncheckedCreateInput>
+  }
+
+  /**
+   * ArtisanProfile createMany
+   */
+  export type ArtisanProfileCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ArtisanProfiles.
+     */
+    data: ArtisanProfileCreateManyInput | ArtisanProfileCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ArtisanProfile createManyAndReturn
+   */
+  export type ArtisanProfileCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * The data used to create many ArtisanProfiles.
+     */
+    data: ArtisanProfileCreateManyInput | ArtisanProfileCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanProfile update
+   */
+  export type ArtisanProfileUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ArtisanProfile.
+     */
+    data: XOR<ArtisanProfileUpdateInput, ArtisanProfileUncheckedUpdateInput>
+    /**
+     * Choose, which ArtisanProfile to update.
+     */
+    where: ArtisanProfileWhereUniqueInput
+  }
+
+  /**
+   * ArtisanProfile updateMany
+   */
+  export type ArtisanProfileUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ArtisanProfiles.
+     */
+    data: XOR<ArtisanProfileUpdateManyMutationInput, ArtisanProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtisanProfiles to update
+     */
+    where?: ArtisanProfileWhereInput
+    /**
+     * Limit how many ArtisanProfiles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtisanProfile updateManyAndReturn
+   */
+  export type ArtisanProfileUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * The data used to update ArtisanProfiles.
+     */
+    data: XOR<ArtisanProfileUpdateManyMutationInput, ArtisanProfileUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtisanProfiles to update
+     */
+    where?: ArtisanProfileWhereInput
+    /**
+     * Limit how many ArtisanProfiles to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanProfile upsert
+   */
+  export type ArtisanProfileUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ArtisanProfile to update in case it exists.
+     */
+    where: ArtisanProfileWhereUniqueInput
+    /**
+     * In case the ArtisanProfile found by the `where` argument doesn't exist, create a new ArtisanProfile with this data.
+     */
+    create: XOR<ArtisanProfileCreateInput, ArtisanProfileUncheckedCreateInput>
+    /**
+     * In case the ArtisanProfile was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ArtisanProfileUpdateInput, ArtisanProfileUncheckedUpdateInput>
+  }
+
+  /**
+   * ArtisanProfile delete
+   */
+  export type ArtisanProfileDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+    /**
+     * Filter which ArtisanProfile to delete.
+     */
+    where: ArtisanProfileWhereUniqueInput
+  }
+
+  /**
+   * ArtisanProfile deleteMany
+   */
+  export type ArtisanProfileDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtisanProfiles to delete
+     */
+    where?: ArtisanProfileWhereInput
+    /**
+     * Limit how many ArtisanProfiles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtisanProfile.skills
+   */
+  export type ArtisanProfile$skillsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    where?: ArtisanSkillWhereInput
+    orderBy?: ArtisanSkillOrderByWithRelationInput | ArtisanSkillOrderByWithRelationInput[]
+    cursor?: ArtisanSkillWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ArtisanSkillScalarFieldEnum | ArtisanSkillScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanProfile without action
+   */
+  export type ArtisanProfileDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanProfile
+     */
+    select?: ArtisanProfileSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanProfile
+     */
+    omit?: ArtisanProfileOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanProfileInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ArtisanSpecialty
+   */
+
+  export type AggregateArtisanSpecialty = {
+    _count: ArtisanSpecialtyCountAggregateOutputType | null
+    _min: ArtisanSpecialtyMinAggregateOutputType | null
+    _max: ArtisanSpecialtyMaxAggregateOutputType | null
+  }
+
+  export type ArtisanSpecialtyMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    serviceId: string | null
+    isPrimary: boolean | null
+    createdAt: Date | null
+  }
+
+  export type ArtisanSpecialtyMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    serviceId: string | null
+    isPrimary: boolean | null
+    createdAt: Date | null
+  }
+
+  export type ArtisanSpecialtyCountAggregateOutputType = {
+    id: number
+    userId: number
+    serviceId: number
+    isPrimary: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ArtisanSpecialtyMinAggregateInputType = {
+    id?: true
+    userId?: true
+    serviceId?: true
+    isPrimary?: true
+    createdAt?: true
+  }
+
+  export type ArtisanSpecialtyMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    serviceId?: true
+    isPrimary?: true
+    createdAt?: true
+  }
+
+  export type ArtisanSpecialtyCountAggregateInputType = {
+    id?: true
+    userId?: true
+    serviceId?: true
+    isPrimary?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ArtisanSpecialtyAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtisanSpecialty to aggregate.
+     */
+    where?: ArtisanSpecialtyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanSpecialties to fetch.
+     */
+    orderBy?: ArtisanSpecialtyOrderByWithRelationInput | ArtisanSpecialtyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ArtisanSpecialtyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanSpecialties from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanSpecialties.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ArtisanSpecialties
+    **/
+    _count?: true | ArtisanSpecialtyCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ArtisanSpecialtyMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ArtisanSpecialtyMaxAggregateInputType
+  }
+
+  export type GetArtisanSpecialtyAggregateType<T extends ArtisanSpecialtyAggregateArgs> = {
+        [P in keyof T & keyof AggregateArtisanSpecialty]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateArtisanSpecialty[P]>
+      : GetScalarType<T[P], AggregateArtisanSpecialty[P]>
+  }
+
+
+
+
+  export type ArtisanSpecialtyGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtisanSpecialtyWhereInput
+    orderBy?: ArtisanSpecialtyOrderByWithAggregationInput | ArtisanSpecialtyOrderByWithAggregationInput[]
+    by: ArtisanSpecialtyScalarFieldEnum[] | ArtisanSpecialtyScalarFieldEnum
+    having?: ArtisanSpecialtyScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ArtisanSpecialtyCountAggregateInputType | true
+    _min?: ArtisanSpecialtyMinAggregateInputType
+    _max?: ArtisanSpecialtyMaxAggregateInputType
+  }
+
+  export type ArtisanSpecialtyGroupByOutputType = {
+    id: string
+    userId: string
+    serviceId: string
+    isPrimary: boolean
+    createdAt: Date
+    _count: ArtisanSpecialtyCountAggregateOutputType | null
+    _min: ArtisanSpecialtyMinAggregateOutputType | null
+    _max: ArtisanSpecialtyMaxAggregateOutputType | null
+  }
+
+  type GetArtisanSpecialtyGroupByPayload<T extends ArtisanSpecialtyGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ArtisanSpecialtyGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ArtisanSpecialtyGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ArtisanSpecialtyGroupByOutputType[P]>
+            : GetScalarType<T[P], ArtisanSpecialtyGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ArtisanSpecialtySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    serviceId?: boolean
+    isPrimary?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanSpecialty"]>
+
+  export type ArtisanSpecialtySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    serviceId?: boolean
+    isPrimary?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanSpecialty"]>
+
+  export type ArtisanSpecialtySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    serviceId?: boolean
+    isPrimary?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanSpecialty"]>
+
+  export type ArtisanSpecialtySelectScalar = {
+    id?: boolean
+    userId?: boolean
+    serviceId?: boolean
+    isPrimary?: boolean
+    createdAt?: boolean
+  }
+
+  export type ArtisanSpecialtyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "serviceId" | "isPrimary" | "createdAt", ExtArgs["result"]["artisanSpecialty"]>
+  export type ArtisanSpecialtyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+  export type ArtisanSpecialtyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+  export type ArtisanSpecialtyIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+  }
+
+  export type $ArtisanSpecialtyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ArtisanSpecialty"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      service: Prisma.$ServicePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      serviceId: string
+      isPrimary: boolean
+      createdAt: Date
+    }, ExtArgs["result"]["artisanSpecialty"]>
+    composites: {}
+  }
+
+  type ArtisanSpecialtyGetPayload<S extends boolean | null | undefined | ArtisanSpecialtyDefaultArgs> = $Result.GetResult<Prisma.$ArtisanSpecialtyPayload, S>
+
+  type ArtisanSpecialtyCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ArtisanSpecialtyFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ArtisanSpecialtyCountAggregateInputType | true
+    }
+
+  export interface ArtisanSpecialtyDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ArtisanSpecialty'], meta: { name: 'ArtisanSpecialty' } }
+    /**
+     * Find zero or one ArtisanSpecialty that matches the filter.
+     * @param {ArtisanSpecialtyFindUniqueArgs} args - Arguments to find a ArtisanSpecialty
+     * @example
+     * // Get one ArtisanSpecialty
+     * const artisanSpecialty = await prisma.artisanSpecialty.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ArtisanSpecialtyFindUniqueArgs>(args: SelectSubset<T, ArtisanSpecialtyFindUniqueArgs<ExtArgs>>): Prisma__ArtisanSpecialtyClient<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ArtisanSpecialty that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ArtisanSpecialtyFindUniqueOrThrowArgs} args - Arguments to find a ArtisanSpecialty
+     * @example
+     * // Get one ArtisanSpecialty
+     * const artisanSpecialty = await prisma.artisanSpecialty.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ArtisanSpecialtyFindUniqueOrThrowArgs>(args: SelectSubset<T, ArtisanSpecialtyFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ArtisanSpecialtyClient<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtisanSpecialty that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSpecialtyFindFirstArgs} args - Arguments to find a ArtisanSpecialty
+     * @example
+     * // Get one ArtisanSpecialty
+     * const artisanSpecialty = await prisma.artisanSpecialty.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ArtisanSpecialtyFindFirstArgs>(args?: SelectSubset<T, ArtisanSpecialtyFindFirstArgs<ExtArgs>>): Prisma__ArtisanSpecialtyClient<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtisanSpecialty that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSpecialtyFindFirstOrThrowArgs} args - Arguments to find a ArtisanSpecialty
+     * @example
+     * // Get one ArtisanSpecialty
+     * const artisanSpecialty = await prisma.artisanSpecialty.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ArtisanSpecialtyFindFirstOrThrowArgs>(args?: SelectSubset<T, ArtisanSpecialtyFindFirstOrThrowArgs<ExtArgs>>): Prisma__ArtisanSpecialtyClient<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ArtisanSpecialties that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSpecialtyFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ArtisanSpecialties
+     * const artisanSpecialties = await prisma.artisanSpecialty.findMany()
+     * 
+     * // Get first 10 ArtisanSpecialties
+     * const artisanSpecialties = await prisma.artisanSpecialty.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const artisanSpecialtyWithIdOnly = await prisma.artisanSpecialty.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ArtisanSpecialtyFindManyArgs>(args?: SelectSubset<T, ArtisanSpecialtyFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ArtisanSpecialty.
+     * @param {ArtisanSpecialtyCreateArgs} args - Arguments to create a ArtisanSpecialty.
+     * @example
+     * // Create one ArtisanSpecialty
+     * const ArtisanSpecialty = await prisma.artisanSpecialty.create({
+     *   data: {
+     *     // ... data to create a ArtisanSpecialty
+     *   }
+     * })
+     * 
+     */
+    create<T extends ArtisanSpecialtyCreateArgs>(args: SelectSubset<T, ArtisanSpecialtyCreateArgs<ExtArgs>>): Prisma__ArtisanSpecialtyClient<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ArtisanSpecialties.
+     * @param {ArtisanSpecialtyCreateManyArgs} args - Arguments to create many ArtisanSpecialties.
+     * @example
+     * // Create many ArtisanSpecialties
+     * const artisanSpecialty = await prisma.artisanSpecialty.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ArtisanSpecialtyCreateManyArgs>(args?: SelectSubset<T, ArtisanSpecialtyCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ArtisanSpecialties and returns the data saved in the database.
+     * @param {ArtisanSpecialtyCreateManyAndReturnArgs} args - Arguments to create many ArtisanSpecialties.
+     * @example
+     * // Create many ArtisanSpecialties
+     * const artisanSpecialty = await prisma.artisanSpecialty.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ArtisanSpecialties and only return the `id`
+     * const artisanSpecialtyWithIdOnly = await prisma.artisanSpecialty.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ArtisanSpecialtyCreateManyAndReturnArgs>(args?: SelectSubset<T, ArtisanSpecialtyCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ArtisanSpecialty.
+     * @param {ArtisanSpecialtyDeleteArgs} args - Arguments to delete one ArtisanSpecialty.
+     * @example
+     * // Delete one ArtisanSpecialty
+     * const ArtisanSpecialty = await prisma.artisanSpecialty.delete({
+     *   where: {
+     *     // ... filter to delete one ArtisanSpecialty
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ArtisanSpecialtyDeleteArgs>(args: SelectSubset<T, ArtisanSpecialtyDeleteArgs<ExtArgs>>): Prisma__ArtisanSpecialtyClient<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ArtisanSpecialty.
+     * @param {ArtisanSpecialtyUpdateArgs} args - Arguments to update one ArtisanSpecialty.
+     * @example
+     * // Update one ArtisanSpecialty
+     * const artisanSpecialty = await prisma.artisanSpecialty.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ArtisanSpecialtyUpdateArgs>(args: SelectSubset<T, ArtisanSpecialtyUpdateArgs<ExtArgs>>): Prisma__ArtisanSpecialtyClient<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ArtisanSpecialties.
+     * @param {ArtisanSpecialtyDeleteManyArgs} args - Arguments to filter ArtisanSpecialties to delete.
+     * @example
+     * // Delete a few ArtisanSpecialties
+     * const { count } = await prisma.artisanSpecialty.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ArtisanSpecialtyDeleteManyArgs>(args?: SelectSubset<T, ArtisanSpecialtyDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtisanSpecialties.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSpecialtyUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ArtisanSpecialties
+     * const artisanSpecialty = await prisma.artisanSpecialty.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ArtisanSpecialtyUpdateManyArgs>(args: SelectSubset<T, ArtisanSpecialtyUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtisanSpecialties and returns the data updated in the database.
+     * @param {ArtisanSpecialtyUpdateManyAndReturnArgs} args - Arguments to update many ArtisanSpecialties.
+     * @example
+     * // Update many ArtisanSpecialties
+     * const artisanSpecialty = await prisma.artisanSpecialty.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ArtisanSpecialties and only return the `id`
+     * const artisanSpecialtyWithIdOnly = await prisma.artisanSpecialty.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ArtisanSpecialtyUpdateManyAndReturnArgs>(args: SelectSubset<T, ArtisanSpecialtyUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ArtisanSpecialty.
+     * @param {ArtisanSpecialtyUpsertArgs} args - Arguments to update or create a ArtisanSpecialty.
+     * @example
+     * // Update or create a ArtisanSpecialty
+     * const artisanSpecialty = await prisma.artisanSpecialty.upsert({
+     *   create: {
+     *     // ... data to create a ArtisanSpecialty
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ArtisanSpecialty we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ArtisanSpecialtyUpsertArgs>(args: SelectSubset<T, ArtisanSpecialtyUpsertArgs<ExtArgs>>): Prisma__ArtisanSpecialtyClient<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ArtisanSpecialties.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSpecialtyCountArgs} args - Arguments to filter ArtisanSpecialties to count.
+     * @example
+     * // Count the number of ArtisanSpecialties
+     * const count = await prisma.artisanSpecialty.count({
+     *   where: {
+     *     // ... the filter for the ArtisanSpecialties we want to count
+     *   }
+     * })
+    **/
+    count<T extends ArtisanSpecialtyCountArgs>(
+      args?: Subset<T, ArtisanSpecialtyCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ArtisanSpecialtyCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ArtisanSpecialty.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSpecialtyAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ArtisanSpecialtyAggregateArgs>(args: Subset<T, ArtisanSpecialtyAggregateArgs>): Prisma.PrismaPromise<GetArtisanSpecialtyAggregateType<T>>
+
+    /**
+     * Group by ArtisanSpecialty.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSpecialtyGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ArtisanSpecialtyGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ArtisanSpecialtyGroupByArgs['orderBy'] }
+        : { orderBy?: ArtisanSpecialtyGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ArtisanSpecialtyGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetArtisanSpecialtyGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ArtisanSpecialty model
+   */
+  readonly fields: ArtisanSpecialtyFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ArtisanSpecialty.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ArtisanSpecialtyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ArtisanSpecialty model
+   */
+  interface ArtisanSpecialtyFieldRefs {
+    readonly id: FieldRef<"ArtisanSpecialty", 'String'>
+    readonly userId: FieldRef<"ArtisanSpecialty", 'String'>
+    readonly serviceId: FieldRef<"ArtisanSpecialty", 'String'>
+    readonly isPrimary: FieldRef<"ArtisanSpecialty", 'Boolean'>
+    readonly createdAt: FieldRef<"ArtisanSpecialty", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ArtisanSpecialty findUnique
+   */
+  export type ArtisanSpecialtyFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSpecialty to fetch.
+     */
+    where: ArtisanSpecialtyWhereUniqueInput
+  }
+
+  /**
+   * ArtisanSpecialty findUniqueOrThrow
+   */
+  export type ArtisanSpecialtyFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSpecialty to fetch.
+     */
+    where: ArtisanSpecialtyWhereUniqueInput
+  }
+
+  /**
+   * ArtisanSpecialty findFirst
+   */
+  export type ArtisanSpecialtyFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSpecialty to fetch.
+     */
+    where?: ArtisanSpecialtyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanSpecialties to fetch.
+     */
+    orderBy?: ArtisanSpecialtyOrderByWithRelationInput | ArtisanSpecialtyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtisanSpecialties.
+     */
+    cursor?: ArtisanSpecialtyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanSpecialties from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanSpecialties.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtisanSpecialties.
+     */
+    distinct?: ArtisanSpecialtyScalarFieldEnum | ArtisanSpecialtyScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanSpecialty findFirstOrThrow
+   */
+  export type ArtisanSpecialtyFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSpecialty to fetch.
+     */
+    where?: ArtisanSpecialtyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanSpecialties to fetch.
+     */
+    orderBy?: ArtisanSpecialtyOrderByWithRelationInput | ArtisanSpecialtyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtisanSpecialties.
+     */
+    cursor?: ArtisanSpecialtyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanSpecialties from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanSpecialties.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtisanSpecialties.
+     */
+    distinct?: ArtisanSpecialtyScalarFieldEnum | ArtisanSpecialtyScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanSpecialty findMany
+   */
+  export type ArtisanSpecialtyFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSpecialties to fetch.
+     */
+    where?: ArtisanSpecialtyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanSpecialties to fetch.
+     */
+    orderBy?: ArtisanSpecialtyOrderByWithRelationInput | ArtisanSpecialtyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ArtisanSpecialties.
+     */
+    cursor?: ArtisanSpecialtyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanSpecialties from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanSpecialties.
+     */
+    skip?: number
+    distinct?: ArtisanSpecialtyScalarFieldEnum | ArtisanSpecialtyScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanSpecialty create
+   */
+  export type ArtisanSpecialtyCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ArtisanSpecialty.
+     */
+    data: XOR<ArtisanSpecialtyCreateInput, ArtisanSpecialtyUncheckedCreateInput>
+  }
+
+  /**
+   * ArtisanSpecialty createMany
+   */
+  export type ArtisanSpecialtyCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ArtisanSpecialties.
+     */
+    data: ArtisanSpecialtyCreateManyInput | ArtisanSpecialtyCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ArtisanSpecialty createManyAndReturn
+   */
+  export type ArtisanSpecialtyCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * The data used to create many ArtisanSpecialties.
+     */
+    data: ArtisanSpecialtyCreateManyInput | ArtisanSpecialtyCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanSpecialty update
+   */
+  export type ArtisanSpecialtyUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ArtisanSpecialty.
+     */
+    data: XOR<ArtisanSpecialtyUpdateInput, ArtisanSpecialtyUncheckedUpdateInput>
+    /**
+     * Choose, which ArtisanSpecialty to update.
+     */
+    where: ArtisanSpecialtyWhereUniqueInput
+  }
+
+  /**
+   * ArtisanSpecialty updateMany
+   */
+  export type ArtisanSpecialtyUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ArtisanSpecialties.
+     */
+    data: XOR<ArtisanSpecialtyUpdateManyMutationInput, ArtisanSpecialtyUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtisanSpecialties to update
+     */
+    where?: ArtisanSpecialtyWhereInput
+    /**
+     * Limit how many ArtisanSpecialties to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtisanSpecialty updateManyAndReturn
+   */
+  export type ArtisanSpecialtyUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * The data used to update ArtisanSpecialties.
+     */
+    data: XOR<ArtisanSpecialtyUpdateManyMutationInput, ArtisanSpecialtyUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtisanSpecialties to update
+     */
+    where?: ArtisanSpecialtyWhereInput
+    /**
+     * Limit how many ArtisanSpecialties to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanSpecialty upsert
+   */
+  export type ArtisanSpecialtyUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ArtisanSpecialty to update in case it exists.
+     */
+    where: ArtisanSpecialtyWhereUniqueInput
+    /**
+     * In case the ArtisanSpecialty found by the `where` argument doesn't exist, create a new ArtisanSpecialty with this data.
+     */
+    create: XOR<ArtisanSpecialtyCreateInput, ArtisanSpecialtyUncheckedCreateInput>
+    /**
+     * In case the ArtisanSpecialty was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ArtisanSpecialtyUpdateInput, ArtisanSpecialtyUncheckedUpdateInput>
+  }
+
+  /**
+   * ArtisanSpecialty delete
+   */
+  export type ArtisanSpecialtyDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    /**
+     * Filter which ArtisanSpecialty to delete.
+     */
+    where: ArtisanSpecialtyWhereUniqueInput
+  }
+
+  /**
+   * ArtisanSpecialty deleteMany
+   */
+  export type ArtisanSpecialtyDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtisanSpecialties to delete
+     */
+    where?: ArtisanSpecialtyWhereInput
+    /**
+     * Limit how many ArtisanSpecialties to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtisanSpecialty without action
+   */
+  export type ArtisanSpecialtyDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ArtisanDocument
+   */
+
+  export type AggregateArtisanDocument = {
+    _count: ArtisanDocumentCountAggregateOutputType | null
+    _min: ArtisanDocumentMinAggregateOutputType | null
+    _max: ArtisanDocumentMaxAggregateOutputType | null
+  }
+
+  export type ArtisanDocumentMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: string | null
+    title: string | null
+    fileUrl: string | null
+    fileType: string | null
+    verified: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ArtisanDocumentMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: string | null
+    title: string | null
+    fileUrl: string | null
+    fileType: string | null
+    verified: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ArtisanDocumentCountAggregateOutputType = {
+    id: number
+    userId: number
+    type: number
+    title: number
+    fileUrl: number
+    fileType: number
+    verified: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ArtisanDocumentMinAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    fileUrl?: true
+    fileType?: true
+    verified?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ArtisanDocumentMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    fileUrl?: true
+    fileType?: true
+    verified?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ArtisanDocumentCountAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    title?: true
+    fileUrl?: true
+    fileType?: true
+    verified?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ArtisanDocumentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtisanDocument to aggregate.
+     */
+    where?: ArtisanDocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanDocuments to fetch.
+     */
+    orderBy?: ArtisanDocumentOrderByWithRelationInput | ArtisanDocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ArtisanDocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanDocuments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanDocuments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ArtisanDocuments
+    **/
+    _count?: true | ArtisanDocumentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ArtisanDocumentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ArtisanDocumentMaxAggregateInputType
+  }
+
+  export type GetArtisanDocumentAggregateType<T extends ArtisanDocumentAggregateArgs> = {
+        [P in keyof T & keyof AggregateArtisanDocument]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateArtisanDocument[P]>
+      : GetScalarType<T[P], AggregateArtisanDocument[P]>
+  }
+
+
+
+
+  export type ArtisanDocumentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtisanDocumentWhereInput
+    orderBy?: ArtisanDocumentOrderByWithAggregationInput | ArtisanDocumentOrderByWithAggregationInput[]
+    by: ArtisanDocumentScalarFieldEnum[] | ArtisanDocumentScalarFieldEnum
+    having?: ArtisanDocumentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ArtisanDocumentCountAggregateInputType | true
+    _min?: ArtisanDocumentMinAggregateInputType
+    _max?: ArtisanDocumentMaxAggregateInputType
+  }
+
+  export type ArtisanDocumentGroupByOutputType = {
+    id: string
+    userId: string
+    type: string
+    title: string
+    fileUrl: string
+    fileType: string
+    verified: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: ArtisanDocumentCountAggregateOutputType | null
+    _min: ArtisanDocumentMinAggregateOutputType | null
+    _max: ArtisanDocumentMaxAggregateOutputType | null
+  }
+
+  type GetArtisanDocumentGroupByPayload<T extends ArtisanDocumentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ArtisanDocumentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ArtisanDocumentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ArtisanDocumentGroupByOutputType[P]>
+            : GetScalarType<T[P], ArtisanDocumentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ArtisanDocumentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    fileUrl?: boolean
+    fileType?: boolean
+    verified?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanDocument"]>
+
+  export type ArtisanDocumentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    fileUrl?: boolean
+    fileType?: boolean
+    verified?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanDocument"]>
+
+  export type ArtisanDocumentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    fileUrl?: boolean
+    fileType?: boolean
+    verified?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanDocument"]>
+
+  export type ArtisanDocumentSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    title?: boolean
+    fileUrl?: boolean
+    fileType?: boolean
+    verified?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ArtisanDocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "title" | "fileUrl" | "fileType" | "verified" | "createdAt" | "updatedAt", ExtArgs["result"]["artisanDocument"]>
+  export type ArtisanDocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ArtisanDocumentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ArtisanDocumentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ArtisanDocumentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ArtisanDocument"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      type: string
+      title: string
+      fileUrl: string
+      fileType: string
+      verified: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["artisanDocument"]>
+    composites: {}
+  }
+
+  type ArtisanDocumentGetPayload<S extends boolean | null | undefined | ArtisanDocumentDefaultArgs> = $Result.GetResult<Prisma.$ArtisanDocumentPayload, S>
+
+  type ArtisanDocumentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ArtisanDocumentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ArtisanDocumentCountAggregateInputType | true
+    }
+
+  export interface ArtisanDocumentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ArtisanDocument'], meta: { name: 'ArtisanDocument' } }
+    /**
+     * Find zero or one ArtisanDocument that matches the filter.
+     * @param {ArtisanDocumentFindUniqueArgs} args - Arguments to find a ArtisanDocument
+     * @example
+     * // Get one ArtisanDocument
+     * const artisanDocument = await prisma.artisanDocument.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ArtisanDocumentFindUniqueArgs>(args: SelectSubset<T, ArtisanDocumentFindUniqueArgs<ExtArgs>>): Prisma__ArtisanDocumentClient<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ArtisanDocument that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ArtisanDocumentFindUniqueOrThrowArgs} args - Arguments to find a ArtisanDocument
+     * @example
+     * // Get one ArtisanDocument
+     * const artisanDocument = await prisma.artisanDocument.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ArtisanDocumentFindUniqueOrThrowArgs>(args: SelectSubset<T, ArtisanDocumentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ArtisanDocumentClient<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtisanDocument that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanDocumentFindFirstArgs} args - Arguments to find a ArtisanDocument
+     * @example
+     * // Get one ArtisanDocument
+     * const artisanDocument = await prisma.artisanDocument.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ArtisanDocumentFindFirstArgs>(args?: SelectSubset<T, ArtisanDocumentFindFirstArgs<ExtArgs>>): Prisma__ArtisanDocumentClient<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtisanDocument that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanDocumentFindFirstOrThrowArgs} args - Arguments to find a ArtisanDocument
+     * @example
+     * // Get one ArtisanDocument
+     * const artisanDocument = await prisma.artisanDocument.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ArtisanDocumentFindFirstOrThrowArgs>(args?: SelectSubset<T, ArtisanDocumentFindFirstOrThrowArgs<ExtArgs>>): Prisma__ArtisanDocumentClient<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ArtisanDocuments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanDocumentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ArtisanDocuments
+     * const artisanDocuments = await prisma.artisanDocument.findMany()
+     * 
+     * // Get first 10 ArtisanDocuments
+     * const artisanDocuments = await prisma.artisanDocument.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const artisanDocumentWithIdOnly = await prisma.artisanDocument.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ArtisanDocumentFindManyArgs>(args?: SelectSubset<T, ArtisanDocumentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ArtisanDocument.
+     * @param {ArtisanDocumentCreateArgs} args - Arguments to create a ArtisanDocument.
+     * @example
+     * // Create one ArtisanDocument
+     * const ArtisanDocument = await prisma.artisanDocument.create({
+     *   data: {
+     *     // ... data to create a ArtisanDocument
+     *   }
+     * })
+     * 
+     */
+    create<T extends ArtisanDocumentCreateArgs>(args: SelectSubset<T, ArtisanDocumentCreateArgs<ExtArgs>>): Prisma__ArtisanDocumentClient<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ArtisanDocuments.
+     * @param {ArtisanDocumentCreateManyArgs} args - Arguments to create many ArtisanDocuments.
+     * @example
+     * // Create many ArtisanDocuments
+     * const artisanDocument = await prisma.artisanDocument.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ArtisanDocumentCreateManyArgs>(args?: SelectSubset<T, ArtisanDocumentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ArtisanDocuments and returns the data saved in the database.
+     * @param {ArtisanDocumentCreateManyAndReturnArgs} args - Arguments to create many ArtisanDocuments.
+     * @example
+     * // Create many ArtisanDocuments
+     * const artisanDocument = await prisma.artisanDocument.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ArtisanDocuments and only return the `id`
+     * const artisanDocumentWithIdOnly = await prisma.artisanDocument.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ArtisanDocumentCreateManyAndReturnArgs>(args?: SelectSubset<T, ArtisanDocumentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ArtisanDocument.
+     * @param {ArtisanDocumentDeleteArgs} args - Arguments to delete one ArtisanDocument.
+     * @example
+     * // Delete one ArtisanDocument
+     * const ArtisanDocument = await prisma.artisanDocument.delete({
+     *   where: {
+     *     // ... filter to delete one ArtisanDocument
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ArtisanDocumentDeleteArgs>(args: SelectSubset<T, ArtisanDocumentDeleteArgs<ExtArgs>>): Prisma__ArtisanDocumentClient<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ArtisanDocument.
+     * @param {ArtisanDocumentUpdateArgs} args - Arguments to update one ArtisanDocument.
+     * @example
+     * // Update one ArtisanDocument
+     * const artisanDocument = await prisma.artisanDocument.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ArtisanDocumentUpdateArgs>(args: SelectSubset<T, ArtisanDocumentUpdateArgs<ExtArgs>>): Prisma__ArtisanDocumentClient<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ArtisanDocuments.
+     * @param {ArtisanDocumentDeleteManyArgs} args - Arguments to filter ArtisanDocuments to delete.
+     * @example
+     * // Delete a few ArtisanDocuments
+     * const { count } = await prisma.artisanDocument.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ArtisanDocumentDeleteManyArgs>(args?: SelectSubset<T, ArtisanDocumentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtisanDocuments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanDocumentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ArtisanDocuments
+     * const artisanDocument = await prisma.artisanDocument.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ArtisanDocumentUpdateManyArgs>(args: SelectSubset<T, ArtisanDocumentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtisanDocuments and returns the data updated in the database.
+     * @param {ArtisanDocumentUpdateManyAndReturnArgs} args - Arguments to update many ArtisanDocuments.
+     * @example
+     * // Update many ArtisanDocuments
+     * const artisanDocument = await prisma.artisanDocument.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ArtisanDocuments and only return the `id`
+     * const artisanDocumentWithIdOnly = await prisma.artisanDocument.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ArtisanDocumentUpdateManyAndReturnArgs>(args: SelectSubset<T, ArtisanDocumentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ArtisanDocument.
+     * @param {ArtisanDocumentUpsertArgs} args - Arguments to update or create a ArtisanDocument.
+     * @example
+     * // Update or create a ArtisanDocument
+     * const artisanDocument = await prisma.artisanDocument.upsert({
+     *   create: {
+     *     // ... data to create a ArtisanDocument
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ArtisanDocument we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ArtisanDocumentUpsertArgs>(args: SelectSubset<T, ArtisanDocumentUpsertArgs<ExtArgs>>): Prisma__ArtisanDocumentClient<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ArtisanDocuments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanDocumentCountArgs} args - Arguments to filter ArtisanDocuments to count.
+     * @example
+     * // Count the number of ArtisanDocuments
+     * const count = await prisma.artisanDocument.count({
+     *   where: {
+     *     // ... the filter for the ArtisanDocuments we want to count
+     *   }
+     * })
+    **/
+    count<T extends ArtisanDocumentCountArgs>(
+      args?: Subset<T, ArtisanDocumentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ArtisanDocumentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ArtisanDocument.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanDocumentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ArtisanDocumentAggregateArgs>(args: Subset<T, ArtisanDocumentAggregateArgs>): Prisma.PrismaPromise<GetArtisanDocumentAggregateType<T>>
+
+    /**
+     * Group by ArtisanDocument.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanDocumentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ArtisanDocumentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ArtisanDocumentGroupByArgs['orderBy'] }
+        : { orderBy?: ArtisanDocumentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ArtisanDocumentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetArtisanDocumentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ArtisanDocument model
+   */
+  readonly fields: ArtisanDocumentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ArtisanDocument.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ArtisanDocumentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ArtisanDocument model
+   */
+  interface ArtisanDocumentFieldRefs {
+    readonly id: FieldRef<"ArtisanDocument", 'String'>
+    readonly userId: FieldRef<"ArtisanDocument", 'String'>
+    readonly type: FieldRef<"ArtisanDocument", 'String'>
+    readonly title: FieldRef<"ArtisanDocument", 'String'>
+    readonly fileUrl: FieldRef<"ArtisanDocument", 'String'>
+    readonly fileType: FieldRef<"ArtisanDocument", 'String'>
+    readonly verified: FieldRef<"ArtisanDocument", 'Boolean'>
+    readonly createdAt: FieldRef<"ArtisanDocument", 'DateTime'>
+    readonly updatedAt: FieldRef<"ArtisanDocument", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ArtisanDocument findUnique
+   */
+  export type ArtisanDocumentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanDocument to fetch.
+     */
+    where: ArtisanDocumentWhereUniqueInput
+  }
+
+  /**
+   * ArtisanDocument findUniqueOrThrow
+   */
+  export type ArtisanDocumentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanDocument to fetch.
+     */
+    where: ArtisanDocumentWhereUniqueInput
+  }
+
+  /**
+   * ArtisanDocument findFirst
+   */
+  export type ArtisanDocumentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanDocument to fetch.
+     */
+    where?: ArtisanDocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanDocuments to fetch.
+     */
+    orderBy?: ArtisanDocumentOrderByWithRelationInput | ArtisanDocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtisanDocuments.
+     */
+    cursor?: ArtisanDocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanDocuments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanDocuments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtisanDocuments.
+     */
+    distinct?: ArtisanDocumentScalarFieldEnum | ArtisanDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanDocument findFirstOrThrow
+   */
+  export type ArtisanDocumentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanDocument to fetch.
+     */
+    where?: ArtisanDocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanDocuments to fetch.
+     */
+    orderBy?: ArtisanDocumentOrderByWithRelationInput | ArtisanDocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtisanDocuments.
+     */
+    cursor?: ArtisanDocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanDocuments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanDocuments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtisanDocuments.
+     */
+    distinct?: ArtisanDocumentScalarFieldEnum | ArtisanDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanDocument findMany
+   */
+  export type ArtisanDocumentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanDocuments to fetch.
+     */
+    where?: ArtisanDocumentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanDocuments to fetch.
+     */
+    orderBy?: ArtisanDocumentOrderByWithRelationInput | ArtisanDocumentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ArtisanDocuments.
+     */
+    cursor?: ArtisanDocumentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanDocuments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanDocuments.
+     */
+    skip?: number
+    distinct?: ArtisanDocumentScalarFieldEnum | ArtisanDocumentScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanDocument create
+   */
+  export type ArtisanDocumentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ArtisanDocument.
+     */
+    data: XOR<ArtisanDocumentCreateInput, ArtisanDocumentUncheckedCreateInput>
+  }
+
+  /**
+   * ArtisanDocument createMany
+   */
+  export type ArtisanDocumentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ArtisanDocuments.
+     */
+    data: ArtisanDocumentCreateManyInput | ArtisanDocumentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ArtisanDocument createManyAndReturn
+   */
+  export type ArtisanDocumentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * The data used to create many ArtisanDocuments.
+     */
+    data: ArtisanDocumentCreateManyInput | ArtisanDocumentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanDocument update
+   */
+  export type ArtisanDocumentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ArtisanDocument.
+     */
+    data: XOR<ArtisanDocumentUpdateInput, ArtisanDocumentUncheckedUpdateInput>
+    /**
+     * Choose, which ArtisanDocument to update.
+     */
+    where: ArtisanDocumentWhereUniqueInput
+  }
+
+  /**
+   * ArtisanDocument updateMany
+   */
+  export type ArtisanDocumentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ArtisanDocuments.
+     */
+    data: XOR<ArtisanDocumentUpdateManyMutationInput, ArtisanDocumentUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtisanDocuments to update
+     */
+    where?: ArtisanDocumentWhereInput
+    /**
+     * Limit how many ArtisanDocuments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtisanDocument updateManyAndReturn
+   */
+  export type ArtisanDocumentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * The data used to update ArtisanDocuments.
+     */
+    data: XOR<ArtisanDocumentUpdateManyMutationInput, ArtisanDocumentUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtisanDocuments to update
+     */
+    where?: ArtisanDocumentWhereInput
+    /**
+     * Limit how many ArtisanDocuments to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanDocument upsert
+   */
+  export type ArtisanDocumentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ArtisanDocument to update in case it exists.
+     */
+    where: ArtisanDocumentWhereUniqueInput
+    /**
+     * In case the ArtisanDocument found by the `where` argument doesn't exist, create a new ArtisanDocument with this data.
+     */
+    create: XOR<ArtisanDocumentCreateInput, ArtisanDocumentUncheckedCreateInput>
+    /**
+     * In case the ArtisanDocument was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ArtisanDocumentUpdateInput, ArtisanDocumentUncheckedUpdateInput>
+  }
+
+  /**
+   * ArtisanDocument delete
+   */
+  export type ArtisanDocumentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+    /**
+     * Filter which ArtisanDocument to delete.
+     */
+    where: ArtisanDocumentWhereUniqueInput
+  }
+
+  /**
+   * ArtisanDocument deleteMany
+   */
+  export type ArtisanDocumentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtisanDocuments to delete
+     */
+    where?: ArtisanDocumentWhereInput
+    /**
+     * Limit how many ArtisanDocuments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtisanDocument without action
+   */
+  export type ArtisanDocumentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanDocument
+     */
+    select?: ArtisanDocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanDocument
+     */
+    omit?: ArtisanDocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanDocumentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ArtisanSkill
+   */
+
+  export type AggregateArtisanSkill = {
+    _count: ArtisanSkillCountAggregateOutputType | null
+    _avg: ArtisanSkillAvgAggregateOutputType | null
+    _sum: ArtisanSkillSumAggregateOutputType | null
+    _min: ArtisanSkillMinAggregateOutputType | null
+    _max: ArtisanSkillMaxAggregateOutputType | null
+  }
+
+  export type ArtisanSkillAvgAggregateOutputType = {
+    selfRating: number | null
+  }
+
+  export type ArtisanSkillSumAggregateOutputType = {
+    selfRating: number | null
+  }
+
+  export type ArtisanSkillMinAggregateOutputType = {
+    id: string | null
+    artisanProfileId: string | null
+    name: string | null
+    selfRating: number | null
+    createdAt: Date | null
+  }
+
+  export type ArtisanSkillMaxAggregateOutputType = {
+    id: string | null
+    artisanProfileId: string | null
+    name: string | null
+    selfRating: number | null
+    createdAt: Date | null
+  }
+
+  export type ArtisanSkillCountAggregateOutputType = {
+    id: number
+    artisanProfileId: number
+    name: number
+    selfRating: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ArtisanSkillAvgAggregateInputType = {
+    selfRating?: true
+  }
+
+  export type ArtisanSkillSumAggregateInputType = {
+    selfRating?: true
+  }
+
+  export type ArtisanSkillMinAggregateInputType = {
+    id?: true
+    artisanProfileId?: true
+    name?: true
+    selfRating?: true
+    createdAt?: true
+  }
+
+  export type ArtisanSkillMaxAggregateInputType = {
+    id?: true
+    artisanProfileId?: true
+    name?: true
+    selfRating?: true
+    createdAt?: true
+  }
+
+  export type ArtisanSkillCountAggregateInputType = {
+    id?: true
+    artisanProfileId?: true
+    name?: true
+    selfRating?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ArtisanSkillAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtisanSkill to aggregate.
+     */
+    where?: ArtisanSkillWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanSkills to fetch.
+     */
+    orderBy?: ArtisanSkillOrderByWithRelationInput | ArtisanSkillOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ArtisanSkillWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanSkills from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanSkills.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ArtisanSkills
+    **/
+    _count?: true | ArtisanSkillCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ArtisanSkillAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ArtisanSkillSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ArtisanSkillMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ArtisanSkillMaxAggregateInputType
+  }
+
+  export type GetArtisanSkillAggregateType<T extends ArtisanSkillAggregateArgs> = {
+        [P in keyof T & keyof AggregateArtisanSkill]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateArtisanSkill[P]>
+      : GetScalarType<T[P], AggregateArtisanSkill[P]>
+  }
+
+
+
+
+  export type ArtisanSkillGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtisanSkillWhereInput
+    orderBy?: ArtisanSkillOrderByWithAggregationInput | ArtisanSkillOrderByWithAggregationInput[]
+    by: ArtisanSkillScalarFieldEnum[] | ArtisanSkillScalarFieldEnum
+    having?: ArtisanSkillScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ArtisanSkillCountAggregateInputType | true
+    _avg?: ArtisanSkillAvgAggregateInputType
+    _sum?: ArtisanSkillSumAggregateInputType
+    _min?: ArtisanSkillMinAggregateInputType
+    _max?: ArtisanSkillMaxAggregateInputType
+  }
+
+  export type ArtisanSkillGroupByOutputType = {
+    id: string
+    artisanProfileId: string
+    name: string
+    selfRating: number
+    createdAt: Date
+    _count: ArtisanSkillCountAggregateOutputType | null
+    _avg: ArtisanSkillAvgAggregateOutputType | null
+    _sum: ArtisanSkillSumAggregateOutputType | null
+    _min: ArtisanSkillMinAggregateOutputType | null
+    _max: ArtisanSkillMaxAggregateOutputType | null
+  }
+
+  type GetArtisanSkillGroupByPayload<T extends ArtisanSkillGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ArtisanSkillGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ArtisanSkillGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ArtisanSkillGroupByOutputType[P]>
+            : GetScalarType<T[P], ArtisanSkillGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ArtisanSkillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    artisanProfileId?: boolean
+    name?: boolean
+    selfRating?: boolean
+    createdAt?: boolean
+    artisanProfile?: boolean | ArtisanProfileDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanSkill"]>
+
+  export type ArtisanSkillSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    artisanProfileId?: boolean
+    name?: boolean
+    selfRating?: boolean
+    createdAt?: boolean
+    artisanProfile?: boolean | ArtisanProfileDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanSkill"]>
+
+  export type ArtisanSkillSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    artisanProfileId?: boolean
+    name?: boolean
+    selfRating?: boolean
+    createdAt?: boolean
+    artisanProfile?: boolean | ArtisanProfileDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artisanSkill"]>
+
+  export type ArtisanSkillSelectScalar = {
+    id?: boolean
+    artisanProfileId?: boolean
+    name?: boolean
+    selfRating?: boolean
+    createdAt?: boolean
+  }
+
+  export type ArtisanSkillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "artisanProfileId" | "name" | "selfRating" | "createdAt", ExtArgs["result"]["artisanSkill"]>
+  export type ArtisanSkillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    artisanProfile?: boolean | ArtisanProfileDefaultArgs<ExtArgs>
+  }
+  export type ArtisanSkillIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    artisanProfile?: boolean | ArtisanProfileDefaultArgs<ExtArgs>
+  }
+  export type ArtisanSkillIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    artisanProfile?: boolean | ArtisanProfileDefaultArgs<ExtArgs>
+  }
+
+  export type $ArtisanSkillPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ArtisanSkill"
+    objects: {
+      artisanProfile: Prisma.$ArtisanProfilePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      artisanProfileId: string
+      name: string
+      selfRating: number
+      createdAt: Date
+    }, ExtArgs["result"]["artisanSkill"]>
+    composites: {}
+  }
+
+  type ArtisanSkillGetPayload<S extends boolean | null | undefined | ArtisanSkillDefaultArgs> = $Result.GetResult<Prisma.$ArtisanSkillPayload, S>
+
+  type ArtisanSkillCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ArtisanSkillFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ArtisanSkillCountAggregateInputType | true
+    }
+
+  export interface ArtisanSkillDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ArtisanSkill'], meta: { name: 'ArtisanSkill' } }
+    /**
+     * Find zero or one ArtisanSkill that matches the filter.
+     * @param {ArtisanSkillFindUniqueArgs} args - Arguments to find a ArtisanSkill
+     * @example
+     * // Get one ArtisanSkill
+     * const artisanSkill = await prisma.artisanSkill.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ArtisanSkillFindUniqueArgs>(args: SelectSubset<T, ArtisanSkillFindUniqueArgs<ExtArgs>>): Prisma__ArtisanSkillClient<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ArtisanSkill that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ArtisanSkillFindUniqueOrThrowArgs} args - Arguments to find a ArtisanSkill
+     * @example
+     * // Get one ArtisanSkill
+     * const artisanSkill = await prisma.artisanSkill.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ArtisanSkillFindUniqueOrThrowArgs>(args: SelectSubset<T, ArtisanSkillFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ArtisanSkillClient<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtisanSkill that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSkillFindFirstArgs} args - Arguments to find a ArtisanSkill
+     * @example
+     * // Get one ArtisanSkill
+     * const artisanSkill = await prisma.artisanSkill.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ArtisanSkillFindFirstArgs>(args?: SelectSubset<T, ArtisanSkillFindFirstArgs<ExtArgs>>): Prisma__ArtisanSkillClient<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtisanSkill that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSkillFindFirstOrThrowArgs} args - Arguments to find a ArtisanSkill
+     * @example
+     * // Get one ArtisanSkill
+     * const artisanSkill = await prisma.artisanSkill.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ArtisanSkillFindFirstOrThrowArgs>(args?: SelectSubset<T, ArtisanSkillFindFirstOrThrowArgs<ExtArgs>>): Prisma__ArtisanSkillClient<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ArtisanSkills that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSkillFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ArtisanSkills
+     * const artisanSkills = await prisma.artisanSkill.findMany()
+     * 
+     * // Get first 10 ArtisanSkills
+     * const artisanSkills = await prisma.artisanSkill.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const artisanSkillWithIdOnly = await prisma.artisanSkill.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ArtisanSkillFindManyArgs>(args?: SelectSubset<T, ArtisanSkillFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ArtisanSkill.
+     * @param {ArtisanSkillCreateArgs} args - Arguments to create a ArtisanSkill.
+     * @example
+     * // Create one ArtisanSkill
+     * const ArtisanSkill = await prisma.artisanSkill.create({
+     *   data: {
+     *     // ... data to create a ArtisanSkill
+     *   }
+     * })
+     * 
+     */
+    create<T extends ArtisanSkillCreateArgs>(args: SelectSubset<T, ArtisanSkillCreateArgs<ExtArgs>>): Prisma__ArtisanSkillClient<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ArtisanSkills.
+     * @param {ArtisanSkillCreateManyArgs} args - Arguments to create many ArtisanSkills.
+     * @example
+     * // Create many ArtisanSkills
+     * const artisanSkill = await prisma.artisanSkill.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ArtisanSkillCreateManyArgs>(args?: SelectSubset<T, ArtisanSkillCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ArtisanSkills and returns the data saved in the database.
+     * @param {ArtisanSkillCreateManyAndReturnArgs} args - Arguments to create many ArtisanSkills.
+     * @example
+     * // Create many ArtisanSkills
+     * const artisanSkill = await prisma.artisanSkill.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ArtisanSkills and only return the `id`
+     * const artisanSkillWithIdOnly = await prisma.artisanSkill.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ArtisanSkillCreateManyAndReturnArgs>(args?: SelectSubset<T, ArtisanSkillCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ArtisanSkill.
+     * @param {ArtisanSkillDeleteArgs} args - Arguments to delete one ArtisanSkill.
+     * @example
+     * // Delete one ArtisanSkill
+     * const ArtisanSkill = await prisma.artisanSkill.delete({
+     *   where: {
+     *     // ... filter to delete one ArtisanSkill
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ArtisanSkillDeleteArgs>(args: SelectSubset<T, ArtisanSkillDeleteArgs<ExtArgs>>): Prisma__ArtisanSkillClient<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ArtisanSkill.
+     * @param {ArtisanSkillUpdateArgs} args - Arguments to update one ArtisanSkill.
+     * @example
+     * // Update one ArtisanSkill
+     * const artisanSkill = await prisma.artisanSkill.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ArtisanSkillUpdateArgs>(args: SelectSubset<T, ArtisanSkillUpdateArgs<ExtArgs>>): Prisma__ArtisanSkillClient<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ArtisanSkills.
+     * @param {ArtisanSkillDeleteManyArgs} args - Arguments to filter ArtisanSkills to delete.
+     * @example
+     * // Delete a few ArtisanSkills
+     * const { count } = await prisma.artisanSkill.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ArtisanSkillDeleteManyArgs>(args?: SelectSubset<T, ArtisanSkillDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtisanSkills.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSkillUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ArtisanSkills
+     * const artisanSkill = await prisma.artisanSkill.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ArtisanSkillUpdateManyArgs>(args: SelectSubset<T, ArtisanSkillUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtisanSkills and returns the data updated in the database.
+     * @param {ArtisanSkillUpdateManyAndReturnArgs} args - Arguments to update many ArtisanSkills.
+     * @example
+     * // Update many ArtisanSkills
+     * const artisanSkill = await prisma.artisanSkill.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ArtisanSkills and only return the `id`
+     * const artisanSkillWithIdOnly = await prisma.artisanSkill.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ArtisanSkillUpdateManyAndReturnArgs>(args: SelectSubset<T, ArtisanSkillUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ArtisanSkill.
+     * @param {ArtisanSkillUpsertArgs} args - Arguments to update or create a ArtisanSkill.
+     * @example
+     * // Update or create a ArtisanSkill
+     * const artisanSkill = await prisma.artisanSkill.upsert({
+     *   create: {
+     *     // ... data to create a ArtisanSkill
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ArtisanSkill we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ArtisanSkillUpsertArgs>(args: SelectSubset<T, ArtisanSkillUpsertArgs<ExtArgs>>): Prisma__ArtisanSkillClient<$Result.GetResult<Prisma.$ArtisanSkillPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ArtisanSkills.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSkillCountArgs} args - Arguments to filter ArtisanSkills to count.
+     * @example
+     * // Count the number of ArtisanSkills
+     * const count = await prisma.artisanSkill.count({
+     *   where: {
+     *     // ... the filter for the ArtisanSkills we want to count
+     *   }
+     * })
+    **/
+    count<T extends ArtisanSkillCountArgs>(
+      args?: Subset<T, ArtisanSkillCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ArtisanSkillCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ArtisanSkill.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSkillAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ArtisanSkillAggregateArgs>(args: Subset<T, ArtisanSkillAggregateArgs>): Prisma.PrismaPromise<GetArtisanSkillAggregateType<T>>
+
+    /**
+     * Group by ArtisanSkill.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtisanSkillGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ArtisanSkillGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ArtisanSkillGroupByArgs['orderBy'] }
+        : { orderBy?: ArtisanSkillGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ArtisanSkillGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetArtisanSkillGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ArtisanSkill model
+   */
+  readonly fields: ArtisanSkillFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ArtisanSkill.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ArtisanSkillClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    artisanProfile<T extends ArtisanProfileDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ArtisanProfileDefaultArgs<ExtArgs>>): Prisma__ArtisanProfileClient<$Result.GetResult<Prisma.$ArtisanProfilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ArtisanSkill model
+   */
+  interface ArtisanSkillFieldRefs {
+    readonly id: FieldRef<"ArtisanSkill", 'String'>
+    readonly artisanProfileId: FieldRef<"ArtisanSkill", 'String'>
+    readonly name: FieldRef<"ArtisanSkill", 'String'>
+    readonly selfRating: FieldRef<"ArtisanSkill", 'Int'>
+    readonly createdAt: FieldRef<"ArtisanSkill", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ArtisanSkill findUnique
+   */
+  export type ArtisanSkillFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSkill to fetch.
+     */
+    where: ArtisanSkillWhereUniqueInput
+  }
+
+  /**
+   * ArtisanSkill findUniqueOrThrow
+   */
+  export type ArtisanSkillFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSkill to fetch.
+     */
+    where: ArtisanSkillWhereUniqueInput
+  }
+
+  /**
+   * ArtisanSkill findFirst
+   */
+  export type ArtisanSkillFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSkill to fetch.
+     */
+    where?: ArtisanSkillWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanSkills to fetch.
+     */
+    orderBy?: ArtisanSkillOrderByWithRelationInput | ArtisanSkillOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtisanSkills.
+     */
+    cursor?: ArtisanSkillWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanSkills from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanSkills.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtisanSkills.
+     */
+    distinct?: ArtisanSkillScalarFieldEnum | ArtisanSkillScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanSkill findFirstOrThrow
+   */
+  export type ArtisanSkillFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSkill to fetch.
+     */
+    where?: ArtisanSkillWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanSkills to fetch.
+     */
+    orderBy?: ArtisanSkillOrderByWithRelationInput | ArtisanSkillOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtisanSkills.
+     */
+    cursor?: ArtisanSkillWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanSkills from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanSkills.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtisanSkills.
+     */
+    distinct?: ArtisanSkillScalarFieldEnum | ArtisanSkillScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanSkill findMany
+   */
+  export type ArtisanSkillFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtisanSkills to fetch.
+     */
+    where?: ArtisanSkillWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtisanSkills to fetch.
+     */
+    orderBy?: ArtisanSkillOrderByWithRelationInput | ArtisanSkillOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ArtisanSkills.
+     */
+    cursor?: ArtisanSkillWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtisanSkills from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtisanSkills.
+     */
+    skip?: number
+    distinct?: ArtisanSkillScalarFieldEnum | ArtisanSkillScalarFieldEnum[]
+  }
+
+  /**
+   * ArtisanSkill create
+   */
+  export type ArtisanSkillCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ArtisanSkill.
+     */
+    data: XOR<ArtisanSkillCreateInput, ArtisanSkillUncheckedCreateInput>
+  }
+
+  /**
+   * ArtisanSkill createMany
+   */
+  export type ArtisanSkillCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ArtisanSkills.
+     */
+    data: ArtisanSkillCreateManyInput | ArtisanSkillCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ArtisanSkill createManyAndReturn
+   */
+  export type ArtisanSkillCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * The data used to create many ArtisanSkills.
+     */
+    data: ArtisanSkillCreateManyInput | ArtisanSkillCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanSkill update
+   */
+  export type ArtisanSkillUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ArtisanSkill.
+     */
+    data: XOR<ArtisanSkillUpdateInput, ArtisanSkillUncheckedUpdateInput>
+    /**
+     * Choose, which ArtisanSkill to update.
+     */
+    where: ArtisanSkillWhereUniqueInput
+  }
+
+  /**
+   * ArtisanSkill updateMany
+   */
+  export type ArtisanSkillUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ArtisanSkills.
+     */
+    data: XOR<ArtisanSkillUpdateManyMutationInput, ArtisanSkillUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtisanSkills to update
+     */
+    where?: ArtisanSkillWhereInput
+    /**
+     * Limit how many ArtisanSkills to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtisanSkill updateManyAndReturn
+   */
+  export type ArtisanSkillUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * The data used to update ArtisanSkills.
+     */
+    data: XOR<ArtisanSkillUpdateManyMutationInput, ArtisanSkillUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtisanSkills to update
+     */
+    where?: ArtisanSkillWhereInput
+    /**
+     * Limit how many ArtisanSkills to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtisanSkill upsert
+   */
+  export type ArtisanSkillUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ArtisanSkill to update in case it exists.
+     */
+    where: ArtisanSkillWhereUniqueInput
+    /**
+     * In case the ArtisanSkill found by the `where` argument doesn't exist, create a new ArtisanSkill with this data.
+     */
+    create: XOR<ArtisanSkillCreateInput, ArtisanSkillUncheckedCreateInput>
+    /**
+     * In case the ArtisanSkill was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ArtisanSkillUpdateInput, ArtisanSkillUncheckedUpdateInput>
+  }
+
+  /**
+   * ArtisanSkill delete
+   */
+  export type ArtisanSkillDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
+    /**
+     * Filter which ArtisanSkill to delete.
+     */
+    where: ArtisanSkillWhereUniqueInput
+  }
+
+  /**
+   * ArtisanSkill deleteMany
+   */
+  export type ArtisanSkillDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtisanSkills to delete
+     */
+    where?: ArtisanSkillWhereInput
+    /**
+     * Limit how many ArtisanSkills to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtisanSkill without action
+   */
+  export type ArtisanSkillDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSkill
+     */
+    select?: ArtisanSkillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSkill
+     */
+    omit?: ArtisanSkillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSkillInclude<ExtArgs> | null
   }
 
 
@@ -5186,6 +10263,7 @@ export namespace Prisma {
     updatedAt?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     projects?: boolean | Service$projectsArgs<ExtArgs>
+    artisanSpecialties?: boolean | Service$artisanSpecialtiesArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["service"]>
 
@@ -5234,6 +10312,7 @@ export namespace Prisma {
   export type ServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     projects?: boolean | Service$projectsArgs<ExtArgs>
+    artisanSpecialties?: boolean | Service$artisanSpecialtiesArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ServiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5248,6 +10327,7 @@ export namespace Prisma {
     objects: {
       category: Prisma.$CategoryPayload<ExtArgs>
       projects: Prisma.$ProjectPayload<ExtArgs>[]
+      artisanSpecialties: Prisma.$ArtisanSpecialtyPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -5656,6 +10736,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     projects<T extends Service$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Service$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    artisanSpecialties<T extends Service$artisanSpecialtiesArgs<ExtArgs> = {}>(args?: Subset<T, Service$artisanSpecialtiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6112,6 +11193,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ProjectScalarFieldEnum | ProjectScalarFieldEnum[]
+  }
+
+  /**
+   * Service.artisanSpecialties
+   */
+  export type Service$artisanSpecialtiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtisanSpecialty
+     */
+    select?: ArtisanSpecialtySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtisanSpecialty
+     */
+    omit?: ArtisanSpecialtyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtisanSpecialtyInclude<ExtArgs> | null
+    where?: ArtisanSpecialtyWhereInput
+    orderBy?: ArtisanSpecialtyOrderByWithRelationInput | ArtisanSpecialtyOrderByWithRelationInput[]
+    cursor?: ArtisanSpecialtyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ArtisanSpecialtyScalarFieldEnum | ArtisanSpecialtyScalarFieldEnum[]
   }
 
   /**
@@ -18763,6 +23868,65 @@ export namespace Prisma {
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+  export const ArtisanProfileScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    companyName: 'companyName',
+    siret: 'siret',
+    yearsOfExperience: 'yearsOfExperience',
+    projectsCompleted: 'projectsCompleted',
+    preferredRadius: 'preferredRadius',
+    level: 'level',
+    averageRating: 'averageRating',
+    verificationStatus: 'verificationStatus',
+    onboardingCompleted: 'onboardingCompleted',
+    availableForWork: 'availableForWork',
+    assessmentCompleted: 'assessmentCompleted',
+    assessmentScore: 'assessmentScore',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ArtisanProfileScalarFieldEnum = (typeof ArtisanProfileScalarFieldEnum)[keyof typeof ArtisanProfileScalarFieldEnum]
+
+
+  export const ArtisanSpecialtyScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    serviceId: 'serviceId',
+    isPrimary: 'isPrimary',
+    createdAt: 'createdAt'
+  };
+
+  export type ArtisanSpecialtyScalarFieldEnum = (typeof ArtisanSpecialtyScalarFieldEnum)[keyof typeof ArtisanSpecialtyScalarFieldEnum]
+
+
+  export const ArtisanDocumentScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    title: 'title',
+    fileUrl: 'fileUrl',
+    fileType: 'fileType',
+    verified: 'verified',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ArtisanDocumentScalarFieldEnum = (typeof ArtisanDocumentScalarFieldEnum)[keyof typeof ArtisanDocumentScalarFieldEnum]
+
+
+  export const ArtisanSkillScalarFieldEnum: {
+    id: 'id',
+    artisanProfileId: 'artisanProfileId',
+    name: 'name',
+    selfRating: 'selfRating',
+    createdAt: 'createdAt'
+  };
+
+  export type ArtisanSkillScalarFieldEnum = (typeof ArtisanSkillScalarFieldEnum)[keyof typeof ArtisanSkillScalarFieldEnum]
+
+
   export const CategoryScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -19049,13 +24213,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Boolean'
-   */
-  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
-    
-
-
-  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -19070,6 +24227,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ArtisanLevel'
+   */
+  export type EnumArtisanLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ArtisanLevel'>
+    
+
+
+  /**
+   * Reference to a field of type 'ArtisanLevel[]'
+   */
+  export type ListEnumArtisanLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ArtisanLevel[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -19080,6 +24251,27 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ArtisanVerificationStatus'
+   */
+  export type EnumArtisanVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ArtisanVerificationStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ArtisanVerificationStatus[]'
+   */
+  export type ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ArtisanVerificationStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Boolean'
+   */
+  export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -19209,6 +24401,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteListRelationFilter
     notifications?: NotificationListRelationFilter
     projectInvitations?: ProjectInvitationListRelationFilter
+    artisanProfile?: XOR<ArtisanProfileNullableScalarRelationFilter, ArtisanProfileWhereInput> | null
+    artisanSpecialties?: ArtisanSpecialtyListRelationFilter
+    artisanDocuments?: ArtisanDocumentListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -19233,6 +24428,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
     projectInvitations?: ProjectInvitationOrderByRelationAggregateInput
+    artisanProfile?: ArtisanProfileOrderByWithRelationInput
+    artisanSpecialties?: ArtisanSpecialtyOrderByRelationAggregateInput
+    artisanDocuments?: ArtisanDocumentOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -19260,6 +24458,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteListRelationFilter
     notifications?: NotificationListRelationFilter
     projectInvitations?: ProjectInvitationListRelationFilter
+    artisanProfile?: XOR<ArtisanProfileNullableScalarRelationFilter, ArtisanProfileWhereInput> | null
+    artisanSpecialties?: ArtisanSpecialtyListRelationFilter
+    artisanDocuments?: ArtisanDocumentListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -19300,6 +24501,312 @@ export namespace Prisma {
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+  }
+
+  export type ArtisanProfileWhereInput = {
+    AND?: ArtisanProfileWhereInput | ArtisanProfileWhereInput[]
+    OR?: ArtisanProfileWhereInput[]
+    NOT?: ArtisanProfileWhereInput | ArtisanProfileWhereInput[]
+    id?: StringFilter<"ArtisanProfile"> | string
+    userId?: StringFilter<"ArtisanProfile"> | string
+    companyName?: StringNullableFilter<"ArtisanProfile"> | string | null
+    siret?: StringNullableFilter<"ArtisanProfile"> | string | null
+    yearsOfExperience?: IntNullableFilter<"ArtisanProfile"> | number | null
+    projectsCompleted?: IntFilter<"ArtisanProfile"> | number
+    preferredRadius?: IntNullableFilter<"ArtisanProfile"> | number | null
+    level?: EnumArtisanLevelNullableFilter<"ArtisanProfile"> | $Enums.ArtisanLevel | null
+    averageRating?: FloatNullableFilter<"ArtisanProfile"> | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFilter<"ArtisanProfile"> | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFilter<"ArtisanProfile"> | boolean
+    availableForWork?: BoolFilter<"ArtisanProfile"> | boolean
+    assessmentCompleted?: BoolFilter<"ArtisanProfile"> | boolean
+    assessmentScore?: IntNullableFilter<"ArtisanProfile"> | number | null
+    createdAt?: DateTimeFilter<"ArtisanProfile"> | Date | string
+    updatedAt?: DateTimeFilter<"ArtisanProfile"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    skills?: ArtisanSkillListRelationFilter
+  }
+
+  export type ArtisanProfileOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    companyName?: SortOrderInput | SortOrder
+    siret?: SortOrderInput | SortOrder
+    yearsOfExperience?: SortOrderInput | SortOrder
+    projectsCompleted?: SortOrder
+    preferredRadius?: SortOrderInput | SortOrder
+    level?: SortOrderInput | SortOrder
+    averageRating?: SortOrderInput | SortOrder
+    verificationStatus?: SortOrder
+    onboardingCompleted?: SortOrder
+    availableForWork?: SortOrder
+    assessmentCompleted?: SortOrder
+    assessmentScore?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    skills?: ArtisanSkillOrderByRelationAggregateInput
+  }
+
+  export type ArtisanProfileWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId?: string
+    AND?: ArtisanProfileWhereInput | ArtisanProfileWhereInput[]
+    OR?: ArtisanProfileWhereInput[]
+    NOT?: ArtisanProfileWhereInput | ArtisanProfileWhereInput[]
+    companyName?: StringNullableFilter<"ArtisanProfile"> | string | null
+    siret?: StringNullableFilter<"ArtisanProfile"> | string | null
+    yearsOfExperience?: IntNullableFilter<"ArtisanProfile"> | number | null
+    projectsCompleted?: IntFilter<"ArtisanProfile"> | number
+    preferredRadius?: IntNullableFilter<"ArtisanProfile"> | number | null
+    level?: EnumArtisanLevelNullableFilter<"ArtisanProfile"> | $Enums.ArtisanLevel | null
+    averageRating?: FloatNullableFilter<"ArtisanProfile"> | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFilter<"ArtisanProfile"> | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFilter<"ArtisanProfile"> | boolean
+    availableForWork?: BoolFilter<"ArtisanProfile"> | boolean
+    assessmentCompleted?: BoolFilter<"ArtisanProfile"> | boolean
+    assessmentScore?: IntNullableFilter<"ArtisanProfile"> | number | null
+    createdAt?: DateTimeFilter<"ArtisanProfile"> | Date | string
+    updatedAt?: DateTimeFilter<"ArtisanProfile"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    skills?: ArtisanSkillListRelationFilter
+  }, "id" | "userId">
+
+  export type ArtisanProfileOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    companyName?: SortOrderInput | SortOrder
+    siret?: SortOrderInput | SortOrder
+    yearsOfExperience?: SortOrderInput | SortOrder
+    projectsCompleted?: SortOrder
+    preferredRadius?: SortOrderInput | SortOrder
+    level?: SortOrderInput | SortOrder
+    averageRating?: SortOrderInput | SortOrder
+    verificationStatus?: SortOrder
+    onboardingCompleted?: SortOrder
+    availableForWork?: SortOrder
+    assessmentCompleted?: SortOrder
+    assessmentScore?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ArtisanProfileCountOrderByAggregateInput
+    _avg?: ArtisanProfileAvgOrderByAggregateInput
+    _max?: ArtisanProfileMaxOrderByAggregateInput
+    _min?: ArtisanProfileMinOrderByAggregateInput
+    _sum?: ArtisanProfileSumOrderByAggregateInput
+  }
+
+  export type ArtisanProfileScalarWhereWithAggregatesInput = {
+    AND?: ArtisanProfileScalarWhereWithAggregatesInput | ArtisanProfileScalarWhereWithAggregatesInput[]
+    OR?: ArtisanProfileScalarWhereWithAggregatesInput[]
+    NOT?: ArtisanProfileScalarWhereWithAggregatesInput | ArtisanProfileScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ArtisanProfile"> | string
+    userId?: StringWithAggregatesFilter<"ArtisanProfile"> | string
+    companyName?: StringNullableWithAggregatesFilter<"ArtisanProfile"> | string | null
+    siret?: StringNullableWithAggregatesFilter<"ArtisanProfile"> | string | null
+    yearsOfExperience?: IntNullableWithAggregatesFilter<"ArtisanProfile"> | number | null
+    projectsCompleted?: IntWithAggregatesFilter<"ArtisanProfile"> | number
+    preferredRadius?: IntNullableWithAggregatesFilter<"ArtisanProfile"> | number | null
+    level?: EnumArtisanLevelNullableWithAggregatesFilter<"ArtisanProfile"> | $Enums.ArtisanLevel | null
+    averageRating?: FloatNullableWithAggregatesFilter<"ArtisanProfile"> | number | null
+    verificationStatus?: EnumArtisanVerificationStatusWithAggregatesFilter<"ArtisanProfile"> | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolWithAggregatesFilter<"ArtisanProfile"> | boolean
+    availableForWork?: BoolWithAggregatesFilter<"ArtisanProfile"> | boolean
+    assessmentCompleted?: BoolWithAggregatesFilter<"ArtisanProfile"> | boolean
+    assessmentScore?: IntNullableWithAggregatesFilter<"ArtisanProfile"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"ArtisanProfile"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ArtisanProfile"> | Date | string
+  }
+
+  export type ArtisanSpecialtyWhereInput = {
+    AND?: ArtisanSpecialtyWhereInput | ArtisanSpecialtyWhereInput[]
+    OR?: ArtisanSpecialtyWhereInput[]
+    NOT?: ArtisanSpecialtyWhereInput | ArtisanSpecialtyWhereInput[]
+    id?: StringFilter<"ArtisanSpecialty"> | string
+    userId?: StringFilter<"ArtisanSpecialty"> | string
+    serviceId?: StringFilter<"ArtisanSpecialty"> | string
+    isPrimary?: BoolFilter<"ArtisanSpecialty"> | boolean
+    createdAt?: DateTimeFilter<"ArtisanSpecialty"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+  }
+
+  export type ArtisanSpecialtyOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    service?: ServiceOrderByWithRelationInput
+  }
+
+  export type ArtisanSpecialtyWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_serviceId?: ArtisanSpecialtyUserIdServiceIdCompoundUniqueInput
+    AND?: ArtisanSpecialtyWhereInput | ArtisanSpecialtyWhereInput[]
+    OR?: ArtisanSpecialtyWhereInput[]
+    NOT?: ArtisanSpecialtyWhereInput | ArtisanSpecialtyWhereInput[]
+    userId?: StringFilter<"ArtisanSpecialty"> | string
+    serviceId?: StringFilter<"ArtisanSpecialty"> | string
+    isPrimary?: BoolFilter<"ArtisanSpecialty"> | boolean
+    createdAt?: DateTimeFilter<"ArtisanSpecialty"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+  }, "id" | "userId_serviceId">
+
+  export type ArtisanSpecialtyOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+    _count?: ArtisanSpecialtyCountOrderByAggregateInput
+    _max?: ArtisanSpecialtyMaxOrderByAggregateInput
+    _min?: ArtisanSpecialtyMinOrderByAggregateInput
+  }
+
+  export type ArtisanSpecialtyScalarWhereWithAggregatesInput = {
+    AND?: ArtisanSpecialtyScalarWhereWithAggregatesInput | ArtisanSpecialtyScalarWhereWithAggregatesInput[]
+    OR?: ArtisanSpecialtyScalarWhereWithAggregatesInput[]
+    NOT?: ArtisanSpecialtyScalarWhereWithAggregatesInput | ArtisanSpecialtyScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ArtisanSpecialty"> | string
+    userId?: StringWithAggregatesFilter<"ArtisanSpecialty"> | string
+    serviceId?: StringWithAggregatesFilter<"ArtisanSpecialty"> | string
+    isPrimary?: BoolWithAggregatesFilter<"ArtisanSpecialty"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"ArtisanSpecialty"> | Date | string
+  }
+
+  export type ArtisanDocumentWhereInput = {
+    AND?: ArtisanDocumentWhereInput | ArtisanDocumentWhereInput[]
+    OR?: ArtisanDocumentWhereInput[]
+    NOT?: ArtisanDocumentWhereInput | ArtisanDocumentWhereInput[]
+    id?: StringFilter<"ArtisanDocument"> | string
+    userId?: StringFilter<"ArtisanDocument"> | string
+    type?: StringFilter<"ArtisanDocument"> | string
+    title?: StringFilter<"ArtisanDocument"> | string
+    fileUrl?: StringFilter<"ArtisanDocument"> | string
+    fileType?: StringFilter<"ArtisanDocument"> | string
+    verified?: BoolFilter<"ArtisanDocument"> | boolean
+    createdAt?: DateTimeFilter<"ArtisanDocument"> | Date | string
+    updatedAt?: DateTimeFilter<"ArtisanDocument"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type ArtisanDocumentOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    fileUrl?: SortOrder
+    fileType?: SortOrder
+    verified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ArtisanDocumentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ArtisanDocumentWhereInput | ArtisanDocumentWhereInput[]
+    OR?: ArtisanDocumentWhereInput[]
+    NOT?: ArtisanDocumentWhereInput | ArtisanDocumentWhereInput[]
+    userId?: StringFilter<"ArtisanDocument"> | string
+    type?: StringFilter<"ArtisanDocument"> | string
+    title?: StringFilter<"ArtisanDocument"> | string
+    fileUrl?: StringFilter<"ArtisanDocument"> | string
+    fileType?: StringFilter<"ArtisanDocument"> | string
+    verified?: BoolFilter<"ArtisanDocument"> | boolean
+    createdAt?: DateTimeFilter<"ArtisanDocument"> | Date | string
+    updatedAt?: DateTimeFilter<"ArtisanDocument"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type ArtisanDocumentOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    fileUrl?: SortOrder
+    fileType?: SortOrder
+    verified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ArtisanDocumentCountOrderByAggregateInput
+    _max?: ArtisanDocumentMaxOrderByAggregateInput
+    _min?: ArtisanDocumentMinOrderByAggregateInput
+  }
+
+  export type ArtisanDocumentScalarWhereWithAggregatesInput = {
+    AND?: ArtisanDocumentScalarWhereWithAggregatesInput | ArtisanDocumentScalarWhereWithAggregatesInput[]
+    OR?: ArtisanDocumentScalarWhereWithAggregatesInput[]
+    NOT?: ArtisanDocumentScalarWhereWithAggregatesInput | ArtisanDocumentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ArtisanDocument"> | string
+    userId?: StringWithAggregatesFilter<"ArtisanDocument"> | string
+    type?: StringWithAggregatesFilter<"ArtisanDocument"> | string
+    title?: StringWithAggregatesFilter<"ArtisanDocument"> | string
+    fileUrl?: StringWithAggregatesFilter<"ArtisanDocument"> | string
+    fileType?: StringWithAggregatesFilter<"ArtisanDocument"> | string
+    verified?: BoolWithAggregatesFilter<"ArtisanDocument"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"ArtisanDocument"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ArtisanDocument"> | Date | string
+  }
+
+  export type ArtisanSkillWhereInput = {
+    AND?: ArtisanSkillWhereInput | ArtisanSkillWhereInput[]
+    OR?: ArtisanSkillWhereInput[]
+    NOT?: ArtisanSkillWhereInput | ArtisanSkillWhereInput[]
+    id?: StringFilter<"ArtisanSkill"> | string
+    artisanProfileId?: StringFilter<"ArtisanSkill"> | string
+    name?: StringFilter<"ArtisanSkill"> | string
+    selfRating?: IntFilter<"ArtisanSkill"> | number
+    createdAt?: DateTimeFilter<"ArtisanSkill"> | Date | string
+    artisanProfile?: XOR<ArtisanProfileScalarRelationFilter, ArtisanProfileWhereInput>
+  }
+
+  export type ArtisanSkillOrderByWithRelationInput = {
+    id?: SortOrder
+    artisanProfileId?: SortOrder
+    name?: SortOrder
+    selfRating?: SortOrder
+    createdAt?: SortOrder
+    artisanProfile?: ArtisanProfileOrderByWithRelationInput
+  }
+
+  export type ArtisanSkillWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ArtisanSkillWhereInput | ArtisanSkillWhereInput[]
+    OR?: ArtisanSkillWhereInput[]
+    NOT?: ArtisanSkillWhereInput | ArtisanSkillWhereInput[]
+    artisanProfileId?: StringFilter<"ArtisanSkill"> | string
+    name?: StringFilter<"ArtisanSkill"> | string
+    selfRating?: IntFilter<"ArtisanSkill"> | number
+    createdAt?: DateTimeFilter<"ArtisanSkill"> | Date | string
+    artisanProfile?: XOR<ArtisanProfileScalarRelationFilter, ArtisanProfileWhereInput>
+  }, "id">
+
+  export type ArtisanSkillOrderByWithAggregationInput = {
+    id?: SortOrder
+    artisanProfileId?: SortOrder
+    name?: SortOrder
+    selfRating?: SortOrder
+    createdAt?: SortOrder
+    _count?: ArtisanSkillCountOrderByAggregateInput
+    _avg?: ArtisanSkillAvgOrderByAggregateInput
+    _max?: ArtisanSkillMaxOrderByAggregateInput
+    _min?: ArtisanSkillMinOrderByAggregateInput
+    _sum?: ArtisanSkillSumOrderByAggregateInput
+  }
+
+  export type ArtisanSkillScalarWhereWithAggregatesInput = {
+    AND?: ArtisanSkillScalarWhereWithAggregatesInput | ArtisanSkillScalarWhereWithAggregatesInput[]
+    OR?: ArtisanSkillScalarWhereWithAggregatesInput[]
+    NOT?: ArtisanSkillScalarWhereWithAggregatesInput | ArtisanSkillScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ArtisanSkill"> | string
+    artisanProfileId?: StringWithAggregatesFilter<"ArtisanSkill"> | string
+    name?: StringWithAggregatesFilter<"ArtisanSkill"> | string
+    selfRating?: IntWithAggregatesFilter<"ArtisanSkill"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"ArtisanSkill"> | Date | string
   }
 
   export type CategoryWhereInput = {
@@ -19398,6 +24905,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Service"> | Date | string
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
     projects?: ProjectListRelationFilter
+    artisanSpecialties?: ArtisanSpecialtyListRelationFilter
   }
 
   export type ServiceOrderByWithRelationInput = {
@@ -19413,6 +24921,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     category?: CategoryOrderByWithRelationInput
     projects?: ProjectOrderByRelationAggregateInput
+    artisanSpecialties?: ArtisanSpecialtyOrderByRelationAggregateInput
   }
 
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
@@ -19432,6 +24941,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Service"> | Date | string
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
     projects?: ProjectListRelationFilter
+    artisanSpecialties?: ArtisanSpecialtyListRelationFilter
   }, "id" | "slug" | "name_categoryId">
 
   export type ServiceOrderByWithAggregationInput = {
@@ -20366,6 +25876,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -20390,6 +25903,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -20414,6 +25930,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -20438,6 +25957,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -20489,6 +26011,334 @@ export namespace Prisma {
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanProfileCreateInput = {
+    id?: string
+    companyName?: string | null
+    siret?: string | null
+    yearsOfExperience?: number | null
+    projectsCompleted?: number
+    preferredRadius?: number | null
+    level?: $Enums.ArtisanLevel | null
+    averageRating?: number | null
+    verificationStatus?: $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutArtisanProfileInput
+    skills?: ArtisanSkillCreateNestedManyWithoutArtisanProfileInput
+  }
+
+  export type ArtisanProfileUncheckedCreateInput = {
+    id?: string
+    userId: string
+    companyName?: string | null
+    siret?: string | null
+    yearsOfExperience?: number | null
+    projectsCompleted?: number
+    preferredRadius?: number | null
+    level?: $Enums.ArtisanLevel | null
+    averageRating?: number | null
+    verificationStatus?: $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    skills?: ArtisanSkillUncheckedCreateNestedManyWithoutArtisanProfileInput
+  }
+
+  export type ArtisanProfileUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    siret?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsOfExperience?: NullableIntFieldUpdateOperationsInput | number | null
+    projectsCompleted?: IntFieldUpdateOperationsInput | number
+    preferredRadius?: NullableIntFieldUpdateOperationsInput | number | null
+    level?: NullableEnumArtisanLevelFieldUpdateOperationsInput | $Enums.ArtisanLevel | null
+    averageRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFieldUpdateOperationsInput | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    availableForWork?: BoolFieldUpdateOperationsInput | boolean
+    assessmentCompleted?: BoolFieldUpdateOperationsInput | boolean
+    assessmentScore?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutArtisanProfileNestedInput
+    skills?: ArtisanSkillUpdateManyWithoutArtisanProfileNestedInput
+  }
+
+  export type ArtisanProfileUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    siret?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsOfExperience?: NullableIntFieldUpdateOperationsInput | number | null
+    projectsCompleted?: IntFieldUpdateOperationsInput | number
+    preferredRadius?: NullableIntFieldUpdateOperationsInput | number | null
+    level?: NullableEnumArtisanLevelFieldUpdateOperationsInput | $Enums.ArtisanLevel | null
+    averageRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFieldUpdateOperationsInput | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    availableForWork?: BoolFieldUpdateOperationsInput | boolean
+    assessmentCompleted?: BoolFieldUpdateOperationsInput | boolean
+    assessmentScore?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    skills?: ArtisanSkillUncheckedUpdateManyWithoutArtisanProfileNestedInput
+  }
+
+  export type ArtisanProfileCreateManyInput = {
+    id?: string
+    userId: string
+    companyName?: string | null
+    siret?: string | null
+    yearsOfExperience?: number | null
+    projectsCompleted?: number
+    preferredRadius?: number | null
+    level?: $Enums.ArtisanLevel | null
+    averageRating?: number | null
+    verificationStatus?: $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ArtisanProfileUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    siret?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsOfExperience?: NullableIntFieldUpdateOperationsInput | number | null
+    projectsCompleted?: IntFieldUpdateOperationsInput | number
+    preferredRadius?: NullableIntFieldUpdateOperationsInput | number | null
+    level?: NullableEnumArtisanLevelFieldUpdateOperationsInput | $Enums.ArtisanLevel | null
+    averageRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFieldUpdateOperationsInput | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    availableForWork?: BoolFieldUpdateOperationsInput | boolean
+    assessmentCompleted?: BoolFieldUpdateOperationsInput | boolean
+    assessmentScore?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanProfileUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    siret?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsOfExperience?: NullableIntFieldUpdateOperationsInput | number | null
+    projectsCompleted?: IntFieldUpdateOperationsInput | number
+    preferredRadius?: NullableIntFieldUpdateOperationsInput | number | null
+    level?: NullableEnumArtisanLevelFieldUpdateOperationsInput | $Enums.ArtisanLevel | null
+    averageRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFieldUpdateOperationsInput | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    availableForWork?: BoolFieldUpdateOperationsInput | boolean
+    assessmentCompleted?: BoolFieldUpdateOperationsInput | boolean
+    assessmentScore?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSpecialtyCreateInput = {
+    id?: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutArtisanSpecialtiesInput
+    service: ServiceCreateNestedOneWithoutArtisanSpecialtiesInput
+  }
+
+  export type ArtisanSpecialtyUncheckedCreateInput = {
+    id?: string
+    userId: string
+    serviceId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSpecialtyUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutArtisanSpecialtiesNestedInput
+    service?: ServiceUpdateOneRequiredWithoutArtisanSpecialtiesNestedInput
+  }
+
+  export type ArtisanSpecialtyUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSpecialtyCreateManyInput = {
+    id?: string
+    userId: string
+    serviceId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSpecialtyUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSpecialtyUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanDocumentCreateInput = {
+    id?: string
+    type: string
+    title: string
+    fileUrl: string
+    fileType: string
+    verified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutArtisanDocumentsInput
+  }
+
+  export type ArtisanDocumentUncheckedCreateInput = {
+    id?: string
+    userId: string
+    type: string
+    title: string
+    fileUrl: string
+    fileType: string
+    verified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ArtisanDocumentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutArtisanDocumentsNestedInput
+  }
+
+  export type ArtisanDocumentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanDocumentCreateManyInput = {
+    id?: string
+    userId: string
+    type: string
+    title: string
+    fileUrl: string
+    fileType: string
+    verified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ArtisanDocumentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanDocumentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSkillCreateInput = {
+    id?: string
+    name: string
+    selfRating: number
+    createdAt?: Date | string
+    artisanProfile: ArtisanProfileCreateNestedOneWithoutSkillsInput
+  }
+
+  export type ArtisanSkillUncheckedCreateInput = {
+    id?: string
+    artisanProfileId: string
+    name: string
+    selfRating: number
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSkillUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    selfRating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    artisanProfile?: ArtisanProfileUpdateOneRequiredWithoutSkillsNestedInput
+  }
+
+  export type ArtisanSkillUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    artisanProfileId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    selfRating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSkillCreateManyInput = {
+    id?: string
+    artisanProfileId: string
+    name: string
+    selfRating: number
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSkillUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    selfRating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSkillUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    artisanProfileId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    selfRating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CategoryCreateInput = {
@@ -20595,6 +26445,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     category: CategoryCreateNestedOneWithoutServicesInput
     projects?: ProjectCreateNestedManyWithoutServiceInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateInput = {
@@ -20609,6 +26460,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectUncheckedCreateNestedManyWithoutServiceInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUpdateInput = {
@@ -20623,6 +26475,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: CategoryUpdateOneRequiredWithoutServicesNestedInput
     projects?: ProjectUpdateManyWithoutServiceNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateInput = {
@@ -20637,6 +26490,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUncheckedUpdateManyWithoutServiceNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceCreateManyInput = {
@@ -21712,6 +27566,23 @@ export namespace Prisma {
     none?: ProjectInvitationWhereInput
   }
 
+  export type ArtisanProfileNullableScalarRelationFilter = {
+    is?: ArtisanProfileWhereInput | null
+    isNot?: ArtisanProfileWhereInput | null
+  }
+
+  export type ArtisanSpecialtyListRelationFilter = {
+    every?: ArtisanSpecialtyWhereInput
+    some?: ArtisanSpecialtyWhereInput
+    none?: ArtisanSpecialtyWhereInput
+  }
+
+  export type ArtisanDocumentListRelationFilter = {
+    every?: ArtisanDocumentWhereInput
+    some?: ArtisanDocumentWhereInput
+    none?: ArtisanDocumentWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -21738,6 +27609,14 @@ export namespace Prisma {
   }
 
   export type ProjectInvitationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ArtisanSpecialtyOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ArtisanDocumentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -21866,9 +27745,15 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type BoolFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolFilter<$PrismaModel> | boolean
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -21880,6 +27765,307 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type EnumArtisanLevelNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArtisanLevel | EnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ArtisanLevel[] | ListEnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ArtisanLevel[] | ListEnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumArtisanLevelNullableFilter<$PrismaModel> | $Enums.ArtisanLevel | null
+  }
+
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type EnumArtisanVerificationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArtisanVerificationStatus | EnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ArtisanVerificationStatus[] | ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ArtisanVerificationStatus[] | ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumArtisanVerificationStatusFilter<$PrismaModel> | $Enums.ArtisanVerificationStatus
+  }
+
+  export type BoolFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolFilter<$PrismaModel> | boolean
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type ArtisanSkillListRelationFilter = {
+    every?: ArtisanSkillWhereInput
+    some?: ArtisanSkillWhereInput
+    none?: ArtisanSkillWhereInput
+  }
+
+  export type ArtisanSkillOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ArtisanProfileCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    companyName?: SortOrder
+    siret?: SortOrder
+    yearsOfExperience?: SortOrder
+    projectsCompleted?: SortOrder
+    preferredRadius?: SortOrder
+    level?: SortOrder
+    averageRating?: SortOrder
+    verificationStatus?: SortOrder
+    onboardingCompleted?: SortOrder
+    availableForWork?: SortOrder
+    assessmentCompleted?: SortOrder
+    assessmentScore?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArtisanProfileAvgOrderByAggregateInput = {
+    yearsOfExperience?: SortOrder
+    projectsCompleted?: SortOrder
+    preferredRadius?: SortOrder
+    averageRating?: SortOrder
+    assessmentScore?: SortOrder
+  }
+
+  export type ArtisanProfileMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    companyName?: SortOrder
+    siret?: SortOrder
+    yearsOfExperience?: SortOrder
+    projectsCompleted?: SortOrder
+    preferredRadius?: SortOrder
+    level?: SortOrder
+    averageRating?: SortOrder
+    verificationStatus?: SortOrder
+    onboardingCompleted?: SortOrder
+    availableForWork?: SortOrder
+    assessmentCompleted?: SortOrder
+    assessmentScore?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArtisanProfileMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    companyName?: SortOrder
+    siret?: SortOrder
+    yearsOfExperience?: SortOrder
+    projectsCompleted?: SortOrder
+    preferredRadius?: SortOrder
+    level?: SortOrder
+    averageRating?: SortOrder
+    verificationStatus?: SortOrder
+    onboardingCompleted?: SortOrder
+    availableForWork?: SortOrder
+    assessmentCompleted?: SortOrder
+    assessmentScore?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArtisanProfileSumOrderByAggregateInput = {
+    yearsOfExperience?: SortOrder
+    projectsCompleted?: SortOrder
+    preferredRadius?: SortOrder
+    averageRating?: SortOrder
+    assessmentScore?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type EnumArtisanLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArtisanLevel | EnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ArtisanLevel[] | ListEnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ArtisanLevel[] | ListEnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumArtisanLevelNullableWithAggregatesFilter<$PrismaModel> | $Enums.ArtisanLevel | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumArtisanLevelNullableFilter<$PrismaModel>
+    _max?: NestedEnumArtisanLevelNullableFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type EnumArtisanVerificationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArtisanVerificationStatus | EnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ArtisanVerificationStatus[] | ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ArtisanVerificationStatus[] | ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumArtisanVerificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ArtisanVerificationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumArtisanVerificationStatusFilter<$PrismaModel>
+    _max?: NestedEnumArtisanVerificationStatusFilter<$PrismaModel>
+  }
+
+  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
+  }
+
+  export type ServiceScalarRelationFilter = {
+    is?: ServiceWhereInput
+    isNot?: ServiceWhereInput
+  }
+
+  export type ArtisanSpecialtyUserIdServiceIdCompoundUniqueInput = {
+    userId: string
+    serviceId: string
+  }
+
+  export type ArtisanSpecialtyCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ArtisanSpecialtyMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ArtisanSpecialtyMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    isPrimary?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ArtisanDocumentCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    fileUrl?: SortOrder
+    fileType?: SortOrder
+    verified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArtisanDocumentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    fileUrl?: SortOrder
+    fileType?: SortOrder
+    verified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArtisanDocumentMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    title?: SortOrder
+    fileUrl?: SortOrder
+    fileType?: SortOrder
+    verified?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ArtisanProfileScalarRelationFilter = {
+    is?: ArtisanProfileWhereInput
+    isNot?: ArtisanProfileWhereInput
+  }
+
+  export type ArtisanSkillCountOrderByAggregateInput = {
+    id?: SortOrder
+    artisanProfileId?: SortOrder
+    name?: SortOrder
+    selfRating?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ArtisanSkillAvgOrderByAggregateInput = {
+    selfRating?: SortOrder
+  }
+
+  export type ArtisanSkillMaxOrderByAggregateInput = {
+    id?: SortOrder
+    artisanProfileId?: SortOrder
+    name?: SortOrder
+    selfRating?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ArtisanSkillMinOrderByAggregateInput = {
+    id?: SortOrder
+    artisanProfileId?: SortOrder
+    name?: SortOrder
+    selfRating?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ArtisanSkillSumOrderByAggregateInput = {
+    selfRating?: SortOrder
   }
 
   export type ServiceListRelationFilter = {
@@ -21934,30 +28120,6 @@ export namespace Prisma {
 
   export type CategorySumOrderByAggregateInput = {
     order?: SortOrder
-  }
-
-  export type BoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type CategoryScalarRelationFilter = {
@@ -22017,17 +28179,6 @@ export namespace Prisma {
     order?: SortOrder
   }
 
-  export type FloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
-  }
-
   export type EnumAccessibilityLevelNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.AccessibilityLevel | EnumAccessibilityLevelFieldRefInput<$PrismaModel> | null
     in?: $Enums.AccessibilityLevel[] | ListEnumAccessibilityLevelFieldRefInput<$PrismaModel> | null
@@ -22073,16 +28224,6 @@ export namespace Prisma {
     in?: $Enums.ProjectVisibility[] | ListEnumProjectVisibilityFieldRefInput<$PrismaModel>
     notIn?: $Enums.ProjectVisibility[] | ListEnumProjectVisibilityFieldRefInput<$PrismaModel>
     not?: NestedEnumProjectVisibilityFilter<$PrismaModel> | $Enums.ProjectVisibility
-  }
-
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
-  }
-
-  export type ServiceScalarRelationFilter = {
-    is?: ServiceWhereInput
-    isNot?: ServiceWhereInput
   }
 
   export type ProjectStepListRelationFilter = {
@@ -22207,22 +28348,6 @@ export namespace Prisma {
   export type ProjectSumOrderByAggregateInput = {
     budget?: SortOrder
     budgetMax?: SortOrder
-  }
-
-  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type EnumAccessibilityLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -22467,17 +28592,6 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-  }
-
   export type QuoteItemListRelationFilter = {
     every?: QuoteItemWhereInput
     some?: QuoteItemWhereInput
@@ -22567,22 +28681,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type QuoteScalarRelationFilter = {
@@ -22848,6 +28946,26 @@ export namespace Prisma {
     connect?: ProjectInvitationWhereUniqueInput | ProjectInvitationWhereUniqueInput[]
   }
 
+  export type ArtisanProfileCreateNestedOneWithoutUserInput = {
+    create?: XOR<ArtisanProfileCreateWithoutUserInput, ArtisanProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ArtisanProfileCreateOrConnectWithoutUserInput
+    connect?: ArtisanProfileWhereUniqueInput
+  }
+
+  export type ArtisanSpecialtyCreateNestedManyWithoutUserInput = {
+    create?: XOR<ArtisanSpecialtyCreateWithoutUserInput, ArtisanSpecialtyUncheckedCreateWithoutUserInput> | ArtisanSpecialtyCreateWithoutUserInput[] | ArtisanSpecialtyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutUserInput | ArtisanSpecialtyCreateOrConnectWithoutUserInput[]
+    createMany?: ArtisanSpecialtyCreateManyUserInputEnvelope
+    connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+  }
+
+  export type ArtisanDocumentCreateNestedManyWithoutUserInput = {
+    create?: XOR<ArtisanDocumentCreateWithoutUserInput, ArtisanDocumentUncheckedCreateWithoutUserInput> | ArtisanDocumentCreateWithoutUserInput[] | ArtisanDocumentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtisanDocumentCreateOrConnectWithoutUserInput | ArtisanDocumentCreateOrConnectWithoutUserInput[]
+    createMany?: ArtisanDocumentCreateManyUserInputEnvelope
+    connect?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -22895,6 +29013,26 @@ export namespace Prisma {
     connectOrCreate?: ProjectInvitationCreateOrConnectWithoutUserInput | ProjectInvitationCreateOrConnectWithoutUserInput[]
     createMany?: ProjectInvitationCreateManyUserInputEnvelope
     connect?: ProjectInvitationWhereUniqueInput | ProjectInvitationWhereUniqueInput[]
+  }
+
+  export type ArtisanProfileUncheckedCreateNestedOneWithoutUserInput = {
+    create?: XOR<ArtisanProfileCreateWithoutUserInput, ArtisanProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ArtisanProfileCreateOrConnectWithoutUserInput
+    connect?: ArtisanProfileWhereUniqueInput
+  }
+
+  export type ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ArtisanSpecialtyCreateWithoutUserInput, ArtisanSpecialtyUncheckedCreateWithoutUserInput> | ArtisanSpecialtyCreateWithoutUserInput[] | ArtisanSpecialtyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutUserInput | ArtisanSpecialtyCreateOrConnectWithoutUserInput[]
+    createMany?: ArtisanSpecialtyCreateManyUserInputEnvelope
+    connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+  }
+
+  export type ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ArtisanDocumentCreateWithoutUserInput, ArtisanDocumentUncheckedCreateWithoutUserInput> | ArtisanDocumentCreateWithoutUserInput[] | ArtisanDocumentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtisanDocumentCreateOrConnectWithoutUserInput | ArtisanDocumentCreateOrConnectWithoutUserInput[]
+    createMany?: ArtisanDocumentCreateManyUserInputEnvelope
+    connect?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -23015,6 +29153,44 @@ export namespace Prisma {
     deleteMany?: ProjectInvitationScalarWhereInput | ProjectInvitationScalarWhereInput[]
   }
 
+  export type ArtisanProfileUpdateOneWithoutUserNestedInput = {
+    create?: XOR<ArtisanProfileCreateWithoutUserInput, ArtisanProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ArtisanProfileCreateOrConnectWithoutUserInput
+    upsert?: ArtisanProfileUpsertWithoutUserInput
+    disconnect?: ArtisanProfileWhereInput | boolean
+    delete?: ArtisanProfileWhereInput | boolean
+    connect?: ArtisanProfileWhereUniqueInput
+    update?: XOR<XOR<ArtisanProfileUpdateToOneWithWhereWithoutUserInput, ArtisanProfileUpdateWithoutUserInput>, ArtisanProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ArtisanSpecialtyUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ArtisanSpecialtyCreateWithoutUserInput, ArtisanSpecialtyUncheckedCreateWithoutUserInput> | ArtisanSpecialtyCreateWithoutUserInput[] | ArtisanSpecialtyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutUserInput | ArtisanSpecialtyCreateOrConnectWithoutUserInput[]
+    upsert?: ArtisanSpecialtyUpsertWithWhereUniqueWithoutUserInput | ArtisanSpecialtyUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ArtisanSpecialtyCreateManyUserInputEnvelope
+    set?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    disconnect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    delete?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    update?: ArtisanSpecialtyUpdateWithWhereUniqueWithoutUserInput | ArtisanSpecialtyUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ArtisanSpecialtyUpdateManyWithWhereWithoutUserInput | ArtisanSpecialtyUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ArtisanSpecialtyScalarWhereInput | ArtisanSpecialtyScalarWhereInput[]
+  }
+
+  export type ArtisanDocumentUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ArtisanDocumentCreateWithoutUserInput, ArtisanDocumentUncheckedCreateWithoutUserInput> | ArtisanDocumentCreateWithoutUserInput[] | ArtisanDocumentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtisanDocumentCreateOrConnectWithoutUserInput | ArtisanDocumentCreateOrConnectWithoutUserInput[]
+    upsert?: ArtisanDocumentUpsertWithWhereUniqueWithoutUserInput | ArtisanDocumentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ArtisanDocumentCreateManyUserInputEnvelope
+    set?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+    disconnect?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+    delete?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+    connect?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+    update?: ArtisanDocumentUpdateWithWhereUniqueWithoutUserInput | ArtisanDocumentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ArtisanDocumentUpdateManyWithWhereWithoutUserInput | ArtisanDocumentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ArtisanDocumentScalarWhereInput | ArtisanDocumentScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -23113,6 +29289,192 @@ export namespace Prisma {
     deleteMany?: ProjectInvitationScalarWhereInput | ProjectInvitationScalarWhereInput[]
   }
 
+  export type ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput = {
+    create?: XOR<ArtisanProfileCreateWithoutUserInput, ArtisanProfileUncheckedCreateWithoutUserInput>
+    connectOrCreate?: ArtisanProfileCreateOrConnectWithoutUserInput
+    upsert?: ArtisanProfileUpsertWithoutUserInput
+    disconnect?: ArtisanProfileWhereInput | boolean
+    delete?: ArtisanProfileWhereInput | boolean
+    connect?: ArtisanProfileWhereUniqueInput
+    update?: XOR<XOR<ArtisanProfileUpdateToOneWithWhereWithoutUserInput, ArtisanProfileUpdateWithoutUserInput>, ArtisanProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ArtisanSpecialtyCreateWithoutUserInput, ArtisanSpecialtyUncheckedCreateWithoutUserInput> | ArtisanSpecialtyCreateWithoutUserInput[] | ArtisanSpecialtyUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutUserInput | ArtisanSpecialtyCreateOrConnectWithoutUserInput[]
+    upsert?: ArtisanSpecialtyUpsertWithWhereUniqueWithoutUserInput | ArtisanSpecialtyUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ArtisanSpecialtyCreateManyUserInputEnvelope
+    set?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    disconnect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    delete?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    update?: ArtisanSpecialtyUpdateWithWhereUniqueWithoutUserInput | ArtisanSpecialtyUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ArtisanSpecialtyUpdateManyWithWhereWithoutUserInput | ArtisanSpecialtyUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ArtisanSpecialtyScalarWhereInput | ArtisanSpecialtyScalarWhereInput[]
+  }
+
+  export type ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ArtisanDocumentCreateWithoutUserInput, ArtisanDocumentUncheckedCreateWithoutUserInput> | ArtisanDocumentCreateWithoutUserInput[] | ArtisanDocumentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtisanDocumentCreateOrConnectWithoutUserInput | ArtisanDocumentCreateOrConnectWithoutUserInput[]
+    upsert?: ArtisanDocumentUpsertWithWhereUniqueWithoutUserInput | ArtisanDocumentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ArtisanDocumentCreateManyUserInputEnvelope
+    set?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+    disconnect?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+    delete?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+    connect?: ArtisanDocumentWhereUniqueInput | ArtisanDocumentWhereUniqueInput[]
+    update?: ArtisanDocumentUpdateWithWhereUniqueWithoutUserInput | ArtisanDocumentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ArtisanDocumentUpdateManyWithWhereWithoutUserInput | ArtisanDocumentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ArtisanDocumentScalarWhereInput | ArtisanDocumentScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutArtisanProfileInput = {
+    create?: XOR<UserCreateWithoutArtisanProfileInput, UserUncheckedCreateWithoutArtisanProfileInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArtisanProfileInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ArtisanSkillCreateNestedManyWithoutArtisanProfileInput = {
+    create?: XOR<ArtisanSkillCreateWithoutArtisanProfileInput, ArtisanSkillUncheckedCreateWithoutArtisanProfileInput> | ArtisanSkillCreateWithoutArtisanProfileInput[] | ArtisanSkillUncheckedCreateWithoutArtisanProfileInput[]
+    connectOrCreate?: ArtisanSkillCreateOrConnectWithoutArtisanProfileInput | ArtisanSkillCreateOrConnectWithoutArtisanProfileInput[]
+    createMany?: ArtisanSkillCreateManyArtisanProfileInputEnvelope
+    connect?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+  }
+
+  export type ArtisanSkillUncheckedCreateNestedManyWithoutArtisanProfileInput = {
+    create?: XOR<ArtisanSkillCreateWithoutArtisanProfileInput, ArtisanSkillUncheckedCreateWithoutArtisanProfileInput> | ArtisanSkillCreateWithoutArtisanProfileInput[] | ArtisanSkillUncheckedCreateWithoutArtisanProfileInput[]
+    connectOrCreate?: ArtisanSkillCreateOrConnectWithoutArtisanProfileInput | ArtisanSkillCreateOrConnectWithoutArtisanProfileInput[]
+    createMany?: ArtisanSkillCreateManyArtisanProfileInputEnvelope
+    connect?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableEnumArtisanLevelFieldUpdateOperationsInput = {
+    set?: $Enums.ArtisanLevel | null
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type EnumArtisanVerificationStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ArtisanVerificationStatus
+  }
+
+  export type BoolFieldUpdateOperationsInput = {
+    set?: boolean
+  }
+
+  export type UserUpdateOneRequiredWithoutArtisanProfileNestedInput = {
+    create?: XOR<UserCreateWithoutArtisanProfileInput, UserUncheckedCreateWithoutArtisanProfileInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArtisanProfileInput
+    upsert?: UserUpsertWithoutArtisanProfileInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutArtisanProfileInput, UserUpdateWithoutArtisanProfileInput>, UserUncheckedUpdateWithoutArtisanProfileInput>
+  }
+
+  export type ArtisanSkillUpdateManyWithoutArtisanProfileNestedInput = {
+    create?: XOR<ArtisanSkillCreateWithoutArtisanProfileInput, ArtisanSkillUncheckedCreateWithoutArtisanProfileInput> | ArtisanSkillCreateWithoutArtisanProfileInput[] | ArtisanSkillUncheckedCreateWithoutArtisanProfileInput[]
+    connectOrCreate?: ArtisanSkillCreateOrConnectWithoutArtisanProfileInput | ArtisanSkillCreateOrConnectWithoutArtisanProfileInput[]
+    upsert?: ArtisanSkillUpsertWithWhereUniqueWithoutArtisanProfileInput | ArtisanSkillUpsertWithWhereUniqueWithoutArtisanProfileInput[]
+    createMany?: ArtisanSkillCreateManyArtisanProfileInputEnvelope
+    set?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+    disconnect?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+    delete?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+    connect?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+    update?: ArtisanSkillUpdateWithWhereUniqueWithoutArtisanProfileInput | ArtisanSkillUpdateWithWhereUniqueWithoutArtisanProfileInput[]
+    updateMany?: ArtisanSkillUpdateManyWithWhereWithoutArtisanProfileInput | ArtisanSkillUpdateManyWithWhereWithoutArtisanProfileInput[]
+    deleteMany?: ArtisanSkillScalarWhereInput | ArtisanSkillScalarWhereInput[]
+  }
+
+  export type ArtisanSkillUncheckedUpdateManyWithoutArtisanProfileNestedInput = {
+    create?: XOR<ArtisanSkillCreateWithoutArtisanProfileInput, ArtisanSkillUncheckedCreateWithoutArtisanProfileInput> | ArtisanSkillCreateWithoutArtisanProfileInput[] | ArtisanSkillUncheckedCreateWithoutArtisanProfileInput[]
+    connectOrCreate?: ArtisanSkillCreateOrConnectWithoutArtisanProfileInput | ArtisanSkillCreateOrConnectWithoutArtisanProfileInput[]
+    upsert?: ArtisanSkillUpsertWithWhereUniqueWithoutArtisanProfileInput | ArtisanSkillUpsertWithWhereUniqueWithoutArtisanProfileInput[]
+    createMany?: ArtisanSkillCreateManyArtisanProfileInputEnvelope
+    set?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+    disconnect?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+    delete?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+    connect?: ArtisanSkillWhereUniqueInput | ArtisanSkillWhereUniqueInput[]
+    update?: ArtisanSkillUpdateWithWhereUniqueWithoutArtisanProfileInput | ArtisanSkillUpdateWithWhereUniqueWithoutArtisanProfileInput[]
+    updateMany?: ArtisanSkillUpdateManyWithWhereWithoutArtisanProfileInput | ArtisanSkillUpdateManyWithWhereWithoutArtisanProfileInput[]
+    deleteMany?: ArtisanSkillScalarWhereInput | ArtisanSkillScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutArtisanSpecialtiesInput = {
+    create?: XOR<UserCreateWithoutArtisanSpecialtiesInput, UserUncheckedCreateWithoutArtisanSpecialtiesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArtisanSpecialtiesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ServiceCreateNestedOneWithoutArtisanSpecialtiesInput = {
+    create?: XOR<ServiceCreateWithoutArtisanSpecialtiesInput, ServiceUncheckedCreateWithoutArtisanSpecialtiesInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutArtisanSpecialtiesInput
+    connect?: ServiceWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutArtisanSpecialtiesNestedInput = {
+    create?: XOR<UserCreateWithoutArtisanSpecialtiesInput, UserUncheckedCreateWithoutArtisanSpecialtiesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArtisanSpecialtiesInput
+    upsert?: UserUpsertWithoutArtisanSpecialtiesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutArtisanSpecialtiesInput, UserUpdateWithoutArtisanSpecialtiesInput>, UserUncheckedUpdateWithoutArtisanSpecialtiesInput>
+  }
+
+  export type ServiceUpdateOneRequiredWithoutArtisanSpecialtiesNestedInput = {
+    create?: XOR<ServiceCreateWithoutArtisanSpecialtiesInput, ServiceUncheckedCreateWithoutArtisanSpecialtiesInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutArtisanSpecialtiesInput
+    upsert?: ServiceUpsertWithoutArtisanSpecialtiesInput
+    connect?: ServiceWhereUniqueInput
+    update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutArtisanSpecialtiesInput, ServiceUpdateWithoutArtisanSpecialtiesInput>, ServiceUncheckedUpdateWithoutArtisanSpecialtiesInput>
+  }
+
+  export type UserCreateNestedOneWithoutArtisanDocumentsInput = {
+    create?: XOR<UserCreateWithoutArtisanDocumentsInput, UserUncheckedCreateWithoutArtisanDocumentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArtisanDocumentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutArtisanDocumentsNestedInput = {
+    create?: XOR<UserCreateWithoutArtisanDocumentsInput, UserUncheckedCreateWithoutArtisanDocumentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArtisanDocumentsInput
+    upsert?: UserUpsertWithoutArtisanDocumentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutArtisanDocumentsInput, UserUpdateWithoutArtisanDocumentsInput>, UserUncheckedUpdateWithoutArtisanDocumentsInput>
+  }
+
+  export type ArtisanProfileCreateNestedOneWithoutSkillsInput = {
+    create?: XOR<ArtisanProfileCreateWithoutSkillsInput, ArtisanProfileUncheckedCreateWithoutSkillsInput>
+    connectOrCreate?: ArtisanProfileCreateOrConnectWithoutSkillsInput
+    connect?: ArtisanProfileWhereUniqueInput
+  }
+
+  export type ArtisanProfileUpdateOneRequiredWithoutSkillsNestedInput = {
+    create?: XOR<ArtisanProfileCreateWithoutSkillsInput, ArtisanProfileUncheckedCreateWithoutSkillsInput>
+    connectOrCreate?: ArtisanProfileCreateOrConnectWithoutSkillsInput
+    upsert?: ArtisanProfileUpsertWithoutSkillsInput
+    connect?: ArtisanProfileWhereUniqueInput
+    update?: XOR<XOR<ArtisanProfileUpdateToOneWithWhereWithoutSkillsInput, ArtisanProfileUpdateWithoutSkillsInput>, ArtisanProfileUncheckedUpdateWithoutSkillsInput>
+  }
+
   export type ServiceCreateNestedManyWithoutCategoryInput = {
     create?: XOR<ServiceCreateWithoutCategoryInput, ServiceUncheckedCreateWithoutCategoryInput> | ServiceCreateWithoutCategoryInput[] | ServiceUncheckedCreateWithoutCategoryInput[]
     connectOrCreate?: ServiceCreateOrConnectWithoutCategoryInput | ServiceCreateOrConnectWithoutCategoryInput[]
@@ -23139,18 +29501,6 @@ export namespace Prisma {
     connectOrCreate?: ProjectCreateOrConnectWithoutCategoryInput | ProjectCreateOrConnectWithoutCategoryInput[]
     createMany?: ProjectCreateManyCategoryInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
-  }
-
-  export type BoolFieldUpdateOperationsInput = {
-    set?: boolean
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type ServiceUpdateManyWithoutCategoryNestedInput = {
@@ -23222,11 +29572,25 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
   }
 
+  export type ArtisanSpecialtyCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ArtisanSpecialtyCreateWithoutServiceInput, ArtisanSpecialtyUncheckedCreateWithoutServiceInput> | ArtisanSpecialtyCreateWithoutServiceInput[] | ArtisanSpecialtyUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutServiceInput | ArtisanSpecialtyCreateOrConnectWithoutServiceInput[]
+    createMany?: ArtisanSpecialtyCreateManyServiceInputEnvelope
+    connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+  }
+
   export type ProjectUncheckedCreateNestedManyWithoutServiceInput = {
     create?: XOR<ProjectCreateWithoutServiceInput, ProjectUncheckedCreateWithoutServiceInput> | ProjectCreateWithoutServiceInput[] | ProjectUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutServiceInput | ProjectCreateOrConnectWithoutServiceInput[]
     createMany?: ProjectCreateManyServiceInputEnvelope
     connect?: ProjectWhereUniqueInput | ProjectWhereUniqueInput[]
+  }
+
+  export type ArtisanSpecialtyUncheckedCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ArtisanSpecialtyCreateWithoutServiceInput, ArtisanSpecialtyUncheckedCreateWithoutServiceInput> | ArtisanSpecialtyCreateWithoutServiceInput[] | ArtisanSpecialtyUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutServiceInput | ArtisanSpecialtyCreateOrConnectWithoutServiceInput[]
+    createMany?: ArtisanSpecialtyCreateManyServiceInputEnvelope
+    connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
   }
 
   export type CategoryUpdateOneRequiredWithoutServicesNestedInput = {
@@ -23251,6 +29615,20 @@ export namespace Prisma {
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
   }
 
+  export type ArtisanSpecialtyUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ArtisanSpecialtyCreateWithoutServiceInput, ArtisanSpecialtyUncheckedCreateWithoutServiceInput> | ArtisanSpecialtyCreateWithoutServiceInput[] | ArtisanSpecialtyUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutServiceInput | ArtisanSpecialtyCreateOrConnectWithoutServiceInput[]
+    upsert?: ArtisanSpecialtyUpsertWithWhereUniqueWithoutServiceInput | ArtisanSpecialtyUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ArtisanSpecialtyCreateManyServiceInputEnvelope
+    set?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    disconnect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    delete?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    update?: ArtisanSpecialtyUpdateWithWhereUniqueWithoutServiceInput | ArtisanSpecialtyUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ArtisanSpecialtyUpdateManyWithWhereWithoutServiceInput | ArtisanSpecialtyUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ArtisanSpecialtyScalarWhereInput | ArtisanSpecialtyScalarWhereInput[]
+  }
+
   export type ProjectUncheckedUpdateManyWithoutServiceNestedInput = {
     create?: XOR<ProjectCreateWithoutServiceInput, ProjectUncheckedCreateWithoutServiceInput> | ProjectCreateWithoutServiceInput[] | ProjectUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutServiceInput | ProjectCreateOrConnectWithoutServiceInput[]
@@ -23263,6 +29641,20 @@ export namespace Prisma {
     update?: ProjectUpdateWithWhereUniqueWithoutServiceInput | ProjectUpdateWithWhereUniqueWithoutServiceInput[]
     updateMany?: ProjectUpdateManyWithWhereWithoutServiceInput | ProjectUpdateManyWithWhereWithoutServiceInput[]
     deleteMany?: ProjectScalarWhereInput | ProjectScalarWhereInput[]
+  }
+
+  export type ArtisanSpecialtyUncheckedUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ArtisanSpecialtyCreateWithoutServiceInput, ArtisanSpecialtyUncheckedCreateWithoutServiceInput> | ArtisanSpecialtyCreateWithoutServiceInput[] | ArtisanSpecialtyUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutServiceInput | ArtisanSpecialtyCreateOrConnectWithoutServiceInput[]
+    upsert?: ArtisanSpecialtyUpsertWithWhereUniqueWithoutServiceInput | ArtisanSpecialtyUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ArtisanSpecialtyCreateManyServiceInputEnvelope
+    set?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    disconnect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    delete?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+    update?: ArtisanSpecialtyUpdateWithWhereUniqueWithoutServiceInput | ArtisanSpecialtyUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ArtisanSpecialtyUpdateManyWithWhereWithoutServiceInput | ArtisanSpecialtyUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ArtisanSpecialtyScalarWhereInput | ArtisanSpecialtyScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutProjectsInput = {
@@ -23351,14 +29743,6 @@ export namespace Prisma {
     connectOrCreate?: ProjectRequirementCreateOrConnectWithoutProjectInput | ProjectRequirementCreateOrConnectWithoutProjectInput[]
     createMany?: ProjectRequirementCreateManyProjectInputEnvelope
     connect?: ProjectRequirementWhereUniqueInput | ProjectRequirementWhereUniqueInput[]
-  }
-
-  export type NullableFloatFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type NullableEnumAccessibilityLevelFieldUpdateOperationsInput = {
@@ -23629,14 +30013,6 @@ export namespace Prisma {
 
   export type FloatFieldUpdateOperationsInput = {
     set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
     increment?: number
     decrement?: number
     multiply?: number
@@ -23930,17 +30306,50 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedEnumArtisanLevelNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArtisanLevel | EnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ArtisanLevel[] | ListEnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ArtisanLevel[] | ListEnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumArtisanLevelNullableFilter<$PrismaModel> | $Enums.ArtisanLevel | null
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumArtisanVerificationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArtisanVerificationStatus | EnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ArtisanVerificationStatus[] | ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ArtisanVerificationStatus[] | ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumArtisanVerificationStatusFilter<$PrismaModel> | $Enums.ArtisanVerificationStatus
+  }
+
   export type NestedBoolFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolFilter<$PrismaModel> | boolean
   }
 
-  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
-    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedBoolFilter<$PrismaModel>
-    _max?: NestedBoolFilter<$PrismaModel>
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
@@ -23970,7 +30379,17 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+  export type NestedEnumArtisanLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArtisanLevel | EnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    in?: $Enums.ArtisanLevel[] | ListEnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.ArtisanLevel[] | ListEnumArtisanLevelFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumArtisanLevelNullableWithAggregatesFilter<$PrismaModel> | $Enums.ArtisanLevel | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumArtisanLevelNullableFilter<$PrismaModel>
+    _max?: NestedEnumArtisanLevelNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
     notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -23978,7 +30397,30 @@ export namespace Prisma {
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumArtisanVerificationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ArtisanVerificationStatus | EnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ArtisanVerificationStatus[] | ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ArtisanVerificationStatus[] | ListEnumArtisanVerificationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumArtisanVerificationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ArtisanVerificationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumArtisanVerificationStatusFilter<$PrismaModel>
+    _max?: NestedEnumArtisanVerificationStatusFilter<$PrismaModel>
+  }
+
+  export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel>
+    not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBoolFilter<$PrismaModel>
+    _max?: NestedBoolFilter<$PrismaModel>
   }
 
   export type NestedEnumAccessibilityLevelNullableFilter<$PrismaModel = never> = {
@@ -24026,22 +30468,6 @@ export namespace Prisma {
     in?: $Enums.ProjectVisibility[] | ListEnumProjectVisibilityFieldRefInput<$PrismaModel>
     notIn?: $Enums.ProjectVisibility[] | ListEnumProjectVisibilityFieldRefInput<$PrismaModel>
     not?: NestedEnumProjectVisibilityFilter<$PrismaModel> | $Enums.ProjectVisibility
-  }
-
-  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedFloatNullableFilter<$PrismaModel>
-    _min?: NestedFloatNullableFilter<$PrismaModel>
-    _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumAccessibilityLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -24149,22 +30575,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type AccountCreateWithoutUserInput = {
@@ -24447,6 +30857,105 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ArtisanProfileCreateWithoutUserInput = {
+    id?: string
+    companyName?: string | null
+    siret?: string | null
+    yearsOfExperience?: number | null
+    projectsCompleted?: number
+    preferredRadius?: number | null
+    level?: $Enums.ArtisanLevel | null
+    averageRating?: number | null
+    verificationStatus?: $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    skills?: ArtisanSkillCreateNestedManyWithoutArtisanProfileInput
+  }
+
+  export type ArtisanProfileUncheckedCreateWithoutUserInput = {
+    id?: string
+    companyName?: string | null
+    siret?: string | null
+    yearsOfExperience?: number | null
+    projectsCompleted?: number
+    preferredRadius?: number | null
+    level?: $Enums.ArtisanLevel | null
+    averageRating?: number | null
+    verificationStatus?: $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    skills?: ArtisanSkillUncheckedCreateNestedManyWithoutArtisanProfileInput
+  }
+
+  export type ArtisanProfileCreateOrConnectWithoutUserInput = {
+    where: ArtisanProfileWhereUniqueInput
+    create: XOR<ArtisanProfileCreateWithoutUserInput, ArtisanProfileUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArtisanSpecialtyCreateWithoutUserInput = {
+    id?: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+    service: ServiceCreateNestedOneWithoutArtisanSpecialtiesInput
+  }
+
+  export type ArtisanSpecialtyUncheckedCreateWithoutUserInput = {
+    id?: string
+    serviceId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSpecialtyCreateOrConnectWithoutUserInput = {
+    where: ArtisanSpecialtyWhereUniqueInput
+    create: XOR<ArtisanSpecialtyCreateWithoutUserInput, ArtisanSpecialtyUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArtisanSpecialtyCreateManyUserInputEnvelope = {
+    data: ArtisanSpecialtyCreateManyUserInput | ArtisanSpecialtyCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ArtisanDocumentCreateWithoutUserInput = {
+    id?: string
+    type: string
+    title: string
+    fileUrl: string
+    fileType: string
+    verified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ArtisanDocumentUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: string
+    title: string
+    fileUrl: string
+    fileType: string
+    verified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ArtisanDocumentCreateOrConnectWithoutUserInput = {
+    where: ArtisanDocumentWhereUniqueInput
+    create: XOR<ArtisanDocumentCreateWithoutUserInput, ArtisanDocumentUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArtisanDocumentCreateManyUserInputEnvelope = {
+    data: ArtisanDocumentCreateManyUserInput | ArtisanDocumentCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
@@ -24665,6 +31174,688 @@ export namespace Prisma {
     respondedAt?: DateTimeNullableFilter<"ProjectInvitation"> | Date | string | null
   }
 
+  export type ArtisanProfileUpsertWithoutUserInput = {
+    update: XOR<ArtisanProfileUpdateWithoutUserInput, ArtisanProfileUncheckedUpdateWithoutUserInput>
+    create: XOR<ArtisanProfileCreateWithoutUserInput, ArtisanProfileUncheckedCreateWithoutUserInput>
+    where?: ArtisanProfileWhereInput
+  }
+
+  export type ArtisanProfileUpdateToOneWithWhereWithoutUserInput = {
+    where?: ArtisanProfileWhereInput
+    data: XOR<ArtisanProfileUpdateWithoutUserInput, ArtisanProfileUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ArtisanProfileUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    siret?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsOfExperience?: NullableIntFieldUpdateOperationsInput | number | null
+    projectsCompleted?: IntFieldUpdateOperationsInput | number
+    preferredRadius?: NullableIntFieldUpdateOperationsInput | number | null
+    level?: NullableEnumArtisanLevelFieldUpdateOperationsInput | $Enums.ArtisanLevel | null
+    averageRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFieldUpdateOperationsInput | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    availableForWork?: BoolFieldUpdateOperationsInput | boolean
+    assessmentCompleted?: BoolFieldUpdateOperationsInput | boolean
+    assessmentScore?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    skills?: ArtisanSkillUpdateManyWithoutArtisanProfileNestedInput
+  }
+
+  export type ArtisanProfileUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    siret?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsOfExperience?: NullableIntFieldUpdateOperationsInput | number | null
+    projectsCompleted?: IntFieldUpdateOperationsInput | number
+    preferredRadius?: NullableIntFieldUpdateOperationsInput | number | null
+    level?: NullableEnumArtisanLevelFieldUpdateOperationsInput | $Enums.ArtisanLevel | null
+    averageRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFieldUpdateOperationsInput | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    availableForWork?: BoolFieldUpdateOperationsInput | boolean
+    assessmentCompleted?: BoolFieldUpdateOperationsInput | boolean
+    assessmentScore?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    skills?: ArtisanSkillUncheckedUpdateManyWithoutArtisanProfileNestedInput
+  }
+
+  export type ArtisanSpecialtyUpsertWithWhereUniqueWithoutUserInput = {
+    where: ArtisanSpecialtyWhereUniqueInput
+    update: XOR<ArtisanSpecialtyUpdateWithoutUserInput, ArtisanSpecialtyUncheckedUpdateWithoutUserInput>
+    create: XOR<ArtisanSpecialtyCreateWithoutUserInput, ArtisanSpecialtyUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArtisanSpecialtyUpdateWithWhereUniqueWithoutUserInput = {
+    where: ArtisanSpecialtyWhereUniqueInput
+    data: XOR<ArtisanSpecialtyUpdateWithoutUserInput, ArtisanSpecialtyUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ArtisanSpecialtyUpdateManyWithWhereWithoutUserInput = {
+    where: ArtisanSpecialtyScalarWhereInput
+    data: XOR<ArtisanSpecialtyUpdateManyMutationInput, ArtisanSpecialtyUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ArtisanSpecialtyScalarWhereInput = {
+    AND?: ArtisanSpecialtyScalarWhereInput | ArtisanSpecialtyScalarWhereInput[]
+    OR?: ArtisanSpecialtyScalarWhereInput[]
+    NOT?: ArtisanSpecialtyScalarWhereInput | ArtisanSpecialtyScalarWhereInput[]
+    id?: StringFilter<"ArtisanSpecialty"> | string
+    userId?: StringFilter<"ArtisanSpecialty"> | string
+    serviceId?: StringFilter<"ArtisanSpecialty"> | string
+    isPrimary?: BoolFilter<"ArtisanSpecialty"> | boolean
+    createdAt?: DateTimeFilter<"ArtisanSpecialty"> | Date | string
+  }
+
+  export type ArtisanDocumentUpsertWithWhereUniqueWithoutUserInput = {
+    where: ArtisanDocumentWhereUniqueInput
+    update: XOR<ArtisanDocumentUpdateWithoutUserInput, ArtisanDocumentUncheckedUpdateWithoutUserInput>
+    create: XOR<ArtisanDocumentCreateWithoutUserInput, ArtisanDocumentUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArtisanDocumentUpdateWithWhereUniqueWithoutUserInput = {
+    where: ArtisanDocumentWhereUniqueInput
+    data: XOR<ArtisanDocumentUpdateWithoutUserInput, ArtisanDocumentUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ArtisanDocumentUpdateManyWithWhereWithoutUserInput = {
+    where: ArtisanDocumentScalarWhereInput
+    data: XOR<ArtisanDocumentUpdateManyMutationInput, ArtisanDocumentUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ArtisanDocumentScalarWhereInput = {
+    AND?: ArtisanDocumentScalarWhereInput | ArtisanDocumentScalarWhereInput[]
+    OR?: ArtisanDocumentScalarWhereInput[]
+    NOT?: ArtisanDocumentScalarWhereInput | ArtisanDocumentScalarWhereInput[]
+    id?: StringFilter<"ArtisanDocument"> | string
+    userId?: StringFilter<"ArtisanDocument"> | string
+    type?: StringFilter<"ArtisanDocument"> | string
+    title?: StringFilter<"ArtisanDocument"> | string
+    fileUrl?: StringFilter<"ArtisanDocument"> | string
+    fileType?: StringFilter<"ArtisanDocument"> | string
+    verified?: BoolFilter<"ArtisanDocument"> | boolean
+    createdAt?: DateTimeFilter<"ArtisanDocument"> | Date | string
+    updatedAt?: DateTimeFilter<"ArtisanDocument"> | Date | string
+  }
+
+  export type UserCreateWithoutArtisanProfileInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    quotes?: QuoteCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutArtisanProfileInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    quotes?: QuoteUncheckedCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutArtisanProfileInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutArtisanProfileInput, UserUncheckedCreateWithoutArtisanProfileInput>
+  }
+
+  export type ArtisanSkillCreateWithoutArtisanProfileInput = {
+    id?: string
+    name: string
+    selfRating: number
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSkillUncheckedCreateWithoutArtisanProfileInput = {
+    id?: string
+    name: string
+    selfRating: number
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSkillCreateOrConnectWithoutArtisanProfileInput = {
+    where: ArtisanSkillWhereUniqueInput
+    create: XOR<ArtisanSkillCreateWithoutArtisanProfileInput, ArtisanSkillUncheckedCreateWithoutArtisanProfileInput>
+  }
+
+  export type ArtisanSkillCreateManyArtisanProfileInputEnvelope = {
+    data: ArtisanSkillCreateManyArtisanProfileInput | ArtisanSkillCreateManyArtisanProfileInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutArtisanProfileInput = {
+    update: XOR<UserUpdateWithoutArtisanProfileInput, UserUncheckedUpdateWithoutArtisanProfileInput>
+    create: XOR<UserCreateWithoutArtisanProfileInput, UserUncheckedCreateWithoutArtisanProfileInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutArtisanProfileInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutArtisanProfileInput, UserUncheckedUpdateWithoutArtisanProfileInput>
+  }
+
+  export type UserUpdateWithoutArtisanProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutArtisanProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUncheckedUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ArtisanSkillUpsertWithWhereUniqueWithoutArtisanProfileInput = {
+    where: ArtisanSkillWhereUniqueInput
+    update: XOR<ArtisanSkillUpdateWithoutArtisanProfileInput, ArtisanSkillUncheckedUpdateWithoutArtisanProfileInput>
+    create: XOR<ArtisanSkillCreateWithoutArtisanProfileInput, ArtisanSkillUncheckedCreateWithoutArtisanProfileInput>
+  }
+
+  export type ArtisanSkillUpdateWithWhereUniqueWithoutArtisanProfileInput = {
+    where: ArtisanSkillWhereUniqueInput
+    data: XOR<ArtisanSkillUpdateWithoutArtisanProfileInput, ArtisanSkillUncheckedUpdateWithoutArtisanProfileInput>
+  }
+
+  export type ArtisanSkillUpdateManyWithWhereWithoutArtisanProfileInput = {
+    where: ArtisanSkillScalarWhereInput
+    data: XOR<ArtisanSkillUpdateManyMutationInput, ArtisanSkillUncheckedUpdateManyWithoutArtisanProfileInput>
+  }
+
+  export type ArtisanSkillScalarWhereInput = {
+    AND?: ArtisanSkillScalarWhereInput | ArtisanSkillScalarWhereInput[]
+    OR?: ArtisanSkillScalarWhereInput[]
+    NOT?: ArtisanSkillScalarWhereInput | ArtisanSkillScalarWhereInput[]
+    id?: StringFilter<"ArtisanSkill"> | string
+    artisanProfileId?: StringFilter<"ArtisanSkill"> | string
+    name?: StringFilter<"ArtisanSkill"> | string
+    selfRating?: IntFilter<"ArtisanSkill"> | number
+    createdAt?: DateTimeFilter<"ArtisanSkill"> | Date | string
+  }
+
+  export type UserCreateWithoutArtisanSpecialtiesInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    quotes?: QuoteCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutArtisanSpecialtiesInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    quotes?: QuoteUncheckedCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutArtisanSpecialtiesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutArtisanSpecialtiesInput, UserUncheckedCreateWithoutArtisanSpecialtiesInput>
+  }
+
+  export type ServiceCreateWithoutArtisanSpecialtiesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    isActive?: boolean
+    order?: number
+    icon?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    category: CategoryCreateNestedOneWithoutServicesInput
+    projects?: ProjectCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutArtisanSpecialtiesInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    isActive?: boolean
+    order?: number
+    icon?: string | null
+    categoryId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projects?: ProjectUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutArtisanSpecialtiesInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutArtisanSpecialtiesInput, ServiceUncheckedCreateWithoutArtisanSpecialtiesInput>
+  }
+
+  export type UserUpsertWithoutArtisanSpecialtiesInput = {
+    update: XOR<UserUpdateWithoutArtisanSpecialtiesInput, UserUncheckedUpdateWithoutArtisanSpecialtiesInput>
+    create: XOR<UserCreateWithoutArtisanSpecialtiesInput, UserUncheckedCreateWithoutArtisanSpecialtiesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutArtisanSpecialtiesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutArtisanSpecialtiesInput, UserUncheckedUpdateWithoutArtisanSpecialtiesInput>
+  }
+
+  export type UserUpdateWithoutArtisanSpecialtiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutArtisanSpecialtiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUncheckedUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ServiceUpsertWithoutArtisanSpecialtiesInput = {
+    update: XOR<ServiceUpdateWithoutArtisanSpecialtiesInput, ServiceUncheckedUpdateWithoutArtisanSpecialtiesInput>
+    create: XOR<ServiceCreateWithoutArtisanSpecialtiesInput, ServiceUncheckedCreateWithoutArtisanSpecialtiesInput>
+    where?: ServiceWhereInput
+  }
+
+  export type ServiceUpdateToOneWithWhereWithoutArtisanSpecialtiesInput = {
+    where?: ServiceWhereInput
+    data: XOR<ServiceUpdateWithoutArtisanSpecialtiesInput, ServiceUncheckedUpdateWithoutArtisanSpecialtiesInput>
+  }
+
+  export type ServiceUpdateWithoutArtisanSpecialtiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: CategoryUpdateOneRequiredWithoutServicesNestedInput
+    projects?: ProjectUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutArtisanSpecialtiesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: ProjectUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type UserCreateWithoutArtisanDocumentsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    quotes?: QuoteCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutArtisanDocumentsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    quotes?: QuoteUncheckedCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutArtisanDocumentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutArtisanDocumentsInput, UserUncheckedCreateWithoutArtisanDocumentsInput>
+  }
+
+  export type UserUpsertWithoutArtisanDocumentsInput = {
+    update: XOR<UserUpdateWithoutArtisanDocumentsInput, UserUncheckedUpdateWithoutArtisanDocumentsInput>
+    create: XOR<UserCreateWithoutArtisanDocumentsInput, UserUncheckedCreateWithoutArtisanDocumentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutArtisanDocumentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutArtisanDocumentsInput, UserUncheckedUpdateWithoutArtisanDocumentsInput>
+  }
+
+  export type UserUpdateWithoutArtisanDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutArtisanDocumentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUncheckedUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ArtisanProfileCreateWithoutSkillsInput = {
+    id?: string
+    companyName?: string | null
+    siret?: string | null
+    yearsOfExperience?: number | null
+    projectsCompleted?: number
+    preferredRadius?: number | null
+    level?: $Enums.ArtisanLevel | null
+    averageRating?: number | null
+    verificationStatus?: $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutArtisanProfileInput
+  }
+
+  export type ArtisanProfileUncheckedCreateWithoutSkillsInput = {
+    id?: string
+    userId: string
+    companyName?: string | null
+    siret?: string | null
+    yearsOfExperience?: number | null
+    projectsCompleted?: number
+    preferredRadius?: number | null
+    level?: $Enums.ArtisanLevel | null
+    averageRating?: number | null
+    verificationStatus?: $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: boolean
+    availableForWork?: boolean
+    assessmentCompleted?: boolean
+    assessmentScore?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ArtisanProfileCreateOrConnectWithoutSkillsInput = {
+    where: ArtisanProfileWhereUniqueInput
+    create: XOR<ArtisanProfileCreateWithoutSkillsInput, ArtisanProfileUncheckedCreateWithoutSkillsInput>
+  }
+
+  export type ArtisanProfileUpsertWithoutSkillsInput = {
+    update: XOR<ArtisanProfileUpdateWithoutSkillsInput, ArtisanProfileUncheckedUpdateWithoutSkillsInput>
+    create: XOR<ArtisanProfileCreateWithoutSkillsInput, ArtisanProfileUncheckedCreateWithoutSkillsInput>
+    where?: ArtisanProfileWhereInput
+  }
+
+  export type ArtisanProfileUpdateToOneWithWhereWithoutSkillsInput = {
+    where?: ArtisanProfileWhereInput
+    data: XOR<ArtisanProfileUpdateWithoutSkillsInput, ArtisanProfileUncheckedUpdateWithoutSkillsInput>
+  }
+
+  export type ArtisanProfileUpdateWithoutSkillsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    siret?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsOfExperience?: NullableIntFieldUpdateOperationsInput | number | null
+    projectsCompleted?: IntFieldUpdateOperationsInput | number
+    preferredRadius?: NullableIntFieldUpdateOperationsInput | number | null
+    level?: NullableEnumArtisanLevelFieldUpdateOperationsInput | $Enums.ArtisanLevel | null
+    averageRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFieldUpdateOperationsInput | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    availableForWork?: BoolFieldUpdateOperationsInput | boolean
+    assessmentCompleted?: BoolFieldUpdateOperationsInput | boolean
+    assessmentScore?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutArtisanProfileNestedInput
+  }
+
+  export type ArtisanProfileUncheckedUpdateWithoutSkillsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    companyName?: NullableStringFieldUpdateOperationsInput | string | null
+    siret?: NullableStringFieldUpdateOperationsInput | string | null
+    yearsOfExperience?: NullableIntFieldUpdateOperationsInput | number | null
+    projectsCompleted?: IntFieldUpdateOperationsInput | number
+    preferredRadius?: NullableIntFieldUpdateOperationsInput | number | null
+    level?: NullableEnumArtisanLevelFieldUpdateOperationsInput | $Enums.ArtisanLevel | null
+    averageRating?: NullableFloatFieldUpdateOperationsInput | number | null
+    verificationStatus?: EnumArtisanVerificationStatusFieldUpdateOperationsInput | $Enums.ArtisanVerificationStatus
+    onboardingCompleted?: BoolFieldUpdateOperationsInput | boolean
+    availableForWork?: BoolFieldUpdateOperationsInput | boolean
+    assessmentCompleted?: BoolFieldUpdateOperationsInput | boolean
+    assessmentScore?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ServiceCreateWithoutCategoryInput = {
     id?: string
     name: string
@@ -24676,6 +31867,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectCreateNestedManyWithoutServiceInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutCategoryInput = {
@@ -24689,6 +31881,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectUncheckedCreateNestedManyWithoutServiceInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutCategoryInput = {
@@ -24928,6 +32121,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ArtisanSpecialtyCreateWithoutServiceInput = {
+    id?: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutArtisanSpecialtiesInput
+  }
+
+  export type ArtisanSpecialtyUncheckedCreateWithoutServiceInput = {
+    id?: string
+    userId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSpecialtyCreateOrConnectWithoutServiceInput = {
+    where: ArtisanSpecialtyWhereUniqueInput
+    create: XOR<ArtisanSpecialtyCreateWithoutServiceInput, ArtisanSpecialtyUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ArtisanSpecialtyCreateManyServiceInputEnvelope = {
+    data: ArtisanSpecialtyCreateManyServiceInput | ArtisanSpecialtyCreateManyServiceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CategoryUpsertWithoutServicesInput = {
     update: XOR<CategoryUpdateWithoutServicesInput, CategoryUncheckedUpdateWithoutServicesInput>
     create: XOR<CategoryCreateWithoutServicesInput, CategoryUncheckedCreateWithoutServicesInput>
@@ -24981,6 +32198,22 @@ export namespace Prisma {
     data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyWithoutServiceInput>
   }
 
+  export type ArtisanSpecialtyUpsertWithWhereUniqueWithoutServiceInput = {
+    where: ArtisanSpecialtyWhereUniqueInput
+    update: XOR<ArtisanSpecialtyUpdateWithoutServiceInput, ArtisanSpecialtyUncheckedUpdateWithoutServiceInput>
+    create: XOR<ArtisanSpecialtyCreateWithoutServiceInput, ArtisanSpecialtyUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ArtisanSpecialtyUpdateWithWhereUniqueWithoutServiceInput = {
+    where: ArtisanSpecialtyWhereUniqueInput
+    data: XOR<ArtisanSpecialtyUpdateWithoutServiceInput, ArtisanSpecialtyUncheckedUpdateWithoutServiceInput>
+  }
+
+  export type ArtisanSpecialtyUpdateManyWithWhereWithoutServiceInput = {
+    where: ArtisanSpecialtyScalarWhereInput
+    data: XOR<ArtisanSpecialtyUpdateManyMutationInput, ArtisanSpecialtyUncheckedUpdateManyWithoutServiceInput>
+  }
+
   export type UserCreateWithoutProjectsInput = {
     id?: string
     name?: string | null
@@ -25002,6 +32235,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
@@ -25025,6 +32261,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -25074,6 +32313,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     category: CategoryCreateNestedOneWithoutServicesInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutProjectsInput = {
@@ -25087,6 +32327,7 @@ export namespace Prisma {
     categoryId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutProjectsInput = {
@@ -25282,6 +32523,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -25305,6 +32549,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CategoryUpsertWithoutProjectsInput = {
@@ -25366,6 +32613,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: CategoryUpdateOneRequiredWithoutServicesNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutProjectsInput = {
@@ -25379,6 +32627,7 @@ export namespace Prisma {
     categoryId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ProjectStepUpsertWithWhereUniqueWithoutProjectInput = {
@@ -26022,6 +33271,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutQuotesInput = {
@@ -26045,6 +33297,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutQuotesInput = {
@@ -26073,6 +33328,9 @@ export namespace Prisma {
     quotes?: QuoteCreateNestedManyWithoutProviderInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReceivedQuotesInput = {
@@ -26096,6 +33354,9 @@ export namespace Prisma {
     quotes?: QuoteUncheckedCreateNestedManyWithoutProviderInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReceivedQuotesInput = {
@@ -26236,6 +33497,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuotesInput = {
@@ -26259,6 +33523,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutReceivedQuotesInput = {
@@ -26293,6 +33560,9 @@ export namespace Prisma {
     quotes?: QuoteUpdateManyWithoutProviderNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedQuotesInput = {
@@ -26316,6 +33586,9 @@ export namespace Prisma {
     quotes?: QuoteUncheckedUpdateManyWithoutProviderNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type QuoteItemUpsertWithWhereUniqueWithoutQuoteInput = {
@@ -26520,6 +33793,9 @@ export namespace Prisma {
     quotes?: QuoteCreateNestedManyWithoutProviderInput
     receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectInvitationsInput = {
@@ -26543,6 +33819,9 @@ export namespace Prisma {
     quotes?: QuoteUncheckedCreateNestedManyWithoutProviderInput
     receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectInvitationsInput = {
@@ -26657,6 +33936,9 @@ export namespace Prisma {
     quotes?: QuoteUpdateManyWithoutProviderNestedInput
     receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectInvitationsInput = {
@@ -26680,6 +33962,9 @@ export namespace Prisma {
     quotes?: QuoteUncheckedUpdateManyWithoutProviderNestedInput
     receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -26703,6 +33988,9 @@ export namespace Prisma {
     quotes?: QuoteCreateNestedManyWithoutProviderInput
     receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
     projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -26726,6 +34014,9 @@ export namespace Prisma {
     quotes?: QuoteUncheckedCreateNestedManyWithoutProviderInput
     receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
     projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -26765,6 +34056,9 @@ export namespace Prisma {
     quotes?: QuoteUpdateManyWithoutProviderNestedInput
     receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
     projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -26788,6 +34082,9 @@ export namespace Prisma {
     quotes?: QuoteUncheckedUpdateManyWithoutProviderNestedInput
     receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
     projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -26811,6 +34108,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -26834,6 +34134,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -26873,6 +34176,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -26896,6 +34202,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -26919,6 +34228,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -26942,6 +34254,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -26981,6 +34296,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -27004,6 +34322,9 @@ export namespace Prisma {
     receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountCreateManyUserInput = {
@@ -27102,6 +34423,24 @@ export namespace Prisma {
     message?: string | null
     createdAt?: Date | string
     respondedAt?: Date | string | null
+  }
+
+  export type ArtisanSpecialtyCreateManyUserInput = {
+    id?: string
+    serviceId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
+  export type ArtisanDocumentCreateManyUserInput = {
+    id?: string
+    type: string
+    title: string
+    fileUrl: string
+    fileType: string
+    verified?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -27412,6 +34751,88 @@ export namespace Prisma {
     respondedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
+  export type ArtisanSpecialtyUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    service?: ServiceUpdateOneRequiredWithoutArtisanSpecialtiesNestedInput
+  }
+
+  export type ArtisanSpecialtyUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSpecialtyUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanDocumentUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanDocumentUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanDocumentUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    fileType?: StringFieldUpdateOperationsInput | string
+    verified?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSkillCreateManyArtisanProfileInput = {
+    id?: string
+    name: string
+    selfRating: number
+    createdAt?: Date | string
+  }
+
+  export type ArtisanSkillUpdateWithoutArtisanProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    selfRating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSkillUncheckedUpdateWithoutArtisanProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    selfRating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSkillUncheckedUpdateManyWithoutArtisanProfileInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    selfRating?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ServiceCreateManyCategoryInput = {
     id?: string
     name: string
@@ -27462,6 +34883,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUpdateManyWithoutServiceNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutCategoryInput = {
@@ -27475,6 +34897,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUncheckedUpdateManyWithoutServiceNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateManyWithoutCategoryInput = {
@@ -27607,6 +35030,13 @@ export namespace Prisma {
     completedAt?: Date | string | null
   }
 
+  export type ArtisanSpecialtyCreateManyServiceInput = {
+    id?: string
+    userId: string
+    isPrimary?: boolean
+    createdAt?: Date | string
+  }
+
   export type ProjectUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
@@ -27696,6 +35126,27 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ArtisanSpecialtyUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutArtisanSpecialtiesNestedInput
+  }
+
+  export type ArtisanSpecialtyUncheckedUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtisanSpecialtyUncheckedUpdateManyWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    isPrimary?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectStepCreateManyProjectInput = {

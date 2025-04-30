@@ -96,7 +96,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       >
         <div className="flex h-16 items-center justify-between border-b px-6">
           <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-            <span>ArtiConnect</span>
+            <span>Reenove</span>
           </Link>
           <Button 
             variant="ghost" 

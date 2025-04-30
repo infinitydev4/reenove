@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, ArrowRight, Save } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
-import { UploadForm } from "@/app/components/project/upload-form"
+import { UploadForm } from "@/components/project/upload-form"
 
 // Services fictifs (normalement récupérés depuis la base de données en fonction de la catégorie)
 const services = {

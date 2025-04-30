@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { v4 as uuidv4 } from "uuid"
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 
-// Configuration Cloudinary
+// Configuration Cloudinary (en fallback)
 const cloudinary = require('cloudinary').v2
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,16 +12,14 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-// Configuration AWS S3
-const s3Client = process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
-  ? new S3Client({
-      region: process.env.AWS_REGION || "eu-west-3",
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-      }
-    })
-  : null
+// Configuration AWS S3 (prioritaire)
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION || "eu-west-3",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ""
+  }
+})
 
 export async function POST(request: NextRequest) {
   try {
@@ -58,12 +56,29 @@ export async function POST(request: NextRequest) {
     // Générer un nom de fichier unique
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    const fileName = `${uuidv4()}-${file.name.replace(/\s+/g, '-').toLowerCase()}`
+    const fileExtension = file.name.split('.').pop() || ""
+    const uniqueFileName = `${uuidv4()}.${fileExtension}`
+    const s3Key = `uploads/${uniqueFileName}`
 
     let imageUrl = ""
 
-    // Essayer d'utiliser Cloudinary d'abord
-    if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+    // Essayer d'utiliser AWS S3 d'abord
+    try {
+      await s3Client.send(new PutObjectCommand({
+        Bucket: process.env.AWS_S3_BUCKET_NAME || "",
+        Key: s3Key,
+        Body: buffer,
+        ContentType: file.type
+      }))
+      
+      imageUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || "eu-west-3"}.amazonaws.com/${s3Key}`
+    } catch (s3Error) {
+      console.error("Erreur AWS S3:", s3Error)
+      // Si S3 échoue, utiliser Cloudinary comme fallback
+    }
+
+    // Si l'URL d'image n'est pas définie, essayer Cloudinary
+    if (!imageUrl && process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
       try {
         // Convertir le buffer en base64 pour Cloudinary
         const base64Data = buffer.toString("base64")
@@ -71,7 +86,7 @@ export async function POST(request: NextRequest) {
           cloudinary.uploader.upload(
             `data:${file.type};base64,${base64Data}`,
             { 
-              public_id: fileName.split(".")[0],
+              public_id: uniqueFileName.split(".")[0],
               folder: "renoveo",
               resource_type: "image"
             },
@@ -82,31 +97,10 @@ export async function POST(request: NextRequest) {
           )
         })
         
-        // @ts-ignore
-        imageUrl = result.secure_url
+        // Corriger cette ligne avec le type approprié
+        imageUrl = (result as any).secure_url
       } catch (cloudinaryError) {
         console.error("Erreur Cloudinary:", cloudinaryError)
-        // Si Cloudinary échoue, on essaie S3 comme solution de secours
-      }
-    }
-
-    // Si l'URL d'image n'est pas définie, essayer AWS S3
-    if (!imageUrl && s3Client) {
-      try {
-        const params = {
-          Bucket: process.env.AWS_S3_BUCKET_NAME,
-          Key: `uploads/${fileName}`,
-          Body: buffer,
-          ContentType: file.type
-        }
-
-        await s3Client.send(new PutObjectCommand(params))
-        imageUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || "eu-west-3"}.amazonaws.com/uploads/${fileName}`
-      } catch (s3Error) {
-        console.error("Erreur AWS S3:", s3Error)
-        return NextResponse.json({ 
-          error: "Échec du téléchargement vers le service de stockage" 
-        }, { status: 500 })
       }
     }
 

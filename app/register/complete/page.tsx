@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/components/ui/use-toast"
+import { signIn } from "next-auth/react"
 
 export default function CompleteRegistrationPage() {
   const router = useRouter()
@@ -92,7 +93,35 @@ export default function CompleteRegistrationPage() {
       }
 
       // Inscription réussie - redirection vers la page de succès
-      router.push("/auth/success")
+      if (role === "artisan") {
+        // Connecter l'utilisateur
+        try {
+          // Utiliser signIn pour connecter l'utilisateur directement
+          const result = await signIn("credentials", {
+            redirect: false,
+            email: formData.email,
+            password: formData.password,
+          });
+          
+          if (result?.ok) {
+            // Rediriger vers l'onboarding artisan
+            router.push("/onboarding/artisan");
+          } else {
+            // En cas d'échec de connexion, rediriger vers la page de succès
+            toast({
+              title: "Inscription réussie",
+              description: "Votre compte a été créé. Vous pouvez maintenant vous connecter.",
+            });
+            router.push("/auth/success");
+          }
+        } catch (error) {
+          console.error("Erreur lors de la connexion automatique:", error);
+          router.push("/auth/success");
+        }
+      } else {
+        // Pour les autres rôles, comportement inchangé
+        router.push("/auth/success");
+      }
       
     } catch (error: any) {
       toast({
@@ -245,7 +274,7 @@ export default function CompleteRegistrationPage() {
               
               {(role === "artisan" || role === "agent") && (
                 <div className="space-y-2">
-                  <Label htmlFor="company">Nom de l'entreprise</Label>
+                  <Label htmlFor="company">Nom de l&apos;entreprise</Label>
                   <div className="relative">
                     <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input 
@@ -289,7 +318,7 @@ export default function CompleteRegistrationPage() {
                   htmlFor="acceptTerms"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  J'accepte les <Link href="/terms" className="text-primary hover:underline">conditions d'utilisation</Link> et la <Link href="/privacy" className="text-primary hover:underline">politique de confidentialité</Link>
+                  J&apos;accepte les <Link href="/terms" className="text-primary hover:underline">conditions d&apos;utilisation</Link> et la <Link href="/privacy" className="text-primary hover:underline">politique de confidentialité</Link>
                 </label>
               </div>
               
