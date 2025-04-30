@@ -92,7 +92,7 @@ export default function Home() {
                 rating={4.9}
                 reviews={124}
                 image="/images/craftsman.png"
-                location="Lyon"
+                location="Marseille"
               />
               <ArtisanCard
                 name="Marie Laurent"
@@ -100,7 +100,7 @@ export default function Home() {
                 rating={4.8}
                 reviews={98}
                 image="/images/electrician.png"
-                location="Paris"
+                location="Marseille"
               />
               <ArtisanCard
                 name="Jean Moreau"
