@@ -6,9 +6,10 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, ArrowRight, Save } from "lucide-react"
+import { ArrowLeft, ArrowRight, Upload } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
 import { UploadForm } from "@/components/project/upload-form"
+import { toast } from "@/components/ui/toast-handler"
 
 // Services fictifs (normalement récupérés depuis la base de données en fonction de la catégorie)
 const services = {
@@ -39,21 +40,27 @@ interface ProjectDetails {
   service: string
   description: string
   propertyType: string
+  photos: string[]
 }
 
 export default function DetailsPage() {
   const router = useRouter()
   const [projectTitle, setProjectTitle] = useState("")
   const [projectDescription, setProjectDescription] = useState("")
+  const [projectPhotos, setProjectPhotos] = useState<string[]>([])
   const [isFormValid, setIsFormValid] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
     // Récupérer les données sauvegardées si elles existent
     const savedData = localStorage.getItem("projectDetails")
     if (savedData) {
-      const { title, description } = JSON.parse(savedData)
+      const { title, description, photos } = JSON.parse(savedData)
       setProjectTitle(title || "")
       setProjectDescription(description || "")
+      if (photos && Array.isArray(photos)) {
+        setProjectPhotos(photos)
+      }
     }
   }, [])
 
@@ -62,42 +69,59 @@ export default function DetailsPage() {
     setIsFormValid(projectTitle.trim().length > 0 && projectDescription.trim().length >= 10)
   }, [projectTitle, projectDescription])
 
+  const handleUploadComplete = (urls: string[]) => {
+    setProjectPhotos(urls)
+  }
+
   const saveAndContinue = () => {
     if (!isFormValid) return
     
-    // Récupérer les détails existants pour ne pas perdre les données de catégorie et service
-    const existingData = localStorage.getItem("projectDetails")
-    let details = {}
+    setIsSubmitting(true)
     
-    if (existingData) {
-      try {
-        details = JSON.parse(existingData)
-        console.log("Données existantes récupérées:", details)
-      } catch (error) {
-        console.error("Erreur lors de la récupération des données existantes:", error)
+    try {
+      // Récupérer les détails existants pour ne pas perdre les données de catégorie et service
+      const existingData = localStorage.getItem("projectDetails")
+      let details = {}
+      
+      if (existingData) {
+        try {
+          details = JSON.parse(existingData)
+          console.log("Données existantes récupérées:", details)
+        } catch (error) {
+          console.error("Erreur lors de la récupération des données existantes:", error)
+        }
       }
+      
+      // Mettre à jour avec les nouvelles informations
+      details = {
+        ...details, // Conserver les données existantes (notamment catégorie et service)
+        title: projectTitle,
+        description: projectDescription,
+        photos: projectPhotos, // Ajouter les URLs des photos téléchargées
+      }
+      
+      console.log("Données à sauvegarder:", details)
+      
+      // Sauvegarder les données
+      localStorage.setItem("projectDetails", JSON.stringify(details))
+      
+      toast({
+        title: "Détails sauvegardés",
+        description: "Les détails de votre projet ont été enregistrés avec succès."
+      })
+      
+      // Naviguer vers l'étape suivante
+      router.push("/create-project/budget")
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde des détails:", error)
+      toast({
+        title: "Erreur",
+        description: "Une erreur s'est produite lors de la sauvegarde des détails.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsSubmitting(false)
     }
-    
-    // Récupérer les informations des photos
-    // Note: Nous supposons ici que le composant UploadForm stocke ses données dans le DOM
-    // En pratique, il faudrait adapter le composant UploadForm pour qu'il expose ses données
-    // via un état React ou utiliser un état dans ce composant pour gérer les photos
-    
-    // Mettre à jour avec les nouvelles informations
-    details = {
-      ...details, // Conserver les données existantes (notamment catégorie et service)
-      title: projectTitle,
-      description: projectDescription,
-      // Les photos seraient ajoutées ici dans une implémentation complète
-    }
-    
-    console.log("Données à sauvegarder:", details)
-    
-    // Sauvegarder les données
-    localStorage.setItem("projectDetails", JSON.stringify(details))
-    
-    // Naviguer vers l'étape suivante
-    router.push("/create-project/budget")
   }
 
   const containerVariants = {
@@ -142,7 +166,10 @@ export default function DetailsPage() {
           <p className="text-sm text-muted-foreground mb-4">
             Ajoutez jusqu'à 6 photos pour mieux illustrer votre projet et aider les artisans à comprendre vos besoins.
           </p>
-          <UploadForm maxFiles={6} />
+          <UploadForm 
+            maxFiles={6} 
+            onUploadComplete={handleUploadComplete}
+          />
           <p className="text-sm text-muted-foreground mt-2">
             Les photos doivent être au format JPG, JPEG ou PNG et ne pas dépasser 5Mo chacune.
           </p>
@@ -194,11 +221,19 @@ export default function DetailsPage() {
           
           <Button
             onClick={saveAndContinue}
-            disabled={!isFormValid}
+            disabled={!isFormValid || isSubmitting}
             className="flex items-center gap-2"
           >
-            Suivant
-            <ArrowRight className="h-4 w-4" />
+            {isSubmitting ? (
+              <>
+                Sauvegarde en cours...
+              </>
+            ) : (
+              <>
+                Suivant
+                <ArrowRight className="h-4 w-4" />
+              </>
+            )}
           </Button>
         </motion.div>
       </motion.div>

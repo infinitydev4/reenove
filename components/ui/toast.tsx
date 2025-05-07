@@ -1,9 +1,10 @@
 "use client"
 
-import React, { createContext, useContext, useState } from "react"
+import React, { createContext, useContext, useState, useEffect } from "react"
 import { X } from "lucide-react"
 import { cva, VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
+import { registerToast } from "./toast-handler"
 
 const ToastVariants = cva(
   "pointer-events-auto relative w-full max-w-md rounded-lg border p-4 shadow-lg transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full",
@@ -78,6 +79,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setVisible(false)
     setTimeout(() => setToastState(null), 300)
   }
+
+  // Enregistrer la fonction globale toast
+  useEffect(() => {
+    registerToast(showToast)
+  }, [])
 
   return (
     <ToastContext.Provider

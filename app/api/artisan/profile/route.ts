@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { prisma } from "@/lib/prisma"
 import { authOptions } from "@/lib/auth"
+import { updateOnboardingProgress } from "@/lib/onboarding"
 
 // GET - Récupérer le profil de l'artisan
 export async function GET() {
@@ -40,7 +41,15 @@ export async function GET() {
       ...(artisanProfile || {}),
     }
 
-    return NextResponse.json(profileData)
+    // Ajouter des en-têtes pour éviter la mise en cache
+    return NextResponse.json(profileData, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Surrogate-Control': 'no-store'
+      }
+    })
   } catch (error) {
     console.error("Erreur lors de la récupération du profil:", error)
     return NextResponse.json(
@@ -62,42 +71,61 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id
     const data = await request.json()
 
-    // Mise à jour des données utilisateur
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        phone: data.phone,
-        address: data.address,
-        city: data.city,
-        postalCode: data.postalCode,
-      },
-    })
+    console.log("Données reçues pour mise à jour du profil:", data)
 
-    // Création ou mise à jour du profil artisan
-    const artisanProfile = await prisma.artisanProfile.upsert({
-      where: { userId },
-      create: {
-        userId,
-        companyName: data.companyName,
-        siret: data.siret,
-        yearsOfExperience: data.yearsOfExperience,
-        preferredRadius: data.preferredRadius,
-      },
-      update: {
-        companyName: data.companyName,
-        siret: data.siret,
-        yearsOfExperience: data.yearsOfExperience,
-        preferredRadius: data.preferredRadius,
-      },
-    })
+    try {
+      // Mise à jour des données utilisateur
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          phone: data.phone,
+          address: data.address,
+          city: data.city,
+          postalCode: data.postalCode,
+        },
+      })
 
-    return NextResponse.json({
-      message: "Profil mis à jour avec succès",
-      profile: {
-        ...data,
-        id: artisanProfile.id,
-      },
-    })
+      // Création ou mise à jour du profil artisan
+      const artisanProfile = await prisma.artisanProfile.upsert({
+        where: { userId },
+        create: {
+          userId,
+          companyName: data.companyName,
+          siret: data.siret,
+          yearsOfExperience: data.yearsOfExperience,
+          preferredRadius: data.preferredRadius,
+        },
+        update: {
+          companyName: data.companyName,
+          siret: data.siret,
+          yearsOfExperience: data.yearsOfExperience,
+          preferredRadius: data.preferredRadius,
+        },
+      })
+
+      // Mettre à jour la progression de l'onboarding
+      try {
+        await updateOnboardingProgress(userId, 'profile')
+        console.log(`Étape profile complétée pour l'utilisateur ${userId}`)
+      } catch (progressError) {
+        console.error("Erreur lors de la mise à jour de la progression:", progressError)
+        // Ne pas bloquer la réponse en cas d'erreur de progression
+      }
+
+      return NextResponse.json({
+        message: "Profil mis à jour avec succès",
+        profile: {
+          ...data,
+          id: artisanProfile.id,
+        },
+      })
+    } catch (dbError) {
+      console.error("Erreur lors des opérations en base de données:", dbError)
+      return NextResponse.json(
+        { error: "Erreur lors de la mise à jour du profil en base de données" },
+        { status: 500 }
+      )
+    }
   } catch (error) {
     console.error("Erreur lors de la mise à jour du profil:", error)
     return NextResponse.json(

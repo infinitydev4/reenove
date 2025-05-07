@@ -4,15 +4,37 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 
+// Log d'erreur silencieux pour éviter d'encombrer la console
+const logError = (message: string, error?: any) => {
+  // En production, on pourrait utiliser un service de logging externe
+  if (process.env.NODE_ENV === "production") {
+    // Log silencieux en production
+    return
+  }
+  
+  // En développement, on affiche un message court sans la trace complète
+  console.log(`[Auth] ${message}`)
+}
+
 async function getUserByEmail(email: string) {
-  const user = await prisma.user.findUnique({
-    where: { email },
-  })
-  return user
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    })
+    return user
+  } catch (error) {
+    logError("Erreur lors de la recherche de l'utilisateur")
+    throw new Error("Erreur de base de données")
+  }
 }
 
 async function verifyPassword(password: string, hashedPassword: string) {
-  return await bcrypt.compare(password, hashedPassword)
+  try {
+    return await bcrypt.compare(password, hashedPassword)
+  } catch (error) {
+    logError("Erreur lors de la vérification du mot de passe")
+    throw new Error("Erreur de vérification du mot de passe")
+  }
 }
 
 export const authOptions: NextAuthOptions = {
@@ -25,28 +47,42 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Mot de passe", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null
-        }
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            throw new Error("Veuillez fournir un email et un mot de passe")
+          }
 
-        const user = await getUserByEmail(credentials.email)
+          const user = await getUserByEmail(credentials.email)
 
-        if (!user || !user.password) {
-          return null
-        }
+          if (!user) {
+            throw new Error("Aucun compte trouvé avec cet email")
+          }
 
-        const isPasswordValid = await verifyPassword(credentials.password, user.password)
+          if (!user.password) {
+            throw new Error("Méthode d'authentification non valide")
+          }
 
-        if (!isPasswordValid) {
-          return null
-        }
+          const isPasswordValid = await verifyPassword(credentials.password, user.password)
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          image: user.image,
-          role: user.role,
+          if (!isPasswordValid) {
+            throw new Error("Mot de passe incorrect")
+          }
+
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            role: user.role,
+          }
+        } catch (error) {
+          // Capture l'erreur sans afficher la trace complète
+          if (error instanceof Error) {
+            logError(`Échec d'authentification: ${error.message}`)
+            throw error
+          }
+          logError("Erreur d'authentification inconnue")
+          throw new Error("Erreur d'authentification inconnue")
         }
       },
     }),
@@ -77,6 +113,17 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth",
     error: "/auth/error",
+  },
+  logger: {
+    error(code, metadata) {
+      logError(`Code d'erreur: ${code}`, metadata)
+    },
+    warn(code) {
+      logError(`Avertissement: ${code}`)
+    },
+    debug(code, metadata) {
+      // Ne rien faire en debug pour réduire le bruit
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 } 

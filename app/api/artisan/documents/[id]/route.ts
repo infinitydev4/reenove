@@ -2,21 +2,58 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { prisma } from "@/lib/prisma"
 import { authOptions } from "@/lib/auth"
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { deleteFromS3, extractKeyFromS3Url } from "@/lib/s3"
 
-// Vérifier si AWS S3 est correctement configuré
-const isS3Configured = !!(process.env.AWS_ACCESS_KEY_ID && 
-                          process.env.AWS_SECRET_ACCESS_KEY && 
-                          process.env.AWS_S3_BUCKET_NAME)
-
-// Configuration AWS S3 seulement si les clés sont définies
-const s3Client = isS3Configured ? new S3Client({
-  region: process.env.AWS_REGION || "eu-west-3",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ""
+// Récupérer un document spécifique
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Vérifier l'authentification
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 })
+    }
+    
+    const documentId = params.id
+    
+    // Récupérer le document
+    const document = await prisma.artisanDocument.findUnique({
+      where: {
+        id: documentId,
+      },
+    })
+    
+    // Vérifier que le document existe
+    if (!document) {
+      return NextResponse.json({ error: "Document non trouvé" }, { status: 404 })
+    }
+    
+    // Vérifier que l'utilisateur est propriétaire du document ou est admin
+    if (document.userId !== session.user.id && session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Accès non autorisé" }, { status: 403 })
+    }
+    
+    // Retourner les informations du document
+    return NextResponse.json({
+      id: document.id,
+      title: document.title,
+      type: document.type,
+      fileUrl: document.fileUrl,
+      fileType: document.fileType,
+      uploadDate: document.createdAt.toISOString(),
+      verified: document.verified,
+    })
+  } catch (error) {
+    console.error("Erreur lors de la récupération du document:", error)
+    return NextResponse.json(
+      { error: "Erreur lors de la récupération du document" },
+      { status: 500 }
+    )
   }
-}) : null
+}
 
 // DELETE - Supprimer un document
 export async function DELETE(
@@ -24,56 +61,51 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Vérifier l'authentification
     const session = await getServerSession(authOptions)
     
-    if (!session || !session.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 })
     }
-
-    const userId = session.user.id
+    
     const documentId = params.id
-
-    // Récupérer le document à supprimer
-    const document = await prisma.artisanDocument.findFirst({
+    
+    // Récupérer le document
+    const document = await prisma.artisanDocument.findUnique({
       where: {
-        userId,
-        type: documentId, // Utilisation du type comme ID
+        id: documentId,
       },
     })
-
+    
+    // Vérifier que le document existe
     if (!document) {
       return NextResponse.json({ error: "Document non trouvé" }, { status: 404 })
     }
-
-    // Si S3 est configuré et que le document a une URL S3, supprimer le fichier
-    if (isS3Configured && s3Client && document.fileUrl && document.fileUrl.includes('amazonaws.com')) {
-      try {
-        // Extraire la clé S3 de l'URL
-        const url = document.fileUrl
-        const urlParts = url.split("/")
-        const key = `documents/${userId}/${urlParts[urlParts.length - 1]}`
-        
-        // Supprimer le fichier de S3
-        await s3Client.send(new DeleteObjectCommand({
-          Bucket: process.env.AWS_S3_BUCKET_NAME || "",
-          Key: key
-        }))
-      } catch (error) {
-        console.error("Erreur lors de la suppression du fichier S3:", error)
-        // Continuer même en cas d'erreur de suppression du fichier
+    
+    // Vérifier que l'utilisateur est propriétaire du document ou est admin
+    if (document.userId !== session.user.id && session.user.role !== "ADMIN") {
+      return NextResponse.json({ error: "Accès non autorisé" }, { status: 403 })
+    }
+    
+    // Si le document a une URL S3, supprimer le fichier
+    if (document.fileUrl && document.fileUrl.includes('amazonaws.com')) {
+      const s3Key = extractKeyFromS3Url(document.fileUrl)
+      if (s3Key) {
+        await deleteFromS3(s3Key)
       }
     } else if (document.fileUrl && document.fileUrl.includes('/api/mock-storage/')) {
       // Si c'est un fichier mock, pas besoin de faire quoi que ce soit de spécial
       console.log("Suppression d'un fichier mock simulé, pas d'action réelle requise")
     }
 
-    // Supprimer l'enregistrement de la base de données
+    // Supprimer le document
     await prisma.artisanDocument.delete({
       where: {
-        id: document.id,
+        id: documentId,
       },
     })
-
+    
+    // Retourner une confirmation
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Erreur lors de la suppression du document:", error)

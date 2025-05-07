@@ -65,6 +65,7 @@ type Artisan = {
   startDate: string
   avatar: string
   verified: boolean
+  verificationStatus?: "PENDING" | "VERIFIED" | "REJECTED"
 }
 
 // Liste des spécialités 
@@ -82,7 +83,9 @@ export default function AdminArtisansPage() {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
   const [selectedSpeciality, setSelectedSpeciality] = useState<string | null>(null)
   const [selectedAvailability, setSelectedAvailability] = useState<string | null>(null)
+  const [selectedVerification, setSelectedVerification] = useState<string | null>(null)
   const [artisans, setArtisans] = useState<Artisan[]>([])
+  const [uniqueSpecialities, setUniqueSpecialities] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -99,6 +102,16 @@ export default function AdminArtisansPage() {
         
         const data = await response.json()
         setArtisans(data)
+        
+        // Extraire les spécialités uniques des artisans
+        const specialities = data
+          .map((artisan: Artisan) => artisan.speciality)
+          .filter((spec: string) => spec && spec !== "Non spécifié")
+        
+        // Éliminer les doublons et trier par ordre alphabétique
+        const uniqueSpecialities = Array.from(new Set(specialities)) as string[];
+        setUniqueSpecialities(uniqueSpecialities.sort())
+        
         setError(null)
       } catch (err) {
         console.error("Erreur lors du chargement des artisans:", err)
@@ -130,7 +143,10 @@ export default function AdminArtisansPage() {
     // Filtre par disponibilité
     const matchesAvailability = selectedAvailability ? artisan.availability === selectedAvailability : true
     
-    return matchesSearch && matchesStatus && matchesSpeciality && matchesAvailability
+    // Filtre par vérification
+    const matchesVerification = selectedVerification ? artisan.verificationStatus === selectedVerification : true
+    
+    return matchesSearch && matchesStatus && matchesSpeciality && matchesAvailability && matchesVerification
   })
   
   const handleDeleteArtisan = async (artisanId: string) => {
@@ -172,6 +188,18 @@ export default function AdminArtisansPage() {
         return <Badge variant="outline" className="border-red-500 text-red-500">Indisponible</Badge>
       default:
         return <Badge variant="outline">Inconnu</Badge>
+    }
+  }
+
+  const getVerificationBadge = (verificationStatus?: string) => {
+    switch (verificationStatus) {
+      case "VERIFIED":
+        return <Badge className="bg-green-500">Vérifié</Badge>
+      case "REJECTED":
+        return <Badge className="bg-red-500">Rejeté</Badge>
+      case "PENDING":
+      default:
+        return <Badge className="bg-amber-500">En attente</Badge>
     }
   }
 
@@ -361,7 +389,7 @@ export default function AdminArtisansPage() {
                     Toutes
                     {!selectedSpeciality && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
-                  {specialities.map(speciality => (
+                  {uniqueSpecialities.map(speciality => (
                     <DropdownMenuItem 
                       key={speciality}
                       className={cn("flex items-center gap-2 cursor-pointer", selectedSpeciality === speciality && "font-bold")}
@@ -416,11 +444,54 @@ export default function AdminArtisansPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
               
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Vérification
+                    {selectedVerification && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel>Filtrer par vérification</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", !selectedVerification && "font-bold")}
+                    onClick={() => setSelectedVerification(null)}
+                  >
+                    Toutes
+                    {!selectedVerification && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "VERIFIED" && "font-bold")}
+                    onClick={() => setSelectedVerification("VERIFIED")}
+                  >
+                    Vérifiées
+                    {selectedVerification === "VERIFIED" && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "REJECTED" && "font-bold")}
+                    onClick={() => setSelectedVerification("REJECTED")}
+                  >
+                    Rejetées
+                    {selectedVerification === "REJECTED" && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "PENDING" && "font-bold")}
+                    onClick={() => setSelectedVerification("PENDING")}
+                  >
+                    En attente
+                    {selectedVerification === "PENDING" && <Check className="ml-auto h-4 w-4" />}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
               <Button variant="outline" size="sm" onClick={() => {
                 setSearchQuery("")
                 setSelectedStatus(null)
                 setSelectedSpeciality(null)
                 setSelectedAvailability(null)
+                setSelectedVerification(null)
               }}>
                 Réinitialiser
               </Button>
@@ -523,6 +594,10 @@ export default function AdminArtisansPage() {
                               <span>•</span>
                               <span className="flex items-center gap-1">
                                 {getStatusBadge(artisan.status)}
+                              </span>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                {getVerificationBadge(artisan.verificationStatus)}
                               </span>
                             </div>
                           </div>

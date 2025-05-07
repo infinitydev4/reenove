@@ -104,8 +104,12 @@ export default function CompleteRegistrationPage() {
           });
           
           if (result?.ok) {
-            // Rediriger vers l'onboarding artisan
-            router.push("/onboarding/artisan");
+            // Rediriger vers le profil artisan (première étape de l'onboarding)
+            toast({
+              title: "Inscription réussie",
+              description: "Veuillez compléter votre profil professionnel pour continuer.",
+            });
+            router.push("/onboarding/artisan/profile");
           } else {
             // En cas d'échec de connexion, rediriger vers la page de succès
             toast({

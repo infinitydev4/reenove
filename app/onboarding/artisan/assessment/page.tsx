@@ -2,16 +2,21 @@
 
 import { AssessmentLayout } from "./components/AssessmentLayout"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/components/ui/use-toast"
 import { useSession } from "next-auth/react"
-import { useEffect } from "react"
+import { OnboardingProgress, ONBOARDING_STEPS } from "../components/OnboardingProgress"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { Loader2 } from "lucide-react"
 
 export default function ArtisanAssessmentPage() {
   const router = useRouter()
   const { toast } = useToast()
   const { data: session, status } = useSession()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [completedSteps, setCompletedSteps] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
 
   // Vérifier si l'utilisateur est connecté et est bien un artisan
   useEffect(() => {
@@ -30,6 +35,32 @@ export default function ArtisanAssessmentPage() {
         })
         return
       }
+      
+      // Récupérer l'état d'avancement de l'onboarding de l'artisan
+      const fetchProgress = async () => {
+        try {
+          const response = await fetch("/api/artisan/onboarding/progress")
+          if (response.ok) {
+            const data = await response.json()
+            
+            // Transformer les données de progression en tableau d'étapes complétées
+            const completed: string[] = []
+            if (data.progress.profile) completed.push("profile")
+            if (data.progress.specialties) completed.push("specialties")
+            if (data.progress.documents) completed.push("documents")
+            if (data.progress.assessment) completed.push("assessment")
+            if (data.progress.confirmation) completed.push("confirmation")
+            
+            setCompletedSteps(completed)
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération de la progression:", error)
+        } finally {
+          setLoading(false)
+        }
+      }
+
+      fetchProgress()
     }
   }, [status, router, toast, session?.user])
   
@@ -51,7 +82,7 @@ export default function ArtisanAssessmentPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ score })
+        body: JSON.stringify({ score, answers })
       })
       
       if (!response.ok) {
@@ -63,8 +94,8 @@ export default function ArtisanAssessmentPage() {
         description: "Votre évaluation a été enregistrée avec succès."
       })
       
-      // Rediriger vers le tableau de bord artisan
-      router.push("/artisan")
+      // Rediriger vers la page de confirmation du processus d'onboarding
+      router.push("/onboarding/artisan/confirmation")
     } catch (error) {
       console.error("Erreur:", error)
       toast({
@@ -77,11 +108,32 @@ export default function ArtisanAssessmentPage() {
     }
   }
   
-  if (status === "loading") {
+  if (loading || status === "loading") {
     return <div className="flex items-center justify-center min-h-screen">
-      <p className="text-muted-foreground">Chargement...</p>
+      <Loader2 className="h-8 w-8 animate-spin text-primary" />
     </div>
   }
   
-  return <AssessmentLayout onComplete={handleComplete} isSubmitting={isSubmitting} />
+  return (
+    <div className="container max-w-5xl mx-auto py-8 px-4">
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Processus d&apos;inscription</CardTitle>
+          <CardDescription>
+            Votre progression dans le processus d&apos;inscription
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <OnboardingProgress
+            currentStep="assessment"
+            completedSteps={completedSteps}
+          />
+        </CardContent>
+      </Card>
+      
+      <Separator className="my-8" />
+      
+      <AssessmentLayout onComplete={handleComplete} isSubmitting={isSubmitting} />
+    </div>
+  )
 } 

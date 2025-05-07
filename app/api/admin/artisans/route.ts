@@ -19,6 +19,20 @@ export async function GET() {
             amount: true,
           }
         },
+        artisanProfile: true,
+        artisanSpecialties: {
+          include: {
+            service: {
+              include: {
+                category: true
+              }
+            }
+          },
+          where: {
+            isPrimary: true
+          },
+          take: 1
+        }
       }
     });
 
@@ -37,8 +51,8 @@ export async function GET() {
         availability = "indisponible";
       }
 
-      // Spécialité fictive pour le moment (à remplacer par un champ réel plus tard)
-      const speciality = "Plomberie"; // À remplacer par un champ réel
+      // Récupérer la spécialité principale de l'artisan
+      const primarySpecialty = artisan.artisanSpecialties[0]?.service?.name || "Non spécifié";
       
       return {
         id: artisan.id,
@@ -47,7 +61,7 @@ export async function GET() {
         phone: artisan.phone || "Non renseigné",
         address: artisan.address || "Non renseignée",
         status: artisan.role === Role.ARTISAN ? "actif" : "inactif",
-        speciality,
+        speciality: primarySpecialty,
         rating: (Math.random() * (5 - 4) + 4).toFixed(1),
         projectsCompleted,
         currentProjects,
@@ -59,7 +73,8 @@ export async function GET() {
           day: 'numeric'
         }),
         avatar: artisan.image || "/placeholder.svg",
-        verified: true
+        verified: artisan.artisanProfile?.verificationStatus === "VERIFIED",
+        verificationStatus: artisan.artisanProfile?.verificationStatus || "PENDING"
       };
     });
 

@@ -3,27 +3,15 @@ import { getServerSession } from "next-auth"
 import { prisma } from "@/lib/prisma"
 import { authOptions } from "@/lib/auth"
 import { v4 as uuidv4 } from "uuid"
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { uploadToS3, deleteFromS3, extractKeyFromS3Url, isS3Available } from "@/lib/s3"
+import { updateOnboardingProgress } from "@/lib/onboarding"
 
-// Vérifier si AWS S3 est correctement configuré
-const isS3Configured = !!(process.env.AWS_ACCESS_KEY_ID && 
-                          process.env.AWS_SECRET_ACCESS_KEY && 
-                          process.env.AWS_S3_BUCKET_NAME)
-
-// Configuration AWS S3 seulement si les clés sont définies
-const s3Client = isS3Configured ? new S3Client({
-  region: process.env.AWS_REGION || "eu-west-3",
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ""
-  }
-}) : null
-
+// Suppression des logs de debug et variables inutiles
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
-    if (!session || !session.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 })
     }
 
@@ -32,10 +20,10 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File | null
     const type = formData.get('type') as string | null
-    const title = formData.get('title') as string | null
+    const title = formData.get('title') as string | null || type || "Document" // Utiliser le type comme titre par défaut si titre non fourni
 
-    if (!file || !type || !title) {
-      return NextResponse.json({ error: "Données manquantes" }, { status: 400 })
+    if (!file || !type) {
+      return NextResponse.json({ error: "Fichier ou type manquant" }, { status: 400 })
     }
 
     // Vérifier le type de fichier
@@ -67,24 +55,17 @@ export async function POST(request: NextRequest) {
     const uniqueFileName = `${type}-${uuidv4()}.${fileExtension}`
     const s3Key = `documents/${userId}/${uniqueFileName}`
 
-    // Si un document existe déjà, le supprimer de la base de données
+    // Convertir le fichier en ArrayBuffer puis en Buffer
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+
+    // Si un document existe déjà, le supprimer de la base de données et de S3
     if (existingDocument) {
-      // Si S3 est configuré et que le document a une URL S3, supprimer le fichier
-      if (isS3Configured && s3Client && existingDocument.fileUrl && existingDocument.fileUrl.includes('amazonaws.com')) {
-        try {
-          // Extraire la clé S3 de l'URL existante
-          const existingUrl = existingDocument.fileUrl
-          const urlParts = existingUrl.split("/")
-          const existingKey = `documents/${userId}/${urlParts[urlParts.length - 1]}`
-          
-          // Supprimer l'ancien fichier de S3
-          await s3Client.send(new DeleteObjectCommand({
-            Bucket: process.env.AWS_S3_BUCKET_NAME || "",
-            Key: existingKey
-          }))
-        } catch (error) {
-          console.error("Erreur lors de la suppression de l'ancien fichier:", error)
-          // Continuer même en cas d'erreur
+      // Supprimer le fichier S3 existant s'il y en a un
+      if (existingDocument.fileUrl && existingDocument.fileUrl.includes('amazonaws.com')) {
+        const existingKey = extractKeyFromS3Url(existingDocument.fileUrl)
+        if (existingKey) {
+          await deleteFromS3(existingKey)
         }
       }
 
@@ -96,34 +77,17 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    let fileUrl = ""
+    // Upload du fichier vers S3 avec le nouveau module
+    const fileUrl = await uploadToS3(buffer, s3Key, file.type)
+    
+    // Fallback si S3 échoue ou n'est pas configuré
+    const finalFileUrl = fileUrl || `http://${request.headers.get('host')}/api/mock-storage/${s3Key}`
 
-    // Convertir le fichier en ArrayBuffer puis en Buffer
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    // Si AWS S3 est configuré, utiliser S3 pour l'upload
-    if (isS3Configured && s3Client) {
-      try {
-        // Upload du fichier vers S3
-        await s3Client.send(new PutObjectCommand({
-          Bucket: process.env.AWS_S3_BUCKET_NAME || "",
-          Key: s3Key,
-          Body: buffer,
-          ContentType: file.type
-        }))
-
-        // Générer l'URL du fichier
-        fileUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || "eu-west-3"}.amazonaws.com/${s3Key}`
-      } catch (error) {
-        console.error("Erreur lors de l'upload vers S3:", error)
-        // En cas d'erreur avec S3, on utilise un fallback local
-        fileUrl = `http://${request.headers.get('host')}/api/mock-storage/${s3Key}`
-      }
-    } else {
-      // Si S3 n'est pas configuré, utiliser un URL de fallback simulé (pas de stockage réel)
-      console.warn("AWS S3 n'est pas configuré. Utilisation d'une URL de fallback simulée.")
-      fileUrl = `http://${request.headers.get('host')}/api/mock-storage/${s3Key}`
+    if (!fileUrl && isS3Available()) {
+      console.error("Échec de l'upload S3 malgré une configuration valide")
+      return NextResponse.json({ 
+        error: "Erreur lors de l'upload sur AWS S3" 
+      }, { status: 500 })
     }
 
     // Créer un nouvel enregistrement dans la base de données
@@ -132,16 +96,42 @@ export async function POST(request: NextRequest) {
         userId,
         type,
         title,
-        fileUrl,
+        fileUrl: finalFileUrl,
         fileType: file.type,
         verified: false,
       },
     })
 
+    // Si c'est un document requis (KBIS ou INSURANCE), mettre à jour la progression de l'onboarding
+    if (type === "KBIS" || type === "INSURANCE") {
+      // Vérifier si l'autre document requis existe aussi
+      const otherType = type === "KBIS" ? "INSURANCE" : "KBIS"
+      const otherDocumentExists = await prisma.artisanDocument.findFirst({
+        where: {
+          userId,
+          type: otherType,
+        },
+      })
+
+      // Si les deux documents requis existent, mettre à jour la progression
+      if (otherDocumentExists) {
+        try {
+          await updateOnboardingProgress(userId, 'documents')
+        } catch (error) {
+          console.error("Erreur lors de la mise à jour de la progression:", error)
+          // Ne pas bloquer le processus en cas d'erreur
+        }
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      fileUrl,
+      fileUrl: finalFileUrl,
       document,
+      id: document.id,
+      name: file.name,
+      type: document.type,
+      url: document.fileUrl
     })
   } catch (error) {
     console.error("Erreur lors du téléversement du document:", error)

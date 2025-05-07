@@ -81,15 +81,13 @@ export default function ReviewPage() {
     const projectBudget = localStorage.getItem("projectBudget")
     const projectLocation = localStorage.getItem("projectLocation")
     const projectDate = localStorage.getItem("projectDate")
-    const projectPhotos = localStorage.getItem("projectPhotos")
     
     console.log("Données brutes récupérées:", {
       selectedCategory,
       projectDetails,
       projectBudget,
       projectLocation,
-      projectDate,
-      projectPhotos
+      projectDate
     })
     
     const projectData: Project = {}
@@ -128,6 +126,18 @@ export default function ReviewPage() {
             ...prev, 
             details: true 
           }))
+        }
+        
+        // Traitement des photos à partir de projectDetails
+        if (details.photos && Array.isArray(details.photos) && details.photos.length > 0) {
+          console.log("Photos trouvées dans les détails:", details.photos)
+          // Formater les photos pour l'affichage
+          projectData.photos = details.photos.map((url: string, index: number) => ({
+            id: `photo-${index}`,
+            name: `Photo ${index + 1}`,
+            preview: url
+          }))
+          setCompletionStatus(prev => ({ ...prev, photos: true }))
         }
       } catch (error) {
         console.error("Erreur lors du chargement des détails:", error)
@@ -208,20 +218,6 @@ export default function ReviewPage() {
       }
     }
     
-    // Traitement des photos
-    if (projectPhotos) {
-      try {
-        const photos = JSON.parse(projectPhotos)
-        console.log("Photos du projet:", photos)
-        if (Array.isArray(photos) && photos.length > 0) {
-          projectData.photos = photos
-          setCompletionStatus(prev => ({ ...prev, photos: true }))
-        }
-      } catch (error) {
-        console.error("Erreur lors du chargement des photos:", error)
-      }
-    }
-    
     console.log("Données du projet finales:", projectData)
     console.log("État de complétion initial:", completionStatus)
     setProject(projectData)
@@ -272,6 +268,9 @@ export default function ReviewPage() {
         categoryId: projectDetails.categoryId || "",
         serviceId: projectDetails.serviceId || "",
         propertyType: projectDetails.propertyType || "HOUSE",
+        
+        // Photos
+        photos: projectDetails.photos || [],
         
         // Budget
         budget: projectBudget.budget || null,
@@ -633,11 +632,14 @@ export default function ReviewPage() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                         {project.photos.map((photo, index) => (
                           <div key={photo.id} className="relative aspect-square rounded-md overflow-hidden border bg-gray-50">
-                            <Image
+                            <img
                               src={photo.preview}
                               alt={`Photo ${index + 1}`}
-                              fill
-                              className="object-cover"
+                              className="object-cover w-full h-full"
+                              onError={(e) => {
+                                console.log("Erreur de chargement d'image:", photo.preview);
+                                e.currentTarget.src = "/placeholder.svg"; // Image de remplacement en cas d'erreur
+                              }}
                             />
                           </div>
                         ))}

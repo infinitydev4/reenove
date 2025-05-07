@@ -104,7 +104,7 @@ export default function SuccessPage() {
       
       <div className="flex justify-center gap-4 pt-4">
         <Button variant="outline" asChild>
-          <Link href="/dashboard/projects">
+          <Link href="/client/projets">
             Voir mes projets
           </Link>
         </Button>

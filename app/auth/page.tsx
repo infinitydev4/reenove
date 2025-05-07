@@ -10,12 +10,20 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/components/ui/use-toast"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Loader2 } from "lucide-react"
 
 export default function AuthPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tab = searchParams.get("tab") || "login"
+  const callbackUrl = searchParams.get("callbackUrl") || "/"
   const [isLoading, setIsLoading] = useState(false)
+  const [formError, setFormError] = useState("")
+  const [formValues, setFormValues] = useState({
+    email: "",
+    password: ""
+  })
   const { toast } = useToast()
 
   // Rediriger vers la nouvelle page d'inscription si on est sur l'onglet register
@@ -25,44 +33,58 @@ export default function AuthPage() {
     }
   }, [tab, router])
 
+  // Vérifier s'il y a une erreur dans les paramètres de l'URL
+  useEffect(() => {
+    const error = searchParams.get("error")
+    if (error) {
+      setFormError("Une erreur s'est produite. Veuillez réessayer.")
+    }
+  }, [searchParams])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormValues(prev => ({ ...prev, [name]: value }))
+    setFormError("") // Réinitialise l'erreur quand l'utilisateur modifie le formulaire
+  }
+
   // Login Form Handler
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setIsLoading(true)
+    setFormError("")
 
-    const formData = new FormData(e.currentTarget)
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
+    // Validation côté client
+    if (!formValues.email || !formValues.password) {
+      setFormError("Veuillez remplir tous les champs")
+      setIsLoading(false)
+      return
+    }
 
     try {
       const result = await signIn("credentials", {
-        email,
-        password,
+        email: formValues.email,
+        password: formValues.password,
         redirect: false,
       })
 
       if (result?.error) {
-        toast({
-          title: "Erreur d'authentification",
-          description: "Identifiants invalides. Veuillez réessayer.",
-          variant: "destructive",
-        })
+        console.error("Erreur de connexion:", result.error)
+        setFormError(result.error)
         setIsLoading(false)
         return
       }
 
-      toast({
-        title: "Connexion réussie",
-        description: "Vous êtes maintenant connecté.",
-      })
-      router.push("/")
-      router.refresh()
+      if (result?.ok) {
+        toast({
+          title: "Connexion réussie",
+          description: "Vous êtes maintenant connecté.",
+        })
+        router.push(callbackUrl)
+        router.refresh()
+      }
     } catch (error) {
-      toast({
-        title: "Quelque chose s'est mal passé",
-        description: "Veuillez réessayer plus tard.",
-        variant: "destructive",
-      })
+      console.error("Erreur de connexion inattendue:", error)
+      setFormError("Une erreur inattendue s'est produite. Veuillez réessayer.")
     } finally {
       setIsLoading(false)
     }
@@ -77,6 +99,12 @@ export default function AuthPage() {
         </div>
 
         <div className="w-full space-y-6">
+          {formError && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertDescription>{formError}</AlertDescription>
+            </Alert>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -87,6 +115,10 @@ export default function AuthPage() {
                 placeholder="exemple@email.com"
                 required
                 disabled={isLoading}
+                value={formValues.email}
+                onChange={handleInputChange}
+                className={formError ? "border-red-500" : ""}
+                autoComplete="email"
               />
             </div>
             <div className="space-y-2">
@@ -102,10 +134,21 @@ export default function AuthPage() {
                 type="password"
                 required
                 disabled={isLoading}
+                value={formValues.password}
+                onChange={handleInputChange}
+                className={formError ? "border-red-500" : ""}
+                autoComplete="current-password"
               />
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Connexion..." : "Se connecter"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connexion en cours...
+                </>
+              ) : (
+                "Se connecter"
+              )}
             </Button>
           </form>
           

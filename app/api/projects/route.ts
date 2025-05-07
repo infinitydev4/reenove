@@ -164,6 +164,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Extraire les photos avant de créer le projet car elles seront ajoutées séparément
+    const photos = body.photos || []
+    
     // Création du projet
     const project = await prisma.project.create({
       data: {
@@ -200,23 +203,34 @@ export async function POST(request: NextRequest) {
     console.log("API - Projet créé:", project)
 
     // Si le projet a été créé avec succès et qu'il y a des photos
-    if (project && body.images && Array.isArray(body.images) && body.images.length > 0) {
+    if (project && photos.length > 0) {
       // Créer les entrées pour les images
       await prisma.projectImage.createMany({
-        data: body.images.map((image: any, index: number) => ({
-          url: image.url,
-          caption: image.caption || "",
+        data: photos.map((photoUrl: string, index: number) => ({
+          url: photoUrl,
+          caption: "",
           order: index,
           projectId: project.id
         }))
       })
+      
+      console.log(`API - ${photos.length} photo(s) ajoutée(s) au projet ${project.id}`)
     }
+
+    // Récupérer les images pour les inclure dans la réponse
+    const imagesFromDb = await prisma.projectImage.findMany({
+      where: { projectId: project.id },
+      orderBy: { order: "asc" }
+    })
+    
+    const imageUrls = imagesFromDb.map(image => image.url)
+    console.log("API - Photos du projet:", imageUrls)
 
     return NextResponse.json({
       message: "Projet créé avec succès",
       project: {
         ...project,
-        images: body.images || []
+        images: imagesFromDb
       }
     }, { status: 201 })
   } catch (error) {

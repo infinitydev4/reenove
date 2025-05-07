@@ -27,9 +27,10 @@ export async function GET(request: NextRequest) {
     
     // Formater les documents pour le frontend
     const formattedDocuments = documents.map(doc => ({
-      id: doc.type,  // Utiliser le type comme identifiant pour le frontend
-      title: doc.title,
-      fileUrl: doc.fileUrl,
+      id: doc.id, 
+      name: doc.title,
+      type: doc.type,
+      url: doc.fileUrl,
       fileType: doc.fileType,
       verified: doc.verified,
     }))
