@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
-import { ArrowRightCircle, User2, Inbox, UserCircle, HomeIcon, Wrench, LogOut, Settings, LayoutDashboard, ShieldQuestion, PlusCircle, Sun, Moon } from "lucide-react"
+import { ArrowRightCircle, User2, Inbox, UserCircle, HomeIcon, Wrench, LogOut, Settings, LayoutDashboard, ShieldQuestion, PlusCircle, Sun, Moon, Users } from "lucide-react"
 import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
@@ -150,6 +150,28 @@ export default function Navbar() {
                   </Button>
                 )}
                 
+                {session?.user?.role === Role.AGENT && (
+                  <Button 
+                    variant="ghost" 
+                    className="mr-2"
+                    onClick={() => router.push("/agent")}
+                  >
+                    <Users className="mr-2 h-4 w-4" />
+                    <span className="hidden md:inline">Espace Agent</span>
+                  </Button>
+                )}
+                
+                {session?.user?.role === Role.ADMIN && (
+                  <Button 
+                    variant="ghost" 
+                    className="mr-2"
+                    onClick={() => router.push("/admin")}
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span className="hidden md:inline">Administration</span>
+                  </Button>
+                )}
+                
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -190,6 +212,15 @@ export default function Navbar() {
                         onClick={() => router.push("/artisan")}
                       >
                         <Wrench className="mr-2 h-4 w-4" />
+                        <span>Tableau de bord</span>
+                      </DropdownMenuItem>
+                    )}
+                    
+                    {session?.user?.role === Role.AGENT && (
+                      <DropdownMenuItem
+                        onClick={() => router.push("/agent")}
+                      >
+                        <Users className="mr-2 h-4 w-4" />
                         <span>Tableau de bord</span>
                       </DropdownMenuItem>
                     )}

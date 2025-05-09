@@ -85,102 +85,102 @@ export default function ArtisanDetailPage() {
     fetchArtisanData()
   }, [artisanId])
 
-  const fetchArtisanData = async () => {
-    try {
-      setIsLoading(true)
-      
-      // Récupérer les informations de l'artisan
-      const artisanResponse = await fetch(`/api/admin/artisans/${artisanId}`)
-      if (!artisanResponse.ok) {
-        throw new Error(`Erreur: ${artisanResponse.status}`)
-      }
-      const artisanData = await artisanResponse.json()
-      
-      // Ajouter les données d'onboarding fictives pour le MVP
-      // À remplacer par les vraies données plus tard
-      const artisanWithOnboarding = {
-        ...artisanData,
-        onboarding: {
-          progress: 75, // pourcentage de complétion
-          steps: [
-            { name: "Inscription", completed: true },
-            { name: "Informations personnelles", completed: true },
-            { name: "Documents légaux", completed: true },
-            { name: "Qualifications", completed: false },
-            { name: "Profil validé", completed: false }
-          ]
-        }
-      }
-      
-      setArtisan(artisanWithOnboarding)
-      
-      // Pour le MVP, on utilise des données fictives pour les projets
-      setProjects([
-        {
-          id: "proj1",
-          title: "Rénovation salle de bain",
-          status: "completed",
-          amount: "2 800€",
-          clientName: "Dupont Marc",
-          startDate: "15/02/2023",
-          endDate: "28/03/2023"
-        },
-        {
-          id: "proj2",
-          title: "Installation électrique",
-          status: "in_progress",
-          amount: "1 500€",
-          clientName: "Martin Sophie",
-          startDate: "05/04/2023"
-        },
-        {
-          id: "proj3", 
-          title: "Réfection toiture",
-          status: "pending",
-          amount: "4 200€",
-          clientName: "Dubois Jean",
-          startDate: "Programmé 15/06/2023"
-        }
-      ])
-      
-      // Récupérer les vrais documents de l'artisan
+    const fetchArtisanData = async () => {
       try {
-        const documentsResponse = await fetch(`/api/admin/artisans/${artisanId}/documents`)
+        setIsLoading(true)
         
-        if (documentsResponse.ok) {
-          const documentsData = await documentsResponse.json()
-          
-          // Transformer les données pour correspondre au format attendu
-          const formattedDocuments = documentsData.map((doc: any) => ({
-            id: doc.id,
-            name: doc.title || doc.type,
-            type: doc.type,
-            status: doc.verified ? "valid" : "pending",
-            uploadDate: new Date(doc.uploadDate).toLocaleDateString('fr-FR'),
-            expiryDate: doc.expiryDate ? new Date(doc.expiryDate).toLocaleDateString('fr-FR') : undefined,
-            fileUrl: doc.fileUrl
-          }))
-          
-          // Ne pas remplacer par des données fictives si aucun document n'est trouvé
-          setDocuments(formattedDocuments)
-        } else {
-          console.error("Impossible de récupérer les documents:", await documentsResponse.text())
-          setDocuments([])
-          toast.error("Impossible de récupérer les documents de l'artisan.")
+        // Récupérer les informations de l'artisan
+        const artisanResponse = await fetch(`/api/admin/artisans/${artisanId}`)
+        if (!artisanResponse.ok) {
+          throw new Error(`Erreur: ${artisanResponse.status}`)
         }
-      } catch (docError) {
-        console.error("Erreur lors de la récupération des documents:", docError)
-        setDocuments([])
-        toast.error("Une erreur s'est produite lors de la récupération des documents.")
+        const artisanData = await artisanResponse.json()
+        
+        // Ajouter les données d'onboarding fictives pour le MVP
+        // À remplacer par les vraies données plus tard
+        const artisanWithOnboarding = {
+          ...artisanData,
+          onboarding: {
+            progress: 75, // pourcentage de complétion
+            steps: [
+              { name: "Inscription", completed: true },
+              { name: "Informations personnelles", completed: true },
+              { name: "Documents légaux", completed: true },
+              { name: "Qualifications", completed: false },
+              { name: "Profil validé", completed: false }
+            ]
+          }
+        }
+        
+        setArtisan(artisanWithOnboarding)
+        
+        // Pour le MVP, on utilise des données fictives pour les projets
+        setProjects([
+          {
+            id: "proj1",
+            title: "Rénovation salle de bain",
+            status: "completed",
+            amount: "2 800€",
+            clientName: "Dupont Marc",
+            startDate: "15/02/2023",
+            endDate: "28/03/2023"
+          },
+          {
+            id: "proj2",
+            title: "Installation électrique",
+            status: "in_progress",
+            amount: "1 500€",
+            clientName: "Martin Sophie",
+            startDate: "05/04/2023"
+          },
+          {
+            id: "proj3", 
+            title: "Réfection toiture",
+            status: "pending",
+            amount: "4 200€",
+            clientName: "Dubois Jean",
+            startDate: "Programmé 15/06/2023"
+          }
+        ])
+        
+        // Récupérer les vrais documents de l'artisan
+        try {
+          const documentsResponse = await fetch(`/api/admin/artisans/${artisanId}/documents`)
+          
+          if (documentsResponse.ok) {
+            const documentsData = await documentsResponse.json()
+            
+            // Transformer les données pour correspondre au format attendu
+            const formattedDocuments = documentsData.map((doc: any) => ({
+              id: doc.id,
+              name: doc.title || doc.type,
+              type: doc.type,
+              status: doc.verified ? "valid" : "pending",
+              uploadDate: new Date(doc.uploadDate).toLocaleDateString('fr-FR'),
+              expiryDate: doc.expiryDate ? new Date(doc.expiryDate).toLocaleDateString('fr-FR') : undefined,
+              fileUrl: doc.fileUrl
+            }))
+            
+            // Ne pas remplacer par des données fictives si aucun document n'est trouvé
+            setDocuments(formattedDocuments)
+          } else {
+            console.error("Impossible de récupérer les documents:", await documentsResponse.text())
+            setDocuments([])
+            toast.error("Impossible de récupérer les documents de l'artisan.")
+          }
+        } catch (docError) {
+          console.error("Erreur lors de la récupération des documents:", docError)
+          setDocuments([])
+          toast.error("Une erreur s'est produite lors de la récupération des documents.")
+        }
+        
+        setError(null)
+      } catch (err) {
+        console.error("Erreur lors du chargement des données:", err)
+        setError("Impossible de charger les données de l'artisan. Veuillez réessayer plus tard.")
+      } finally {
+        setIsLoading(false)
       }
-      
-      setError(null)
-    } catch (err) {
-      console.error("Erreur lors du chargement des données:", err)
-      setError("Impossible de charger les données de l'artisan. Veuillez réessayer plus tard.")
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   // Fonction pour mettre à jour le statut de vérification de l'artisan
