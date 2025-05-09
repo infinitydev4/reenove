@@ -16,11 +16,13 @@ import {
   Trash,
   X,
   AlertCircle,
-  Construction
+  Construction,
+  ListFilter,
+  Download
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -44,9 +46,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+  SheetFooter
+} from "@/components/ui/sheet"
 import { ProjectStatus } from "@/lib/generated/prisma"
 import { formatDistanceToNow } from "date-fns"
 import { fr } from "date-fns/locale"
+import { FilterDrawer, FilterGroup } from "@/components/admin/FilterDrawer"
 
 // Données fictives pour la démo
 const mockProjects = [
@@ -240,6 +253,12 @@ export default function ProjetsPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [projects, setProjects] = useState(mockProjects)
   const [isLoading, setIsLoading] = useState(false)
+  const [advancedFilters, setAdvancedFilters] = useState<Record<string, string | null>>({
+    budget: null,
+    date: null,
+    location: null,
+    category: null
+  })
 
   // Dans une vraie application, on chargerait les projets depuis l'API
   useEffect(() => {
@@ -250,6 +269,58 @@ export default function ProjetsPage() {
       setIsLoading(false)
     }, 500)
   }, [])
+
+  // Configuration des filtres avancés
+  const advancedFilterGroups: FilterGroup[] = [
+    {
+      id: "category",
+      title: "Catégorie",
+      options: [
+        { id: "all-cat", label: "Toutes les catégories", value: null as any },
+        { id: "plomberie", label: "Plomberie", value: "Plomberie" },
+        { id: "electricite", label: "Électricité", value: "Électricité" },
+        { id: "menuiserie", label: "Menuiserie", value: "Menuiserie" },
+        { id: "peinture", label: "Peinture", value: "Peinture" },
+        { id: "revetement", label: "Revêtement sol", value: "Revêtement sol" },
+        { id: "toiture", label: "Toiture", value: "Toiture" },
+        { id: "climatisation", label: "Climatisation", value: "Climatisation" }
+      ]
+    },
+    {
+      id: "location",
+      title: "Localisation",
+      options: [
+        { id: "all-loc", label: "Toutes les localisations", value: null as any },
+        { id: "paris", label: "Paris", value: "Paris" },
+        { id: "lyon", label: "Lyon", value: "Lyon" },
+        { id: "marseille", label: "Marseille", value: "Marseille" },
+        { id: "toulouse", label: "Toulouse", value: "Toulouse" },
+        { id: "bordeaux", label: "Bordeaux", value: "Bordeaux" },
+        { id: "nantes", label: "Nantes", value: "Nantes" },
+        { id: "nice", label: "Nice", value: "Nice" }
+      ]
+    }
+  ];
+
+  // Fonction pour changer un filtre avancé
+  const handleAdvancedFilterChange = (groupId: string, value: string | null) => {
+    setAdvancedFilters(prev => ({
+      ...prev,
+      [groupId]: value
+    }));
+  };
+
+  // Fonction pour réinitialiser tous les filtres
+  const handleResetFilters = () => {
+    setAdvancedFilters({
+      budget: null,
+      date: null,
+      location: null,
+      category: null
+    });
+    setStatusFilter("all");
+    setSearchTerm("");
+  };
 
   // Filtrage des projets
   const filteredProjects = projects.filter(project => {
@@ -266,7 +337,17 @@ export default function ProjetsPage() {
       statusFilter === "all" || 
       project.status === statusFilter
 
-    return matchesSearch && matchesStatus
+    // Filtre par catégorie
+    const matchesCategory = 
+      !advancedFilters.category || 
+      project.category.name === advancedFilters.category
+
+    // Filtre par localisation
+    const matchesLocation = 
+      !advancedFilters.location || 
+      project.location === advancedFilters.location
+
+    return matchesSearch && matchesStatus && matchesCategory && matchesLocation
   })
 
   const statusCounts = {
@@ -290,11 +371,42 @@ export default function ProjetsPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button variant="outline" className="flex items-center gap-2">
-            <Filter className="h-4 w-4" /> Filtres avancés
-          </Button>
+          {/* FilterDrawer pour desktop */}
+          <FilterDrawer
+            title="Filtres avancés"
+            description="Filtrez les projets selon différents critères"
+            side="right"
+            className="hidden md:block"
+            trigger={
+              <Button variant="outline" className="flex items-center gap-2 hidden md:flex">
+                <ListFilter className="h-4 w-4" /> Filtres avancés
+              </Button>
+            }
+            filterGroups={advancedFilterGroups}
+            selectedFilters={advancedFilters}
+            onFilterChange={handleAdvancedFilterChange}
+            onResetFilters={handleResetFilters}
+          />
+          
+          {/* FilterDrawer pour mobile */}
+          <FilterDrawer
+            title="Filtres avancés"
+            description="Filtrez les projets selon différents critères"
+            side="bottom"
+            isMobile={true}
+            trigger={
+              <Button variant="outline" className="flex items-center gap-2 md:hidden">
+                <ListFilter className="h-4 w-4" /> Filtres avancés
+              </Button>
+            }
+            filterGroups={advancedFilterGroups}
+            selectedFilters={advancedFilters}
+            onFilterChange={handleAdvancedFilterChange}
+            onResetFilters={handleResetFilters}
+          />
+          
           <Button className="flex items-center gap-2">
-            <FileText className="h-4 w-4" /> Exporter
+            <Download className="h-4 w-4" /> Exporter
           </Button>
         </div>
       </div>
@@ -338,30 +450,103 @@ export default function ProjetsPage() {
         </Select>
       </div>
 
-      {/* Statistiques */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 flex flex-col items-center">
-            <div className="text-2xl font-bold">{projects.length}</div>
-            <p className="text-sm text-muted-foreground">Total des projets</p>
+      {/* Affichage des filtres actifs */}
+      {(advancedFilters.category || advancedFilters.location || statusFilter !== "all") && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Filtres actifs:</span>
+          
+          {statusFilter !== "all" && (
+            <Badge variant="secondary" className="h-6 gap-1">
+              Statut: {
+                statusFilter === ProjectStatus.DRAFT ? "Brouillon" :
+                statusFilter === ProjectStatus.PENDING ? "En attente" :
+                statusFilter === ProjectStatus.PUBLISHED ? "Publié" :
+                statusFilter === ProjectStatus.ASSIGNED ? "Attribué" :
+                statusFilter === ProjectStatus.IN_PROGRESS ? "En cours" :
+                statusFilter === ProjectStatus.COMPLETED ? "Terminé" :
+                "Annulé"
+              }
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-3 w-3 p-0 ml-1"
+                onClick={() => setStatusFilter("all")}
+              >
+                <X className="h-2 w-2" />
+              </Button>
+            </Badge>
+          )}
+          
+          {advancedFilters.category && (
+            <Badge variant="secondary" className="h-6 gap-1">
+              Catégorie: {advancedFilters.category}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-3 w-3 p-0 ml-1"
+                onClick={() => handleAdvancedFilterChange("category", null)}
+              >
+                <X className="h-2 w-2" />
+              </Button>
+            </Badge>
+          )}
+          
+          {advancedFilters.location && (
+            <Badge variant="secondary" className="h-6 gap-1">
+              Localisation: {advancedFilters.location}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-3 w-3 p-0 ml-1"
+                onClick={() => handleAdvancedFilterChange("location", null)}
+              >
+                <X className="h-2 w-2" />
+              </Button>
+            </Badge>
+          )}
+          
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="h-6 text-xs"
+            onClick={handleResetFilters}
+          >
+            Réinitialiser tous
+          </Button>
+        </div>
+      )}
+
+      {/* Statistiques améliorées avec design moderne */}
+      <div className="grid grid-cols-4 gap-2 md:gap-4">
+        <Card className="border shadow-sm overflow-hidden">
+          <div className="h-1 bg-blue-500"></div>
+          <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
+            <span className="text-2xl md:text-4xl font-bold text-blue-600 dark:text-blue-400">{projects.length}</span>
+            <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">Total</span>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 flex flex-col items-center">
-            <div className="text-2xl font-bold text-blue-600">{statusCounts[ProjectStatus.PUBLISHED]}</div>
-            <p className="text-sm text-muted-foreground">Projets publiés</p>
+        
+        <Card className="border shadow-sm overflow-hidden">
+          <div className="h-1 bg-purple-500"></div>
+          <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
+            <span className="text-2xl md:text-4xl font-bold text-purple-600 dark:text-purple-400">{statusCounts[ProjectStatus.PUBLISHED]}</span>
+            <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">Publiés</span>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 flex flex-col items-center">
-            <div className="text-2xl font-bold text-amber-600">{statusCounts[ProjectStatus.IN_PROGRESS]}</div>
-            <p className="text-sm text-muted-foreground">Projets en cours</p>
+        
+        <Card className="border shadow-sm overflow-hidden">
+          <div className="h-1 bg-amber-500"></div>
+          <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
+            <span className="text-2xl md:text-4xl font-bold text-amber-600 dark:text-amber-400">{statusCounts[ProjectStatus.IN_PROGRESS]}</span>
+            <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">En cours</span>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 flex flex-col items-center">
-            <div className="text-2xl font-bold text-green-600">{statusCounts[ProjectStatus.COMPLETED]}</div>
-            <p className="text-sm text-muted-foreground">Projets terminés</p>
+        
+        <Card className="border shadow-sm overflow-hidden">
+          <div className="h-1 bg-green-500"></div>
+          <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
+            <span className="text-2xl md:text-4xl font-bold text-green-600 dark:text-green-400">{statusCounts[ProjectStatus.COMPLETED]}</span>
+            <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">Terminés</span>
           </CardContent>
         </Card>
       </div>

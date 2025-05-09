@@ -21,13 +21,15 @@ import {
   CircleDollarSign,
   Hammer,
   BadgeCheck,
-  Star
+  Star,
+  X,
+  ChevronLeft
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -47,6 +49,7 @@ import {
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
+import { FilterDrawer, FilterGroup } from "@/components/admin/FilterDrawer"
 
 // Type pour un artisan
 type Artisan = {
@@ -80,14 +83,22 @@ const specialities = [
 
 export default function AdminArtisansPage() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
-  const [selectedSpeciality, setSelectedSpeciality] = useState<string | null>(null)
-  const [selectedAvailability, setSelectedAvailability] = useState<string | null>(null)
-  const [selectedVerification, setSelectedVerification] = useState<string | null>(null)
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string | null>>({
+    status: null,
+    speciality: null, 
+    availability: null, 
+    verification: null
+  })
   const [artisans, setArtisans] = useState<Artisan[]>([])
   const [uniqueSpecialities, setUniqueSpecialities] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  // Récupération des filtres individuels pour retrocompatibilité avec le code existant
+  const selectedStatus = selectedFilters.status
+  const selectedSpeciality = selectedFilters.speciality
+  const selectedAvailability = selectedFilters.availability
+  const selectedVerification = selectedFilters.verification
 
   // Charger les artisans depuis l'API
   useEffect(() => {
@@ -123,6 +134,70 @@ export default function AdminArtisansPage() {
 
     fetchArtisans()
   }, [])
+
+  // Définition des groupes de filtres
+  const filterGroups: FilterGroup[] = [
+    {
+      id: "status",
+      title: "Statut",
+      options: [
+        { id: "all", label: "Tous", value: null as any },
+        { id: "active", label: "Actifs", value: "actif" },
+        { id: "inactive", label: "Inactifs", value: "inactif" }
+      ]
+    },
+    {
+      id: "verification",
+      title: "Vérification",
+      options: [
+        { id: "all-verif", label: "Toutes", value: null as any },
+        { id: "verified", label: "Vérifiées", value: "VERIFIED" },
+        { id: "pending", label: "En attente", value: "PENDING" },
+        { id: "rejected", label: "Rejetées", value: "REJECTED" }
+      ]
+    },
+    {
+      id: "availability",
+      title: "Disponibilité",
+      options: [
+        { id: "all-avail", label: "Toutes", value: null as any },
+        { id: "available", label: "Disponible", value: "disponible" },
+        { id: "busy", label: "Occupé", value: "occupé" },
+        { id: "unavailable", label: "Indisponible", value: "indisponible" }
+      ]
+    },
+    {
+      id: "speciality",
+      title: "Spécialité",
+      options: [
+        { id: "all-spec", label: "Toutes", value: null as any },
+        ...uniqueSpecialities.map(spec => ({
+          id: spec.toLowerCase().replace(/\s+/g, '-'),
+          label: spec,
+          value: spec
+        }))
+      ]
+    }
+  ];
+
+  // Fonction pour changer un filtre
+  const handleFilterChange = (groupId: string, value: string | null) => {
+    setSelectedFilters(prev => ({
+      ...prev,
+      [groupId]: value
+    }));
+  };
+
+  // Fonction pour réinitialiser tous les filtres
+  const handleResetFilters = () => {
+    setSelectedFilters({
+      status: null,
+      speciality: null,
+      availability: null,
+      verification: null
+    });
+    setSearchQuery("");
+  };
 
   // Filtrer les artisans selon les critères
   const filteredArtisans = artisans.filter(artisan => {
@@ -251,75 +326,194 @@ export default function AdminArtisansPage() {
         </Button>
       </div>
 
-      {/* Vue d'ensemble des artisans */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total des artisans
-            </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
+      {/* Vue d'ensemble des artisans - Optimisée pour mobile */}
+      <div className="grid grid-cols-3 gap-2 md:gap-4">
+        <Card className="border shadow-sm overflow-hidden">
+          <div className="h-1 bg-blue-500"></div>
+          <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
             {isLoading ? (
-              <Skeleton className="h-7 w-16" />
+              <Skeleton className="h-9 w-12 my-2" />
             ) : (
               <>
-                <div className="text-2xl font-bold">{totalArtisans}</div>
-                <p className="text-xs text-muted-foreground">
-                  {activeArtisans} artisans actifs
-                </p>
+                <span className="text-2xl md:text-4xl font-bold text-blue-600 dark:text-blue-400">{totalArtisans}</span>
+                <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">Artisans</span>
+                <span className="text-[10px] md:text-xs text-green-500 mt-0.5 md:mt-1">{activeArtisans} actifs</span>
               </>
             )}
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Projets en cours
-            </CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
+        <Card className="border shadow-sm overflow-hidden">
+          <div className="h-1 bg-amber-500"></div>
+          <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
             {isLoading ? (
-              <Skeleton className="h-7 w-16" />
+              <Skeleton className="h-9 w-12 my-2" />
             ) : (
               <>
-                <div className="text-2xl font-bold">
-                  {totalCurrentProjects}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Sur {totalCompletedProjects} projets complétés
-                </p>
+                <span className="text-2xl md:text-4xl font-bold text-amber-600 dark:text-amber-400">{totalCurrentProjects}</span>
+                <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">Projets</span>
+                <span className="text-[10px] md:text-xs text-green-500 mt-0.5 md:mt-1">{totalCompletedProjects} terminés</span>
               </>
             )}
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Chiffre d&apos;affaires généré
-            </CardTitle>
-            <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
+        <Card className="border shadow-sm overflow-hidden">
+          <div className="h-1 bg-green-500"></div>
+          <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
             {isLoading ? (
-              <Skeleton className="h-7 w-16" />
+              <Skeleton className="h-9 w-12 my-2" />
             ) : (
               <>
-                <div className="text-2xl font-bold">
-                  {totalEarnings.toLocaleString()}€
+                <span className="text-2xl md:text-4xl font-bold text-green-600 dark:text-green-400">{totalEarnings.toLocaleString()}€</span>
+                <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">CA</span>
+                <div className="flex items-center text-[10px] md:text-xs text-amber-500 mt-0.5 md:mt-1">
+                  <Star className="h-3 w-3 mr-1 fill-amber-500" />
+                  <span>{averageRating}/5</span>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Note moyenne: {averageRating}/5
-                </p>
               </>
             )}
           </CardContent>
         </Card>
       </div>
+
+      {/* Barre de recherche avec bouton pour ouvrir le drawer de filtres */}
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Rechercher par nom, email, téléphone..."
+            className="w-full pl-9"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1 h-7 w-7"
+              onClick={() => setSearchQuery("")}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
+        
+        {/* FilterDrawer pour desktop */}
+        <FilterDrawer
+          title="Filtres"
+          description="Filtrez les artisans selon différents critères"
+          side="right"
+          className="hidden md:block"
+          trigger={
+            <Button variant="outline" size="icon" className="h-9 w-9 hidden md:flex">
+              <Filter className="h-4 w-4" />
+            </Button>
+          }
+          filterGroups={filterGroups}
+          selectedFilters={selectedFilters}
+          onFilterChange={handleFilterChange}
+          onResetFilters={handleResetFilters}
+        />
+        
+        {/* FilterDrawer pour mobile */}
+        <FilterDrawer
+          title="Filtres"
+          description="Filtrez les artisans selon différents critères"
+          side="bottom"
+          isMobile={true}
+          trigger={
+            <Button variant="outline" size="icon" className="h-9 w-9 md:hidden">
+              <Filter className="h-4 w-4" />
+            </Button>
+          }
+          filterGroups={filterGroups}
+          selectedFilters={selectedFilters}
+          onFilterChange={handleFilterChange}
+          onResetFilters={handleResetFilters}
+        />
+        
+        {/* Indicateurs de filtres actifs */}
+        {(selectedStatus || selectedSpeciality || selectedAvailability || selectedVerification) && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="hidden sm:inline-flex gap-1 h-9"
+            onClick={handleResetFilters}
+          >
+            <X className="h-3.5 w-3.5" />
+            Réinitialiser
+          </Button>
+        )}
+        
+        <Button variant="outline" size="icon" className="h-9 w-9">
+          <Download className="h-4 w-4" />
+        </Button>
+      </div>
+      
+      {/* Affichage des filtres actifs */}
+      {(selectedStatus || selectedSpeciality || selectedAvailability || selectedVerification) && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Filtres actifs:</span>
+          {selectedStatus && (
+            <Badge variant="secondary" className="h-6 gap-1">
+              Statut: {selectedStatus === "actif" ? "Actif" : "Inactif"}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-3 w-3 p-0 ml-1"
+                onClick={() => handleFilterChange("status", null)}
+              >
+                <X className="h-2 w-2" />
+              </Button>
+            </Badge>
+          )}
+          {selectedSpeciality && (
+            <Badge variant="secondary" className="h-6 gap-1">
+              Spécialité: {selectedSpeciality}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-3 w-3 p-0 ml-1"
+                onClick={() => handleFilterChange("speciality", null)}
+              >
+                <X className="h-2 w-2" />
+              </Button>
+            </Badge>
+          )}
+          {selectedAvailability && (
+            <Badge variant="secondary" className="h-6 gap-1">
+              Disponibilité: {selectedAvailability}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-3 w-3 p-0 ml-1"
+                onClick={() => handleFilterChange("availability", null)}
+              >
+                <X className="h-2 w-2" />
+              </Button>
+            </Badge>
+          )}
+          {selectedVerification && (
+            <Badge variant="secondary" className="h-6 gap-1">
+              Vérification: {
+                selectedVerification === "VERIFIED" ? "Vérifié" : 
+                selectedVerification === "PENDING" ? "En attente" : 
+                "Rejeté"
+              }
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-3 w-3 p-0 ml-1"
+                onClick={() => handleFilterChange("verification", null)}
+              >
+                <X className="h-2 w-2" />
+              </Button>
+            </Badge>
+          )}
+        </div>
+      )}
 
       <Card>
         <CardHeader className="pb-3">
@@ -349,21 +543,21 @@ export default function AdminArtisansPage() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", !selectedStatus && "font-bold")}
-                    onClick={() => setSelectedStatus(null)}
+                    onClick={() => handleFilterChange("status", null)}
                   >
                     Tous
                     {!selectedStatus && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", selectedStatus === "actif" && "font-bold")}
-                    onClick={() => setSelectedStatus("actif")}
+                    onClick={() => handleFilterChange("status", "actif")}
                   >
                     Actifs
                     {selectedStatus === "actif" && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", selectedStatus === "inactif" && "font-bold")}
-                    onClick={() => setSelectedStatus("inactif")}
+                    onClick={() => handleFilterChange("status", "inactif")}
                   >
                     Inactifs
                     {selectedStatus === "inactif" && <Check className="ml-auto h-4 w-4" />}
@@ -384,7 +578,7 @@ export default function AdminArtisansPage() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", !selectedSpeciality && "font-bold")}
-                    onClick={() => setSelectedSpeciality(null)}
+                    onClick={() => handleFilterChange("speciality", null)}
                   >
                     Toutes
                     {!selectedSpeciality && <Check className="ml-auto h-4 w-4" />}
@@ -393,7 +587,7 @@ export default function AdminArtisansPage() {
                     <DropdownMenuItem 
                       key={speciality}
                       className={cn("flex items-center gap-2 cursor-pointer", selectedSpeciality === speciality && "font-bold")}
-                      onClick={() => setSelectedSpeciality(speciality)}
+                      onClick={() => handleFilterChange("speciality", speciality)}
                     >
                       {speciality}
                       {selectedSpeciality === speciality && <Check className="ml-auto h-4 w-4" />}
@@ -415,28 +609,28 @@ export default function AdminArtisansPage() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", !selectedAvailability && "font-bold")}
-                    onClick={() => setSelectedAvailability(null)}
+                    onClick={() => handleFilterChange("availability", null)}
                   >
                     Toutes
                     {!selectedAvailability && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "disponible" && "font-bold")}
-                    onClick={() => setSelectedAvailability("disponible")}
+                    onClick={() => handleFilterChange("availability", "disponible")}
                   >
                     Disponible
                     {selectedAvailability === "disponible" && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "occupé" && "font-bold")}
-                    onClick={() => setSelectedAvailability("occupé")}
+                    onClick={() => handleFilterChange("availability", "occupé")}
                   >
                     Occupé
                     {selectedAvailability === "occupé" && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "indisponible" && "font-bold")}
-                    onClick={() => setSelectedAvailability("indisponible")}
+                    onClick={() => handleFilterChange("availability", "indisponible")}
                   >
                     Indisponible
                     {selectedAvailability === "indisponible" && <Check className="ml-auto h-4 w-4" />}
@@ -457,28 +651,28 @@ export default function AdminArtisansPage() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", !selectedVerification && "font-bold")}
-                    onClick={() => setSelectedVerification(null)}
+                    onClick={() => handleFilterChange("verification", null)}
                   >
                     Toutes
                     {!selectedVerification && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "VERIFIED" && "font-bold")}
-                    onClick={() => setSelectedVerification("VERIFIED")}
+                    onClick={() => handleFilterChange("verification", "VERIFIED")}
                   >
                     Vérifiées
                     {selectedVerification === "VERIFIED" && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "REJECTED" && "font-bold")}
-                    onClick={() => setSelectedVerification("REJECTED")}
+                    onClick={() => handleFilterChange("verification", "REJECTED")}
                   >
                     Rejetées
                     {selectedVerification === "REJECTED" && <Check className="ml-auto h-4 w-4" />}
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "PENDING" && "font-bold")}
-                    onClick={() => setSelectedVerification("PENDING")}
+                    onClick={() => handleFilterChange("verification", "PENDING")}
                   >
                     En attente
                     {selectedVerification === "PENDING" && <Check className="ml-auto h-4 w-4" />}
@@ -486,13 +680,7 @@ export default function AdminArtisansPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              <Button variant="outline" size="sm" onClick={() => {
-                setSearchQuery("")
-                setSelectedStatus(null)
-                setSelectedSpeciality(null)
-                setSelectedAvailability(null)
-                setSelectedVerification(null)
-              }}>
+              <Button variant="outline" size="sm" onClick={handleResetFilters}>
                 Réinitialiser
               </Button>
               
