@@ -54,7 +54,7 @@ export function ArtisanSidebar({ isOpen, closeSidebar }: ArtisanSidebarProps) {
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed top-20 bottom-20 md:top-24 md:bottom-8 left-4 z-40 w-64 bg-white dark:bg-gray-900",
+          "fixed top-20 bottom-20 md:top-24 md:bottom-8 left-4 z-40 w-64 bg-white dark:bg-black/95",
           "rounded-xl shadow-lg border border-gray-100 dark:border-gray-800",
           "transform transition-transform duration-300 ease-in-out overflow-hidden",
           isOpen ? "translate-x-0" : "-translate-x-[calc(100%+16px)] md:translate-x-0"

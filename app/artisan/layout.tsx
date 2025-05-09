@@ -70,7 +70,7 @@ export default function ArtisanDashboardLayout({ children }: PropsWithChildren) 
 
   return (
     <NotificationProvider>
-      <div className="h-screen overflow-hidden bg-gray-50 dark:bg-gray-950 flex flex-col">
+      <div className="h-screen overflow-hidden bg-gray-50 dark:bg-black/95 flex flex-col">
         {/* Header flottant */}
         <ArtisanHeader toggleSidebar={() => setSidebarOpen(true)} />
 

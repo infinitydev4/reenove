@@ -209,7 +209,7 @@ export default function ArtisanDashboardPage() {
     if (isOnboardingComplete) return null;
     
     return (
-      <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950/20 dark:border-orange-800 mb-6">
+      <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950/10 dark:border-orange-800/50 mb-6">
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center">
             <AlertTriangle className="h-4 w-4 text-orange-500 mr-2" />

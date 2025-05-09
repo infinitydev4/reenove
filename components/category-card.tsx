@@ -36,7 +36,7 @@ export default function CategoryCard({ icon, title, count }: CategoryCardProps) 
 
   return (
     <Link href={`/categories/${title.toLowerCase()}`}>
-      <Card className="overflow-hidden transition-all hover:shadow-md hover:bg-gray-50 dark:hover:bg-gray-800">
+      <Card className="overflow-hidden transition-all hover:shadow-md hover:bg-gray-50 dark:hover:bg-zinc-900">
         <CardContent className="p-4 flex flex-col items-center text-center">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-3">
             {getIcon()}
