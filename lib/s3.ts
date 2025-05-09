@@ -1,21 +1,21 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
 
 // Vérifier si AWS S3 est correctement configuré
-const isS3Configured = !!(process.env.AWS_ACCESS_KEY_ID && 
-                        process.env.AWS_SECRET_ACCESS_KEY && 
-                        process.env.AWS_BUCKET_NAME)
+const isS3Configured = !!(process.env.REENOVE_AWS_ACCESS_KEY_ID && 
+                        process.env.REENOVE_AWS_SECRET_ACCESS_KEY && 
+                        process.env.REENOVE_AWS_S3_BUCKET_NAME)
 
 // Configuration AWS S3 seulement si les clés sont définies
 const s3Client = isS3Configured ? new S3Client({
-  region: process.env.AWS_REGION || "eu-west-3",
+  region: process.env.REENOVE_AWS_REGION || "eu-west-3",
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ""
+    accessKeyId: process.env.REENOVE_AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.REENOVE_AWS_SECRET_ACCESS_KEY || ""
   }
 }) : null
 
 // Récupérer le nom du bucket
-const bucketName = process.env.AWS_BUCKET_NAME || ""
+const bucketName = process.env.REENOVE_AWS_S3_BUCKET_NAME || ""
 
 /**
  * Téléverser un fichier vers AWS S3
@@ -42,7 +42,7 @@ export async function uploadToS3(buffer: Buffer, key: string, contentType: strin
     }))
     
     // Générer l'URL du fichier
-    const fileUrl = `https://${bucketName}.s3.${process.env.AWS_REGION || "eu-west-3"}.amazonaws.com/${key}`
+    const fileUrl = `https://${bucketName}.s3.${process.env.REENOVE_AWS_REGION || "eu-west-3"}.amazonaws.com/${key}`
     console.log("Fichier uploadé avec succès:", fileUrl)
     
     return fileUrl

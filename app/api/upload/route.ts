@@ -14,10 +14,10 @@ cloudinary.config({
 
 // Configuration AWS S3 (prioritaire)
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION || "eu-west-3",
+  region: process.env.REENOVE_AWS_REGION || "eu-west-3",
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || ""
+    accessKeyId: process.env.REENOVE_AWS_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.REENOVE_AWS_SECRET_ACCESS_KEY || ""
   }
 })
 
@@ -65,13 +65,13 @@ export async function POST(request: NextRequest) {
     // Essayer d'utiliser AWS S3 d'abord
     try {
       await s3Client.send(new PutObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME || "",
+        Bucket: process.env.REENOVE_AWS_S3_BUCKET_NAME || "",
         Key: s3Key,
         Body: buffer,
         ContentType: file.type
       }))
       
-      imageUrl = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || "eu-west-3"}.amazonaws.com/${s3Key}`
+      imageUrl = `https://${process.env.REENOVE_AWS_S3_BUCKET_NAME}.s3.${process.env.REENOVE_AWS_REGION || "eu-west-3"}.amazonaws.com/${s3Key}`
     } catch (s3Error) {
       console.error("Erreur AWS S3:", s3Error)
       // Si S3 échoue, utiliser Cloudinary comme fallback
