@@ -101,8 +101,8 @@ async function processCategories(categoryChunk: CategoryData[], allServices: Rec
   // Résultats de ce lot
   let createdCategories = 0;
   let createdServices = 0;
-  let skippedCategories: string[] = [];
-  let skippedServices: string[] = [];
+  const skippedCategories: string[] = [];
+  const skippedServices: string[] = [];
 
   // Traiter chaque catégorie une par une (sans transaction)
   for (const category of categoryChunk) {
