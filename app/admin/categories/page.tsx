@@ -338,6 +338,13 @@ export default function AdminCategoriesPage() {
                       ))}
                     </div>
                   </div>
+
+                  <div className="mt-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-md">
+                    <p className="text-sm text-amber-700">
+                      <AlertCircle className="h-4 w-4 inline-block mr-1" /> 
+                      L&apos;importation peut prendre jusqu&apos;à 30 secondes. Veuillez patienter pendant le processus.
+                    </p>
+                  </div>
                 </div>
               </div>
               
@@ -349,7 +356,7 @@ export default function AdminCategoriesPage() {
                   {importing ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Importation...
+                      Importation en cours...
                     </>
                   ) : (
                     <>
@@ -359,6 +366,18 @@ export default function AdminCategoriesPage() {
                   )}
                 </Button>
               </DialogFooter>
+              
+              {importing && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <div className="flex items-center">
+                    <Loader2 className="h-5 w-5 text-blue-600 animate-spin mr-3" />
+                    <div>
+                      <p className="text-sm font-medium text-blue-800">Importation en cours</p>
+                      <p className="text-xs text-blue-600 mt-1">Cela peut prendre jusqu&apos;à 30 secondes. Veuillez ne pas fermer cette fenêtre.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {error && (
                 <div className="mt-4 p-3 bg-red-50 text-red-700 rounded-md text-sm flex items-start">

@@ -147,6 +147,9 @@ export async function POST(req: Request) {
         skippedCategoriesCount: skippedCategories.length,
         skippedServicesCount: skippedServices.length
       }
+    }, {
+      // Augmenter le timeout de la transaction à 30 secondes pour gérer les nombreuses opérations
+      timeout: 30000 // 30 secondes au lieu des 5 secondes par défaut
     })
     
     return NextResponse.json({
