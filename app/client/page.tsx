@@ -315,24 +315,39 @@ export default function ClientDashboardPage() {
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Résumé</CardTitle>
         </CardHeader>
-        <CardContent className="pb-2">
+        <CardContent className="pb-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="flex flex-col">
-              <span className="text-xl font-bold">{projects.length}</span>
-              <span className="text-xs text-muted-foreground">Projets en cours</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold">3</span>
-              <span className="text-xs text-muted-foreground">Messages non lus</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold">{events.length}</span>
-              <span className="text-xs text-muted-foreground">Événements à venir</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold">{artisans.length}</span>
-              <span className="text-xs text-muted-foreground">Artisans favoris</span>
-            </div>
+            <Card className="border shadow-sm overflow-hidden">
+              <div className="h-1 bg-blue-500"></div>
+              <CardContent className="p-4 flex flex-col items-center justify-center">
+                <span className="text-4xl font-bold text-blue-600 dark:text-blue-400">{projects.length}</span>
+                <span className="text-xs text-muted-foreground mt-2 text-center">Projets en cours</span>
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-sm overflow-hidden">
+              <div className="h-1 bg-amber-500"></div>
+              <CardContent className="p-4 flex flex-col items-center justify-center">
+                <span className="text-4xl font-bold text-amber-600 dark:text-amber-400">3</span>
+                <span className="text-xs text-muted-foreground mt-2 text-center">Messages non lus</span>
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-sm overflow-hidden">
+              <div className="h-1 bg-purple-500"></div>
+              <CardContent className="p-4 flex flex-col items-center justify-center">
+                <span className="text-4xl font-bold text-purple-600 dark:text-purple-400">{events.length}</span>
+                <span className="text-xs text-muted-foreground mt-2 text-center">Événements à venir</span>
+              </CardContent>
+            </Card>
+
+            <Card className="border shadow-sm overflow-hidden">
+              <div className="h-1 bg-green-500"></div>
+              <CardContent className="p-4 flex flex-col items-center justify-center">
+                <span className="text-4xl font-bold text-green-600 dark:text-green-400">{artisans.length}</span>
+                <span className="text-xs text-muted-foreground mt-2 text-center">Artisans favoris</span>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
         <CardFooter>
