@@ -167,10 +167,10 @@ export function UploadForm({ maxFiles = 6, onUploadComplete }: UploadFormProps) 
   
   return (
     <Card className="w-full">
-      <CardContent className="p-6 space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <CardContent className="p-4 space-y-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {previews.map((preview, index) => (
-            <div key={index} className="relative aspect-square rounded-md overflow-hidden border">
+            <div key={index} className="relative rounded-md overflow-hidden border aspect-[4/3]">
               <Image 
                 src={preview} 
                 alt={`Photo ${index + 1}`} 
@@ -180,44 +180,44 @@ export function UploadForm({ maxFiles = 6, onUploadComplete }: UploadFormProps) 
               
               {/* Indicateur de statut de téléchargement */}
               {index >= uploadedUrls.length ? (
-                <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center p-4">
-                  <Loader2 className="h-8 w-8 text-white animate-spin mb-2" />
-                  <p className="text-white text-sm text-center">Téléchargement...</p>
+                <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center p-2">
+                  <Loader2 className="h-6 w-6 text-white animate-spin mb-1" />
+                  <p className="text-white text-xs text-center">Téléchargement...</p>
                   <Progress 
                     value={Object.values(uploadProgress)[index] || 0} 
-                    className="h-1 w-3/4 mt-2 bg-white/20" 
+                    className="h-1 w-3/4 mt-1 bg-white/20" 
                   />
                 </div>
               ) : uploadErrors[index] ? (
-                <div className="absolute inset-0 bg-red-500/60 flex flex-col items-center justify-center p-4">
-                  <AlertCircle className="h-8 w-8 text-white mb-2" />
+                <div className="absolute inset-0 bg-red-500/60 flex flex-col items-center justify-center p-2">
+                  <AlertCircle className="h-6 w-6 text-white mb-1" />
                   <p className="text-white text-xs text-center">{uploadErrors[index]}</p>
                 </div>
               ) : (
-                <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1">
-                  <CheckCircle className="h-4 w-4 text-white" />
+                <div className="absolute top-1 right-1 bg-green-500 rounded-full p-1">
+                  <CheckCircle className="h-3 w-3 text-white" />
                 </div>
               )}
               
               <Button 
                 variant="destructive" 
                 size="icon" 
-                className="absolute top-2 left-2 h-8 w-8"
+                className="absolute top-1 left-1 h-6 w-6"
                 onClick={() => removeFile(index)}
                 disabled={isUploading}
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3 w-3" />
               </Button>
             </div>
           ))}
           
           {files.length < maxFiles && (
-            <label className="relative flex flex-col items-center justify-center aspect-square cursor-pointer border-2 border-dashed rounded-md hover:bg-muted/50">
-              <div className="flex flex-col items-center justify-center p-4 text-center space-y-2">
-                <Upload className="h-8 w-8 text-muted-foreground" />
-                <p className="text-sm font-medium">Déposer les photos ici</p>
-                <p className="text-xs text-muted-foreground">
-                  PNG, JPG ou JPEG (max {maxFiles - files.length} photos)
+            <label className="relative flex flex-col items-center justify-center aspect-[4/3] cursor-pointer border-2 border-dashed rounded-md hover:bg-muted/50">
+              <div className="flex flex-col items-center justify-center p-2 text-center space-y-1">
+                <Upload className="h-6 w-6 text-muted-foreground" />
+                <p className="text-xs font-medium">Déposer les photos</p>
+                <p className="text-[10px] text-muted-foreground">
+                  PNG, JPG (max {maxFiles - files.length})
                 </p>
               </div>
               <input
@@ -233,9 +233,9 @@ export function UploadForm({ maxFiles = 6, onUploadComplete }: UploadFormProps) 
         </div>
         
         {isUploading && (
-          <div className="flex items-center justify-center p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-md">
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            <p className="text-sm">Téléchargement de vos images en cours...</p>
+          <div className="flex items-center justify-center p-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-md">
+            <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
+            <p className="text-xs">Téléchargement en cours...</p>
           </div>
         )}
       </CardContent>

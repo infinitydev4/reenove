@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, Search, Star, PenToolIcon as Tool, Users } from "lucide-react"
+import { ArrowRight, Search, Star, PenToolIcon as Tool, Users, Sparkles, Bolt } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import ArtisanCard from "@/components/artisan-card"
@@ -13,32 +13,44 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-100 dark:from-gray-950 dark:to-gray-900">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-100 dark:from-black dark:to-black/95">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                    Trouvez l&apos;artisan idéal pour votre projet
+                    Trouvez l&apos;artisan idéal pour votre projet de rénovation
                   </h1>
                   <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
                     Connectez-vous avec des professionnels qualifiés pour tous vos besoins de rénovation, construction
                     et décoration.
                   </p>
                 </div>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <div className="flex-1 relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-                    <Input
-                      type="search"
-                      placeholder="Plombier, électricien, menuisier..."
-                      className="w-full pl-9 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm"
-                    />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="group">
+                    <div className="bg-white dark:bg-card rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-all h-full flex flex-col">
+                      <div className="h-12 w-12 bg-gray-100 dark:bg-black/80 rounded-full flex items-center justify-center mb-4">
+                        <Sparkles className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">Service sur mesure</h3>
+                      <p className="text-gray-500 dark:text-gray-400 mb-4 flex-grow">Créez un projet personnalisé selon vos besoins spécifiques.</p>
+                      <Button className="w-full" asChild>
+                        <Link href="/create-project">Créer un projet</Link>
+                      </Button>
+                    </div>
                   </div>
-                  <Button>
-                    Rechercher
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <div className="group">
+                    <div className="bg-white dark:bg-card rounded-xl p-6 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-all h-full flex flex-col">
+                      <div className="h-12 w-12 bg-gray-100 dark:bg-black/80 rounded-full flex items-center justify-center mb-4">
+                        <Bolt className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+                      </div>
+                      <h3 className="text-xl font-bold mb-2">Reenove Express</h3>
+                      <p className="text-gray-500 dark:text-gray-400 mb-4 flex-grow">Solutions rapides et efficaces pour vos projets urgents.</p>
+                      <Button className="w-full dark:bg-gray-800" variant="outline" disabled>
+                        Bientôt disponible
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div className="mx-auto w-full max-w-[500px] lg:max-w-none">
@@ -54,7 +66,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-12 md:py-24 lg:py-32 dark:bg-black">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -75,7 +87,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-gray-900">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50 dark:bg-black/90">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -122,7 +134,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-12 md:py-24 lg:py-32 dark:bg-black">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
               <div className="mx-auto w-full max-w-[500px] lg:max-w-none order-2 lg:order-1">
@@ -201,7 +213,7 @@ export default function Home() {
           </div>
         </section> */}
       </main>
-      <footer className="w-full border-t py-6 md:py-0">
+      <footer className="w-full border-t py-6 md:py-0 dark:border-gray-800">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4 md:h-16">
           <p className="text-sm text-gray-500 dark:text-gray-400">© 2024 Reenove. Tous droits réservés.</p>
           <nav className="flex gap-4 sm:gap-6">

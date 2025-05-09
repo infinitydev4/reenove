@@ -40,7 +40,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
-import { toast } from "@/components/ui/toast"
+import { toast } from "sonner"
 
 interface User {
   id: string;
@@ -95,11 +95,7 @@ export default function AdminUsersPage() {
       setPagination(data.pagination)
     } catch (error) {
       console.error("Erreur:", error)
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les utilisateurs. Veuillez réessayer.",
-        variant: "destructive",
-      })
+      toast.error("Impossible de charger les utilisateurs. Veuillez réessayer.")
     } finally {
       setIsLoading(false)
     }
@@ -137,10 +133,7 @@ export default function AdminUsersPage() {
   const handleCopyEmail = (email: string) => {
     if (!email) return
     navigator.clipboard.writeText(email)
-    toast({
-      title: "Copié !",
-      description: "L'email a été copié dans le presse-papiers",
-    })
+    toast.success("L'email a été copié dans le presse-papiers")
   }
   
   const handleDeleteUser = async (userId: string) => {
@@ -159,21 +152,13 @@ export default function AdminUsersPage() {
         throw new Error(error.error || "Erreur lors de la suppression de l'utilisateur")
       }
 
-      toast({
-        title: "Utilisateur supprimé",
-        description: "L'utilisateur a été supprimé avec succès",
-        variant: "default",
-      })
+      toast.success("L'utilisateur a été supprimé avec succès")
 
       // Recharger les utilisateurs après suppression
       loadUsers()
     } catch (error) {
       console.error("Erreur:", error)
-      toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression",
-        variant: "destructive",
-      })
+      toast.error(error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression")
     } finally {
       setIsDeleting(null)
     }
@@ -342,10 +327,7 @@ export default function AdminUsersPage() {
                 size="sm"
                 disabled={isLoading || users.length === 0}
                 onClick={() => {
-                  toast({
-                    title: "Export en cours",
-                    description: "Cette fonctionnalité sera disponible prochainement.",
-                  })
+                  toast("Cette fonctionnalité sera disponible prochainement.")
                 }}
               >
                 <Download className="mr-2 h-4 w-4" />

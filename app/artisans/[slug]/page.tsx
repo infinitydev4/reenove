@@ -291,7 +291,7 @@ export default function ArtisanProfilePage({ params }: { params: { slug: string 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-muted/50 rounded-lg p-3 text-center">
                         <p className="text-2xl font-bold">{artisan.experience}</p>
-                        <p className="text-xs text-muted-foreground">Années d'expérience</p>
+                        <p className="text-xs text-muted-foreground">Années d&apos;expérience</p>
                       </div>
                       <div className="bg-muted/50 rounded-lg p-3 text-center">
                         <p className="text-2xl font-bold">{artisan.projectsCompleted}+</p>
@@ -323,7 +323,7 @@ export default function ArtisanProfilePage({ params }: { params: { slug: string 
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium mb-3">Zone d'intervention</h3>
+                    <h3 className="text-sm font-medium mb-3">Zone d&apos;intervention</h3>
                     <p className="text-sm">{artisan.serviceArea}</p>
                   </div>
 
@@ -561,7 +561,7 @@ export default function ArtisanProfilePage({ params }: { params: { slug: string 
                           <h4 className="font-medium text-sm">Délai de réponse</h4>
                           <p className="text-sm text-muted-foreground mt-1">
                             {artisan.name} répond généralement dans les 24 heures. Pour les demandes urgentes, nous vous
-                            recommandons de l'appeler directement.
+                            recommandons de l&apos;appeler directement.
                           </p>
                         </div>
                       </div>

@@ -22,7 +22,7 @@ export async function updateOnboardingProgress(userId: string, step: string) {
     }
 
     // Vérifier si l'étape est valide
-    if (!['profile', 'specialties', 'documents', 'confirmation'].includes(step)) {
+    if (!['profile', 'location', 'specialties', 'documents', 'confirmation'].includes(step)) {
       throw new Error('Étape d\'onboarding invalide')
     }
 
@@ -34,6 +34,14 @@ export async function updateOnboardingProgress(userId: string, step: string) {
           data: { 
             // S'assurer que les champs existent dans le modèle
             // Ces champs sont soit déjà définis, soit à définir dans le schéma
+            onboardingCompleted: true 
+          }
+        })
+        break
+      case 'location':
+        await prisma.artisanProfile.update({
+          where: { userId },
+          data: { 
             onboardingCompleted: true 
           }
         })
@@ -81,6 +89,9 @@ export async function getOnboardingProgress(userId: string) {
     // Récupérer le profil artisan
     const artisanProfile = await prisma.artisanProfile.findUnique({
       where: { userId },
+      include: {
+        user: true // Inclure les informations de l'utilisateur
+      }
     })
 
     if (!artisanProfile) {
@@ -97,6 +108,7 @@ export async function getOnboardingProgress(userId: string) {
         completedSteps: [],
         progress: {
           profile: false,
+          location: false,
           specialties: false,
           documents: false,
           confirmation: false
@@ -123,6 +135,11 @@ export async function getOnboardingProgress(userId: string) {
       completedSteps.push('profile')
     }
     
+    // Location complétée si l'adresse et le code postal sont définis dans le User
+    if (artisanProfile && artisanProfile.user && artisanProfile.user.address && artisanProfile.user.postalCode) {
+      completedSteps.push('location')
+    }
+    
     // Spécialités complétées si au moins une spécialité existe
     if (specialties.length > 0) {
       completedSteps.push('specialties')
@@ -145,6 +162,7 @@ export async function getOnboardingProgress(userId: string) {
       completedSteps,
       progress: {
         profile: !!artisanProfile,
+        location: !!artisanProfile && !!artisanProfile.user && !!artisanProfile.user.address && !!artisanProfile.user.postalCode,
         specialties: specialties.length > 0,
         documents: documents.length >= 2 && 
                   documents.some((doc: { type: string }) => doc.type === 'KBIS') && 

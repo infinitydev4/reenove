@@ -1,15 +1,15 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect, FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, ArrowRight, Upload } from "lucide-react"
+import { ArrowLeft, ArrowRight, Upload, X, ImageIcon } from "lucide-react"
 import { PageHeader } from "@/components/page-header"
+import { toast } from "sonner"
 import { UploadForm } from "@/components/project/upload-form"
-import { toast } from "@/components/ui/toast-handler"
 
 // Services fictifs (normalement récupérés depuis la base de données en fonction de la catégorie)
 const services = {
@@ -37,9 +37,7 @@ const services = {
 // Type pour le formulaire
 interface ProjectDetails {
   title: string
-  service: string
   description: string
-  propertyType: string
   photos: string[]
 }
 
@@ -50,27 +48,41 @@ export default function DetailsPage() {
   const [projectPhotos, setProjectPhotos] = useState<string[]>([])
   const [isFormValid, setIsFormValid] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    // Animation d'entrée
+    setIsVisible(true)
+    
     // Récupérer les données sauvegardées si elles existent
     const savedData = localStorage.getItem("projectDetails")
     if (savedData) {
-      const { title, description, photos } = JSON.parse(savedData)
-      setProjectTitle(title || "")
-      setProjectDescription(description || "")
-      if (photos && Array.isArray(photos)) {
-        setProjectPhotos(photos)
+      try {
+        const details: ProjectDetails = JSON.parse(savedData)
+        setProjectTitle(details.title || "")
+        setProjectDescription(details.description || "")
+        setProjectPhotos(details.photos || [])
+      } catch (error) {
+        console.error("Erreur lors du chargement des détails:", error)
       }
     }
   }, [])
 
   useEffect(() => {
     // Valider le formulaire
-    setIsFormValid(projectTitle.trim().length > 0 && projectDescription.trim().length >= 10)
+    setIsFormValid(
+      projectTitle.trim().length >= 3 && 
+      projectDescription.trim().length >= 10
+    )
   }, [projectTitle, projectDescription])
 
   const handleUploadComplete = (urls: string[]) => {
     setProjectPhotos(urls)
+  }
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    saveAndContinue()
   }
 
   const saveAndContinue = () => {
@@ -86,7 +98,6 @@ export default function DetailsPage() {
       if (existingData) {
         try {
           details = JSON.parse(existingData)
-          console.log("Données existantes récupérées:", details)
         } catch (error) {
           console.error("Erreur lors de la récupération des données existantes:", error)
         }
@@ -100,25 +111,16 @@ export default function DetailsPage() {
         photos: projectPhotos, // Ajouter les URLs des photos téléchargées
       }
       
-      console.log("Données à sauvegarder:", details)
-      
       // Sauvegarder les données
       localStorage.setItem("projectDetails", JSON.stringify(details))
       
-      toast({
-        title: "Détails sauvegardés",
-        description: "Les détails de votre projet ont été enregistrés avec succès."
-      })
+      toast.success("Les détails de votre projet ont été enregistrés avec succès.")
       
       // Naviguer vers l'étape suivante
       router.push("/create-project/budget")
     } catch (error) {
       console.error("Erreur lors de la sauvegarde des détails:", error)
-      toast({
-        title: "Erreur",
-        description: "Une erreur s'est produite lors de la sauvegarde des détails.",
-        variant: "destructive"
-      })
+      toast.error("Une erreur s'est produite lors de la sauvegarde des détails.")
     } finally {
       setIsSubmitting(false)
     }
@@ -146,97 +148,99 @@ export default function DetailsPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-8">
+    <div className="space-y-3 md:space-y-6">
       <PageHeader
         title="Détails de votre projet"
-        description="Décrivez précisément votre projet pour obtenir les meilleures propositions d'artisans"
-        className="mb-8"
+        description="Décrivez votre projet pour obtenir les meilleures propositions"
+        className="mb-3 md:mb-6"
       />
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="space-y-6"
-      >
-        <motion.div variants={itemVariants} className="space-y-2">
-          <h3 className="text-lg font-medium">
-            Photos du projet
-          </h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Ajoutez jusqu'à 6 photos pour mieux illustrer votre projet et aider les artisans à comprendre vos besoins.
-          </p>
-          <UploadForm 
-            maxFiles={6} 
-            onUploadComplete={handleUploadComplete}
-          />
-          <p className="text-sm text-muted-foreground mt-2">
-            Les photos doivent être au format JPG, JPEG ou PNG et ne pas dépasser 5Mo chacune.
-          </p>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="space-y-2">
-          <label htmlFor="title" className="text-lg font-medium">
-            Titre du projet
-          </label>
-          <Input
-            id="title"
-            placeholder="Ex: Rénovation de salle de bain"
-            value={projectTitle}
-            onChange={(e) => setProjectTitle(e.target.value)}
-            className="w-full p-3 text-base"
-          />
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="space-y-2">
-          <label htmlFor="description" className="text-lg font-medium">
-            Description détaillée
-          </label>
-          <Textarea
-            id="description"
-            placeholder="Décrivez votre projet en détail : dimensions, matériaux souhaités, préférences particulières..."
-            value={projectDescription}
-            onChange={(e) => setProjectDescription(e.target.value)}
-            className="w-full min-h-[200px] p-3 text-base"
-          />
-          <p className="text-sm text-muted-foreground">
-            {projectDescription.length < 10
-              ? `Minimum 10 caractères (${projectDescription.length}/10)`
-              : `${projectDescription.length} caractères`}
-          </p>
-        </motion.div>
-
+      <form id="project-form" onSubmit={handleSubmit}>
         <motion.div
-          variants={itemVariants}
-          className="flex flex-col sm:flex-row gap-4 justify-between pt-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-3 md:space-y-6"
         >
-          <Button
-            variant="outline"
-            onClick={() => router.push("/create-project/category")}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Précédent
-          </Button>
-          
-          <Button
-            onClick={saveAndContinue}
-            disabled={!isFormValid || isSubmitting}
-            className="flex items-center gap-2"
-          >
-            {isSubmitting ? (
-              <>
-                Sauvegarde en cours...
-              </>
-            ) : (
-              <>
-                Suivant
-                <ArrowRight className="h-4 w-4" />
-              </>
+          <motion.div variants={itemVariants} className="space-y-1.5 md:space-y-2">
+            <h3 className="text-sm md:text-lg font-medium">
+              Photos du projet
+            </h3>
+            <p className="text-xs text-muted-foreground mb-2">
+              Ajoutez jusqu&apos;à 6 photos pour illustrer votre projet.
+            </p>
+            <UploadForm 
+              maxFiles={6} 
+              onUploadComplete={handleUploadComplete}
+            />
+            <p className="text-[10px] md:text-xs text-muted-foreground mt-1">
+              Formats: JPG, PNG (max 5Mo)
+            </p>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-1.5 md:space-y-2">
+            <label htmlFor="title" className="text-sm md:text-lg font-medium">
+              Titre du projet
+            </label>
+            <Input
+              id="title"
+              placeholder="Ex: Rénovation de salle de bain"
+              value={projectTitle}
+              onChange={(e) => setProjectTitle(e.target.value)}
+              className="w-full p-2 text-sm"
+            />
+            {projectTitle && projectTitle.length < 3 && (
+              <p className="text-[10px] md:text-xs text-destructive">Le titre doit comporter au moins 3 caractères</p>
             )}
-          </Button>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-1.5 md:space-y-2">
+            <label htmlFor="description" className="text-sm md:text-lg font-medium">
+              Description détaillée
+            </label>
+            <Textarea
+              id="description"
+              placeholder="Décrivez votre projet: dimensions, matériaux souhaités..."
+              value={projectDescription}
+              onChange={(e) => setProjectDescription(e.target.value)}
+              className="w-full min-h-[80px] md:min-h-[200px] p-2 text-sm"
+            />
+            <p className={`text-[10px] md:text-xs ${
+              projectDescription.length < 10 ? "text-destructive" : "text-muted-foreground"
+            }`}>
+              {projectDescription.length < 10
+                ? `Minimum 10 caractères (${projectDescription.length}/10)`
+                : `${projectDescription.length} caractères`}
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col sm:flex-row gap-3 justify-between pt-3 md:pt-6 hidden sm:flex"
+          >
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/create-project/category")}
+              className="flex items-center gap-2"
+              size="sm"
+            >
+              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4" />
+              Précédent
+            </Button>
+            
+            <Button
+              type="submit"
+              disabled={!isFormValid || isSubmitting}
+              className="flex items-center gap-2"
+              size="sm"
+            >
+              {isSubmitting ? "Enregistrement..." : "Suivant"}
+              <ArrowRight className="h-3 w-3 md:h-4 md:w-4" />
+            </Button>
+          </motion.div>
         </motion.div>
-      </motion.div>
+      </form>
     </div>
   )
 } 

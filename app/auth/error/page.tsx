@@ -37,7 +37,7 @@ export default function AuthErrorPage() {
     <div className="container flex flex-col items-center justify-center h-screen max-w-md py-10">
       <div className="w-full space-y-6">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">Erreur d'authentification</h1>
+          <h1 className="text-3xl font-bold">Erreur d&apos;authentification</h1>
           <p className="text-gray-500">Un problème est survenu lors de la connexion</p>
         </div>
         
@@ -57,7 +57,7 @@ export default function AuthErrorPage() {
           
           <div className="text-center mt-4">
             <p className="text-sm text-muted-foreground">
-              Besoin d'aide ? <Link href="/contact" className="text-primary hover:underline">Contactez-nous</Link>
+              Besoin d&apos;aide ? <Link href="/contact" className="text-primary hover:underline">Contactez-nous</Link>
             </p>
           </div>
         </div>

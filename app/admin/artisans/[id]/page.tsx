@@ -58,8 +58,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useToast } from "@/components/ui/toast"
-import { toast } from "@/components/ui/toast-handler"
+import { useToast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
 // Type pour un artisan
@@ -209,20 +209,12 @@ export default function ArtisanDetailPage() {
           } else {
             console.error("Impossible de récupérer les documents:", await documentsResponse.text())
             setDocuments([])
-            toast({
-              title: "Erreur",
-              description: "Impossible de récupérer les documents de l'artisan.",
-              variant: "destructive",
-            })
+            toast.error("Impossible de récupérer les documents de l'artisan.")
           }
         } catch (docError) {
           console.error("Erreur lors de la récupération des documents:", docError)
           setDocuments([])
-          toast({
-            title: "Erreur",
-            description: "Une erreur s'est produite lors de la récupération des documents.",
-            variant: "destructive",
-          })
+          toast.error("Une erreur s'est produite lors de la récupération des documents.")
         }
         
         setError(null)
@@ -365,22 +357,16 @@ export default function ArtisanDetailPage() {
         verified: status === "VERIFIED"
       })
       
-      toast({
-        title: "Statut mis à jour",
-        description: status === "VERIFIED" 
-          ? "L'artisan a été vérifié avec succès." 
-          : status === "REJECTED" 
-            ? "L'artisan a été rejeté." 
-            : "L'artisan est en attente de vérification.",
-        variant: status === "VERIFIED" ? "default" : status === "REJECTED" ? "destructive" : "default",
-      })
+      if (status === "VERIFIED") {
+        toast.success("L'artisan a été vérifié avec succès.")
+      } else if (status === "REJECTED") {
+        toast.error("L'artisan a été rejeté.")
+      } else {
+        toast("L'artisan est en attente de vérification.")
+      }
     } catch (err) {
       console.error("Erreur lors de la mise à jour du statut:", err)
-      toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour le statut de vérification.",
-        variant: "destructive",
-      })
+      toast.error("Impossible de mettre à jour le statut de vérification.")
     } finally {
       setIsUpdating(false)
     }
@@ -395,31 +381,20 @@ export default function ArtisanDetailPage() {
         const response = await fetch(`/api/admin/documents/${document.id}`)
         
         if (!response.ok) {
-          toast({
-            title: "Erreur",
-            description: "Ce document n'a pas de fichier associé pour le téléchargement.",
-            variant: "destructive",
-          })
+          toast.error("Ce document n'a pas de fichier associé pour le téléchargement.")
           return
         }
         
         const documentData = await response.json()
         if (!documentData.fileUrl) {
-          toast({
-            title: "Erreur",
-            description: "URL du document non disponible.",
-            variant: "destructive",
-          })
+          toast.error("URL du document non disponible.")
           return
         }
         
         // Utiliser l'URL du document réel
         window.open(documentData.fileUrl, '_blank')
         
-        toast({
-          title: "Téléchargement en cours",
-          description: `Le document "${document.name}" est en cours de téléchargement.`,
-        })
+        toast.success(`Le document "${document.name}" est en cours de téléchargement.`)
         
         return
       }
@@ -428,10 +403,7 @@ export default function ArtisanDetailPage() {
       if (document.fileUrl.includes('amazonaws.com')) {
         window.open(document.fileUrl, '_blank')
         
-        toast({
-          title: "Téléchargement en cours",
-          description: `Le document "${document.name}" est en cours de téléchargement.`,
-        })
+        toast.success(`Le document "${document.name}" est en cours de téléchargement.`)
         return
       }
       
@@ -443,37 +415,23 @@ export default function ArtisanDetailPage() {
       link.click()
       window.document.body.removeChild(link)
       
-      toast({
-        title: "Téléchargement en cours",
-        description: `Le document "${document.name}" est en cours de téléchargement.`,
-      })
+      toast.success(`Le document "${document.name}" est en cours de téléchargement.`)
     } catch (err) {
       console.error("Erreur lors du téléchargement:", err)
-      toast({
-        title: "Erreur",
-        description: "Impossible de télécharger le document.",
-        variant: "destructive",
-      })
+      toast.error("Impossible de télécharger le document.")
     }
   }
 
   // Fonction pour télécharger tous les documents
   const handleDownloadAllDocuments = async () => {
     if (documents.length === 0) {
-      toast({
-        title: "Information",
-        description: "Aucun document à télécharger.",
-        variant: "default",
-      })
+      toast.info("Aucun document à télécharger.")
       return
     }
 
     // Télécharger les documents un par un
     try {
-      toast({
-        title: "Préparation du téléchargement",
-        description: `${documents.length} documents en cours de récupération...`,
-      })
+      toast.info(`${documents.length} documents en cours de récupération...`)
       
       let downloadCount = 0
       
@@ -508,24 +466,13 @@ export default function ArtisanDetailPage() {
       }
       
       if (downloadCount > 0) {
-        toast({
-          title: "Téléchargement en cours",
-          description: `${downloadCount} document(s) en cours de téléchargement.`,
-        })
+        toast.success(`${downloadCount} document(s) en cours de téléchargement.`)
       } else {
-        toast({
-          title: "Erreur",
-          description: "Aucun document n'a pu être téléchargé.",
-          variant: "destructive",
-        })
+        toast.error("Aucun document n'a pu être téléchargé.")
       }
     } catch (err) {
       console.error("Erreur lors du téléchargement des documents:", err)
-      toast({
-        title: "Erreur",
-        description: "Impossible de télécharger les documents.",
-        variant: "destructive",
-      })
+      toast.error("Impossible de télécharger les documents.")
     }
   }
 
@@ -815,7 +762,7 @@ export default function ArtisanDetailPage() {
                     <div className="flex flex-col">
                       <span className="text-xs text-muted-foreground">Assurance</span>
                       <div className="flex items-center">
-                        <span className="text-sm font-medium">Valide jusqu'au 15/01/2024</span>
+                        <span className="text-sm font-medium">Valide jusqu&apos;au 15/01/2024</span>
                         <Badge className="ml-2 bg-green-500 text-[10px] py-0 px-2">Active</Badge>
                       </div>
                     </div>
@@ -1146,27 +1093,27 @@ export default function ArtisanDetailPage() {
                 <div className="border-l-2 border-muted pl-4 py-2">
                   <div className="text-sm font-medium">Mise à jour du profil</div>
                   <div className="text-xs text-muted-foreground">15/04/2023 à 14:30</div>
-                  <div className="text-sm mt-1">L'artisan a mis à jour ses informations de contact</div>
+                  <div className="text-sm mt-1">L&apos;artisan a mis à jour ses informations de contact</div>
                 </div>
                 <div className="border-l-2 border-muted pl-4 py-2">
                   <div className="text-sm font-medium">Nouveau projet</div>
                   <div className="text-xs text-muted-foreground">10/04/2023 à 09:15</div>
-                  <div className="text-sm mt-1">Ajout du projet "Installation électrique"</div>
+                  <div className="text-sm mt-1">Ajout du projet &quot;Installation électrique&quot;</div>
                 </div>
                 <div className="border-l-2 border-muted pl-4 py-2">
                   <div className="text-sm font-medium">Document expiré</div>
                   <div className="text-xs text-muted-foreground">05/04/2023 à 00:00</div>
-                  <div className="text-sm mt-1">L'assurance professionnelle a expiré</div>
+                  <div className="text-sm mt-1">L&apos;assurance professionnelle a expiré</div>
                 </div>
                 <div className="border-l-2 border-muted pl-4 py-2">
                   <div className="text-sm font-medium">Projet terminé</div>
                   <div className="text-xs text-muted-foreground">28/03/2023 à 17:45</div>
-                  <div className="text-sm mt-1">Le projet "Rénovation salle de bain" a été marqué comme terminé</div>
+                  <div className="text-sm mt-1">Le projet &quot;Rénovation salle de bain&quot; a été marqué comme terminé</div>
                 </div>
                 <div className="border-l-2 border-muted pl-4 py-2">
                   <div className="text-sm font-medium">Nouvelle évaluation</div>
                   <div className="text-xs text-muted-foreground">28/03/2023 à 18:10</div>
-                  <div className="text-sm mt-1">L'artisan a reçu une évaluation 5/5 pour le projet "Rénovation salle de bain"</div>
+                  <div className="text-sm mt-1">L&apos;artisan a reçu une évaluation 5/5 pour le projet &quot;Rénovation salle de bain&quot;</div>
                 </div>
               </div>
             </CardContent>

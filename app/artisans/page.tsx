@@ -123,7 +123,7 @@ export default function ArtisansPage() {
         </div>
 
         <div className="flex justify-center mt-8">
-          <Button variant="outline">Charger plus d'artisans</Button>
+          <Button variant="outline">Charger plus d&apos;artisans</Button>
         </div>
       </div>
     </div>

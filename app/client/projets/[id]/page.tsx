@@ -33,7 +33,8 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/components/ui/toast-handler"
+import { toast } from "sonner"
+import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
 
 // Interface pour les projets
 interface Project {
@@ -160,11 +161,7 @@ export default function ProjectDetailPage() {
         setProject(data)
       } catch (error) {
         console.error("Erreur:", error)
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les détails du projet. Veuillez réessayer plus tard.",
-          variant: "destructive"
-        })
+        toast.error("Impossible de charger les détails du projet. Veuillez réessayer plus tard.")
       } finally {
         setIsLoading(false)
       }
@@ -219,7 +216,7 @@ export default function ProjectDetailPage() {
             <FileText className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-medium mb-2">Projet introuvable</h3>
             <p className="text-muted-foreground text-center max-w-md mb-6">
-              Ce projet n'existe pas ou vous n'avez pas les permissions pour y accéder.
+              Ce projet n&apos;existe pas ou vous n&apos;avez pas les permissions pour y accéder.
             </p>
             <Button asChild>
               <Link href="/client/projets">
@@ -430,6 +427,18 @@ export default function ProjectDetailPage() {
                       </div>
                     </div>
                   </div>
+                  
+                  {project.location && project.postalCode && project.city && (
+                    <div className="mt-4">
+                      <GoogleMapComponent
+                        address={project.location}
+                        city={project.city}
+                        postalCode={project.postalCode}
+                        mapHeight="200px"
+                        className="w-full rounded-md border"
+                      />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -497,7 +506,7 @@ export default function ProjectDetailPage() {
                     <div className="flex items-start gap-2">
                       <Clock className="h-4 w-4 text-muted-foreground mt-0.5" />
                       <div>
-                        <div className="text-sm">Niveau d'urgence</div>
+                        <div className="text-sm">Niveau d&apos;urgence</div>
                         <div className="font-medium">
                           {project.urgencyLevel === "URGENT" ? "Urgent (7 jours)" : 
                            project.urgencyLevel === "SOON" ? "Dès que possible (15 jours)" : 
@@ -568,9 +577,9 @@ export default function ProjectDetailPage() {
                   <CircleDollarSign className="h-12 w-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium mb-2">Aucun devis reçu</h3>
                   <p className="text-muted-foreground text-center max-w-md mb-6">
-                    Vous n'avez pas encore reçu de devis pour ce projet. 
+                    Vous n&apos;avez pas encore reçu de devis pour ce projet. 
                     {project.status === "DRAFT" 
-                      ? " Publiez votre projet pour recevoir des propositions d'artisans." 
+                      ? " Publiez votre projet pour recevoir des propositions d&apos;artisans." 
                       : " Les artisans consultent votre projet et pourront vous envoyer leurs propositions."}
                   </p>
                   {project.status === "DRAFT" && (
@@ -590,7 +599,7 @@ export default function ProjectDetailPage() {
             <CardHeader>
               <CardTitle>Planning des travaux</CardTitle>
               <CardDescription>
-                Suivez l'avancement et les dates clés de votre projet
+                Suivez l&apos;avancement et les dates clés de votre projet
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -619,7 +628,7 @@ export default function ProjectDetailPage() {
                 <MessagesSquare className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium mb-2">Aucune conversation</h3>
                 <p className="text-muted-foreground text-center max-w-md mb-6">
-                  Vous n'avez pas encore de conversations liées à ce projet.
+                  Vous n&apos;avez pas encore de conversation liées à ce projet.
                 </p>
                 <Button>
                   Contacter un artisan
@@ -646,9 +655,8 @@ export default function ProjectDetailPage() {
             </Button>
           )}
           {["DRAFT", "PUBLISHED", "PENDING"].includes(project.status) && (
-            <Button variant="destructive" onClick={() => toast({
-              title: "Fonctionnalité à venir",
-              description: "L'annulation de projet sera bientôt disponible",
+            <Button variant="destructive" onClick={() => toast.info("Fonctionnalité à venir", {
+              description: "L'annulation de projet sera bientôt disponible"
             })}>
               <XCircle className="mr-2 h-4 w-4" />
               Annuler le projet

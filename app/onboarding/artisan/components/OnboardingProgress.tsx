@@ -3,33 +3,7 @@ import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, AlertCircle, Clock, ChevronRight } from "lucide-react"
-
-export const ONBOARDING_STEPS = [
-  {
-    id: "profile",
-    title: "Informations de profil",
-    description: "Complétez vos informations personnelles et d'entreprise",
-    path: "/onboarding/artisan/profile"
-  },
-  {
-    id: "specialties",
-    title: "Spécialités",
-    description: "Indiquez vos domaines d'expertise principaux et secondaires",
-    path: "/onboarding/artisan/specialties"
-  },
-  {
-    id: "documents",
-    title: "Documents obligatoires",
-    description: "Importez vos documents professionnels (KBIS, assurances, etc.)",
-    path: "/onboarding/artisan/documents"
-  },
-  {
-    id: "confirmation",
-    title: "Confirmation",
-    description: "Vérifiez et confirmez vos informations",
-    path: "/onboarding/artisan/confirmation"
-  }
-]
+import { ONBOARDING_STEPS } from "../constants"
 
 type StepStatus = "completed" | "current" | "pending" | "blocked"
 

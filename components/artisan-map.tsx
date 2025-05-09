@@ -48,7 +48,7 @@ export default function ArtisanMap({ coordinates, name }: ArtisanMapProps) {
       <div className="absolute bottom-0 left-0 right-0 p-3 bg-background/80 backdrop-blur-sm">
         <div className="flex items-center">
           <MapPin className="h-4 w-4 mr-2 text-primary" />
-          <span className="text-sm font-medium">Zone d'intervention: Lyon et sa périphérie (jusqu'à 50km)</span>
+          <span className="text-sm font-medium">Zone d&apos;intervention: Lyon et sa périphérie (jusqu&apos;à 50km)</span>
         </div>
       </div>
     </div>

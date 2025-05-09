@@ -29,9 +29,21 @@ export async function GET() {
       where: { userId },
     })
 
+    // Diviser le nom complet en prénom et nom si possible
+    let firstName = "", lastName = "";
+    if (user.name) {
+      const nameParts = user.name.split(" ");
+      if (nameParts.length > 0) {
+        firstName = nameParts[0];
+        lastName = nameParts.slice(1).join(" ");
+      }
+    }
+
     // Fusionner les données utilisateur et profil artisan
     const profileData = {
       name: user.name,
+      firstName,
+      lastName,
       email: user.email,
       phone: user.phone,
       address: user.address,
@@ -74,10 +86,14 @@ export async function POST(request: NextRequest) {
     console.log("Données reçues pour mise à jour du profil:", data)
 
     try {
+      // Créer le nom complet à partir du prénom et du nom
+      const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+
       // Mise à jour des données utilisateur
       await prisma.user.update({
         where: { id: userId },
         data: {
+          name: fullName,
           phone: data.phone,
           address: data.address,
           city: data.city,
@@ -105,8 +121,14 @@ export async function POST(request: NextRequest) {
 
       // Mettre à jour la progression de l'onboarding
       try {
-        await updateOnboardingProgress(userId, 'profile')
-        console.log(`Étape profile complétée pour l'utilisateur ${userId}`)
+        // Si les données contiennent une adresse et un code postal, cela concerne l'étape de localisation
+        if (data.address && data.postalCode) {
+          await updateOnboardingProgress(userId, 'location')
+          console.log(`Étape location complétée pour l'utilisateur ${userId}`)
+        } else {
+          await updateOnboardingProgress(userId, 'profile')
+          console.log(`Étape profile complétée pour l'utilisateur ${userId}`)
+        }
       } catch (progressError) {
         console.error("Erreur lors de la mise à jour de la progression:", progressError)
         // Ne pas bloquer la réponse en cas d'erreur de progression

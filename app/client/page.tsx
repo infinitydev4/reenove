@@ -277,7 +277,7 @@ export default function ClientDashboard() {
           <div className="text-center">
             <Button variant="outline" asChild>
               <a href="/artisans">
-                Voir plus d'artisans
+                Voir plus d&apos;artisans
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
             </Button>

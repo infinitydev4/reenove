@@ -4,7 +4,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useSession, signOut } from "next-auth/react"
-import { ArrowRightCircle, User2, Inbox, UserCircle, HomeIcon, Wrench, LogOut, Settings, LayoutDashboard, ShieldQuestion, PlusCircle } from "lucide-react"
+import { ArrowRightCircle, User2, Inbox, UserCircle, HomeIcon, Wrench, LogOut, Settings, LayoutDashboard, ShieldQuestion, PlusCircle, Sun, Moon } from "lucide-react"
+import { useTheme } from "next-themes"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +23,7 @@ export default function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
   const { data: session, status } = useSession()
+  const { theme, setTheme } = useTheme()
 
   const getInitials = (name: string) => {
     if (!name) return "U";
@@ -29,15 +31,29 @@ export default function Navbar() {
     return names.map((n) => n[0]).join("");
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            {/* <Image src="/logo.svg" alt="Logo" width={32} height={32} /> */}
-            <span className="hidden font-bold sm:inline-block">
-              Reenove
-            </span>
+            <Image
+              src="/logo.png"
+              alt="Reenove Logo"
+              width={140}
+              height={40}
+              className="h-6 w-auto object-contain block dark:hidden"
+            />
+            <Image
+              src="/logow.png"
+              alt="Reenove Logo"
+              width={140}
+              height={40}
+              className="h-6 w-auto object-contain hidden dark:block"
+            />
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
             {/* <Link
@@ -65,10 +81,43 @@ export default function Navbar() {
         </div>
 
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="md:hidden">
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo.png"
+                alt="Reenove Logo"
+                width={110}
+                height={30}
+                className="h-5 w-auto object-contain block dark:hidden"
+              />
+              <Image
+                src="/logow.png"
+                alt="Reenove Logo"
+                width={110}
+                height={30}
+                className="h-5 w-auto object-contain hidden dark:block"
+              />
+            </Link>
+          </div>
           <div className="w-full flex-1 md:w-auto md:flex-none">
             {/* Recherche ou autre contenu */}
           </div>
           <nav className="flex items-center">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              aria-label="Changer de thème" 
+              onClick={toggleTheme}
+              className="mr-2"
+            >
+              {theme === "dark" ? (
+                <Sun className="h-[1.2rem] w-[1.2rem] text-yellow-400" />
+              ) : (
+                <Moon className="h-[1.2rem] w-[1.2rem] text-slate-700" />
+              )}
+              <span className="sr-only">Changer de thème</span>
+            </Button>
+
             <Link href="/create-project/category">
               <Button variant="outline" className="mr-2">
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -167,9 +216,8 @@ export default function Navbar() {
             ) : (
               <>
                 <Link href="/auth?tab=login">
-                  <Button variant="ghost" className="mr-2">
-                    <User2 className="mr-2 h-4 w-4" />
-                    <span>Connexion</span>
+                  <Button variant="ghost">
+                    <User2 className="h-4 w-4" />
                   </Button>
                 </Link>
                 {/* <Link href="/register/role">

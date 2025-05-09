@@ -129,7 +129,7 @@ export default function AdminDashboardPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Tableau de bord</h1>
           <p className="text-muted-foreground">
-            Bienvenue sur votre tableau de bord d'administration.
+            Bienvenue sur votre tableau de bord d&apos;administration.
           </p>
         </div>
         <div className="mt-4 md:mt-0 space-x-2">

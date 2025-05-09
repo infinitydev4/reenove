@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
+import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -94,7 +95,22 @@ export default function AuthPage() {
     <div className="container flex flex-col items-center justify-center h-screen max-w-md py-10">
       <div className="w-full">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold">Reenove</h1>
+          <Link href="/" className="inline-block mb-4">
+            <Image
+              src="/logo.png"
+              alt="Reenove Logo"
+              width={140}
+              height={40}
+              className="h-10 w-auto object-contain block dark:hidden"
+            />
+            <Image
+              src="/logow.png"
+              alt="Reenove Logo"
+              width={140}
+              height={40}
+              className="h-10 w-auto object-contain hidden dark:block"
+            />
+          </Link>
           <p className="text-gray-500">Connexion à la plateforme</p>
         </div>
 

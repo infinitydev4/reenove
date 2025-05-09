@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { step } = body
 
-    if (!step || !['profile', 'specialties', 'documents', 'confirmation'].includes(step)) {
+    if (!step || !['profile', 'location', 'specialties', 'documents', 'confirmation'].includes(step)) {
       return NextResponse.json(
         { error: "Étape invalide ou manquante" },
         { status: 400 }

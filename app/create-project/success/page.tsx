@@ -47,7 +47,7 @@ export default function SuccessPage() {
         <h1 className="text-3xl font-bold">Projet soumis avec succès !</h1>
         <p className="text-muted-foreground max-w-xl">
           {projectTitle ? (
-            <>Votre projet <span className="font-medium text-foreground">"{projectTitle}"</span> a été enregistré et sera bientôt examiné par des artisans qualifiés.</>
+            <>Votre projet <span className="font-medium text-foreground">&quot;{projectTitle}&quot;</span> a été enregistré et sera bientôt examiné par des artisans qualifiés.</>
           ) : (
             <>Votre projet a été enregistré et sera bientôt examiné par des artisans qualifiés.</>
           )}
@@ -66,7 +66,7 @@ export default function SuccessPage() {
               <div className="flex-1">
                 <h3 className="font-medium">Examen du projet</h3>
                 <p className="text-muted-foreground">
-                  Notre équipe va vérifier les détails de votre projet dans les 24 heures pour s'assurer que tout est en ordre.
+                  Notre équipe va vérifier les détails de votre projet dans les 24 heures pour s&apos;assurer que tout est en ordre.
                 </p>
               </div>
             </div>
@@ -78,7 +78,7 @@ export default function SuccessPage() {
                 <Search className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-medium">Recherche d'artisans</h3>
+                <h3 className="font-medium">Recherche d&apos;artisans</h3>
                 <p className="text-muted-foreground">
                   Des artisans qualifiés dans votre région recevront votre demande et pourront vous proposer leurs services.
                 </p>
@@ -110,7 +110,7 @@ export default function SuccessPage() {
         </Button>
         <Button asChild>
           <Link href="/">
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </Link>
         </Button>
       </div>
@@ -118,7 +118,7 @@ export default function SuccessPage() {
       <div className="text-center text-sm text-muted-foreground pt-6 pb-10">
         <p>Vous recevrez également un email récapitulatif avec les détails de votre projet.</p>
         <p className="mt-1">
-          Besoin d'aide ? <Link href="/contact" className="text-primary hover:underline">Contactez notre support</Link>
+          Besoin d&apos;aide ? <Link href="/contact" className="text-primary hover:underline">Contactez notre support</Link>
         </p>
       </div>
     </div>

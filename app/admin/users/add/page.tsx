@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { toast } from "@/components/ui/toast"
+import { toast } from "sonner"
 
 export default function AddUserPage() {
   const router = useRouter()
@@ -42,40 +42,24 @@ export default function AddUserPage() {
   // Valider le formulaire
   const validateForm = () => {
     if (!formData.name.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Le nom est requis",
-        variant: "destructive",
-      })
+      toast.error("Le nom est requis")
       return false
     }
 
     if (!formData.email.trim()) {
-      toast({
-        title: "Erreur",
-        description: "L'email est requis",
-        variant: "destructive",
-      })
+      toast.error("L'email est requis")
       return false
     }
 
     // Validation simple de l'email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(formData.email)) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez entrer un email valide",
-        variant: "destructive",
-      })
+      toast.error("Veuillez entrer un email valide")
       return false
     }
 
     if (!formData.password || formData.password.length < 8) {
-      toast({
-        title: "Erreur",
-        description: "Le mot de passe doit comporter au moins 8 caractères",
-        variant: "destructive",
-      })
+      toast.error("Le mot de passe doit comporter au moins 8 caractères")
       return false
     }
 
@@ -106,20 +90,13 @@ export default function AddUserPage() {
       }
 
       const data = await response.json()
-      toast({
-        title: "Succès",
-        description: "Utilisateur créé avec succès",
-      })
+      toast.success("Utilisateur créé avec succès")
 
       // Rediriger vers la page de détail de l'utilisateur créé
       router.push(`/admin/users/${data.id}`)
     } catch (error) {
       console.error("Erreur:", error)
-      toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Une erreur est survenue lors de la création",
-        variant: "destructive",
-      })
+      toast.error(error instanceof Error ? error.message : "Une erreur est survenue lors de la création")
     } finally {
       setIsLoading(false)
     }
@@ -244,7 +221,7 @@ export default function AddUserPage() {
               ) : (
                 <>
                   <Save className="mr-2 h-4 w-4" />
-                  Créer l'utilisateur
+                  Créer l&apos;utilisateur
                 </>
               )}
             </Button>

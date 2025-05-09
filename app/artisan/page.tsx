@@ -18,7 +18,9 @@ import {
   AlertCircle,
   Wrench,
   MapPin,
-  Send
+  Send,
+  AlertTriangle,
+  ChevronRight as ChevronRightIcon
 } from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -29,6 +31,7 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { TestNotificationsArtisan } from "@/components/artisan/TestNotificationsArtisan"
 import { useNotifications } from "@/lib/contexts/NotificationContext"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function ArtisanDashboardPage() {
   const router = useRouter()
@@ -36,6 +39,13 @@ export default function ArtisanDashboardPage() {
   const [activeTab, setActiveTab] = useState("today")
   const { unreadCount } = useNotifications()
   const [isLoading, setIsLoading] = useState(true)
+  const [onboardingProgress, setOnboardingProgress] = useState<{
+    profile: boolean;
+    specialties: boolean;
+    documents: boolean;
+    assessment: boolean;
+    confirmation: boolean;
+  } | null>(null)
 
   // Vérifier si l'onboarding est complété
   useEffect(() => {
@@ -50,17 +60,18 @@ export default function ArtisanDashboardPage() {
           const response = await fetch("/api/artisan/onboarding/progress")
           if (response.ok) {
             const data = await response.json()
-            const { progress } = data
+            setOnboardingProgress(data.progress)
             
             // Vérifier si toutes les étapes obligatoires sont complétées
-            const isProfileComplete = progress.profile
-            const isSpecialtiesComplete = progress.specialties
-            const isDocumentsComplete = progress.documents
+            const isProfileComplete = data.progress.profile
+            const isSpecialtiesComplete = data.progress.specialties
+            const isDocumentsComplete = data.progress.documents
             
             // Si un des éléments essentiels n'est pas complété, rediriger vers l'onboarding
-            if (!isProfileComplete || !isSpecialtiesComplete || !isDocumentsComplete) {
-              router.push("/onboarding/artisan")
-            }
+            // Nous ne redirigeons plus automatiquement, on affiche un statut à la place
+            // if (!isProfileComplete || !isSpecialtiesComplete || !isDocumentsComplete) {
+            //   router.push("/onboarding/artisan")
+            // }
           }
         } catch (error) {
           console.error("Erreur lors de la vérification de l'onboarding:", error)
@@ -83,6 +94,21 @@ export default function ArtisanDashboardPage() {
       </div>
     )
   }
+
+  // Vérifier si l'onboarding est complet
+  const isOnboardingComplete = 
+    onboardingProgress?.profile && 
+    onboardingProgress?.specialties && 
+    onboardingProgress?.documents;
+
+  // Calculer le pourcentage de complétion
+  const calculateCompletionPercentage = () => {
+    if (!onboardingProgress) return 0;
+    
+    const steps = ['profile', 'specialties', 'documents', 'assessment'];
+    const completedSteps = steps.filter(step => onboardingProgress[step as keyof typeof onboardingProgress]).length;
+    return Math.round((completedSteps / steps.length) * 100);
+  };
 
   // Données fictives
   const pendingQuotes = [
@@ -150,6 +176,91 @@ export default function ArtisanDashboardPage() {
     },
   ]
 
+  // Composant de statut d'onboarding
+  const OnboardingStatusCard = () => {
+    if (isOnboardingComplete) return null;
+    
+    return (
+      <Card className="border-orange-200 bg-orange-50 dark:bg-orange-950/20 dark:border-orange-800 mb-8">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg flex items-center">
+            <AlertTriangle className="h-5 w-5 text-orange-500 mr-2" />
+            Compte en attente de vérification
+          </CardTitle>
+          <CardDescription className="text-orange-700 dark:text-orange-400">
+            Complétez votre profil pour activer toutes les fonctionnalités
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm">Progression</span>
+                <span className="text-sm font-medium">{calculateCompletionPercentage()}%</span>
+              </div>
+              <Progress value={calculateCompletionPercentage()} className="h-2" />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className={`flex items-center p-2 rounded-md ${onboardingProgress?.profile ? 'bg-green-100 dark:bg-green-900/20' : 'bg-orange-100 dark:bg-orange-900/20'}`}>
+                <div className={`p-1 rounded-full mr-2 ${onboardingProgress?.profile ? 'bg-green-500/20' : 'bg-orange-500/20'}`}>
+                  {onboardingProgress?.profile ? (
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-orange-600" />
+                  )}
+                </div>
+                <span className="text-sm">Informations professionnelles</span>
+              </div>
+              
+              <div className={`flex items-center p-2 rounded-md ${onboardingProgress?.specialties ? 'bg-green-100 dark:bg-green-900/20' : 'bg-orange-100 dark:bg-orange-900/20'}`}>
+                <div className={`p-1 rounded-full mr-2 ${onboardingProgress?.specialties ? 'bg-green-500/20' : 'bg-orange-500/20'}`}>
+                  {onboardingProgress?.specialties ? (
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-orange-600" />
+                  )}
+                </div>
+                <span className="text-sm">Compétences et spécialités</span>
+              </div>
+              
+              <div className={`flex items-center p-2 rounded-md ${onboardingProgress?.documents ? 'bg-green-100 dark:bg-green-900/20' : 'bg-orange-100 dark:bg-orange-900/20'}`}>
+                <div className={`p-1 rounded-full mr-2 ${onboardingProgress?.documents ? 'bg-green-500/20' : 'bg-orange-500/20'}`}>
+                  {onboardingProgress?.documents ? (
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-orange-600" />
+                  )}
+                </div>
+                <span className="text-sm">Documents professionnels</span>
+              </div>
+              
+              <div className={`flex items-center p-2 rounded-md ${onboardingProgress?.assessment ? 'bg-green-100 dark:bg-green-900/20' : 'bg-orange-100 dark:bg-orange-900/20'}`}>
+                <div className={`p-1 rounded-full mr-2 ${onboardingProgress?.assessment ? 'bg-green-500/20' : 'bg-orange-500/20'}`}>
+                  {onboardingProgress?.assessment ? (
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-orange-600" />
+                  )}
+                </div>
+                <span className="text-sm">Auto-évaluation</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="pt-0">
+          <Button 
+            className="w-full" 
+            onClick={() => router.push('/onboarding/artisan')}
+          >
+            Compléter mon profil
+            <ChevronRightIcon className="h-4 w-4 ml-2" />
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -176,6 +287,9 @@ export default function ArtisanDashboardPage() {
           </Button>
         </div>
       </div>
+
+      {/* Section statut onboarding */}
+      <OnboardingStatusCard />
 
       {/* Section des cartes de statistiques */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

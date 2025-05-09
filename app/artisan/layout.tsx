@@ -1,8 +1,8 @@
 "use client"
 
-import { PropsWithChildren, useState } from "react"
+import { PropsWithChildren, useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { 
   LayoutDashboard, 
@@ -16,7 +16,8 @@ import {
   LogOut, 
   Menu, 
   X,
-  Home
+  Home,
+  AlertTriangle
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -24,11 +25,41 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { NotificationProvider } from "@/lib/contexts/NotificationContext"
 import { NotificationDropdown } from "@/components/ui/notifications/NotificationDropdown"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function ArtisanDashboardLayout({ children }: PropsWithChildren) {
   const { data: session } = useSession()
   const pathname = usePathname()
+  const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [onboardingStatus, setOnboardingStatus] = useState<{
+    profile: boolean;
+    specialties: boolean;
+    documents: boolean;
+    assessment: boolean;
+    confirmation: boolean;
+  } | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      try {
+        const response = await fetch("/api/artisan/onboarding/progress")
+        if (response.ok) {
+          const data = await response.json()
+          setOnboardingStatus(data.progress)
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération du statut d'onboarding:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    if (session) {
+      checkOnboardingStatus()
+    }
+  }, [session])
 
   const getInitials = (name: string) => {
     if (!name) return "A"
@@ -47,6 +78,34 @@ export default function ArtisanDashboardLayout({ children }: PropsWithChildren) 
     { name: "Statistiques", href: "/artisan/statistiques", icon: BarChart3 },
     { name: "Paramètres", href: "/artisan/parametres", icon: Settings },
   ]
+
+  // Vérifier si toutes les étapes d'onboarding obligatoires sont complétées
+  const isOnboardingComplete = 
+    onboardingStatus?.profile && 
+    onboardingStatus?.specialties && 
+    onboardingStatus?.documents
+
+  // Composant d'alerte pour l'onboarding incomplet
+  const OnboardingAlert = () => {
+    if (isLoading || isOnboardingComplete) return null;
+    
+    return (
+      <Alert variant="destructive" className="mb-4">
+        <AlertTriangle className="h-4 w-4" />
+        <AlertTitle>Profil incomplet</AlertTitle>
+        <AlertDescription className="flex flex-col space-y-2">
+          <p>Votre profil artisan n&apos;est pas complètement configuré.</p>
+          <Button 
+            variant="default" 
+            className="mt-2 w-full sm:w-auto"
+            onClick={() => router.push('/onboarding/artisan')}
+          >
+            Compléter mon profil
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  };
 
   return (
     <NotificationProvider>
@@ -233,7 +292,10 @@ export default function ArtisanDashboardLayout({ children }: PropsWithChildren) 
             </div>
           </header>
           
-          <main className="p-4 md:p-8 flex-1">{children}</main>
+          <main className="p-4 md:p-8 flex-1">
+            <OnboardingAlert />
+            {children}
+          </main>
         </div>
       </div>
     </NotificationProvider>

@@ -1,86 +1,55 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useToast } from "@/components/ui/use-toast"
 import { Loader2 } from "lucide-react"
-import { ONBOARDING_STEPS } from "./components/OnboardingProgress"
+import { useOnboarding } from "./context/OnboardingContext"
 
 export default function ArtisanOnboardingPage() {
   const router = useRouter()
   const { data: session, status } = useSession()
   const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(true)
+  const { isLoading, completedSteps } = useOnboarding()
 
   useEffect(() => {
-    // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
     if (status === "unauthenticated") {
       router.push("/login")
       return
     }
 
-    if (status === "authenticated" && session) {
-      const fetchProgress = async () => {
-        try {
-          const response = await fetch("/api/artisan/onboarding/progress", { 
-            method: "GET",
-            cache: 'no-store'
-          })
+    if (status === "authenticated" && session && !isLoading) {
+      // Déterminer vers quelle étape rediriger
+      let nextStep = "/onboarding/artisan/profile" // Par défaut, rediriger vers le profil
 
-          if (!response.ok) {
-            throw new Error("Erreur lors de la récupération de la progression")
-          }
+      // Si l'étape de confirmation est complétée, rediriger vers le tableau de bord
+      if (completedSteps.includes("confirmation")) {
+        router.push("/artisan")
+        return
+      }
 
-          const data = await response.json()
-          console.log("Données de progression:", data)
-          
-          // S'assurer que l'objet a la structure attendue
-          const completedSteps = data.completedSteps || []
-
-          // Déterminer vers quelle étape rediriger
-          let nextStep = "/onboarding/artisan/profile" // Par défaut, rediriger vers le profil
-
-          // Si l'étape de confirmation est complétée, rediriger vers le tableau de bord
-          if (completedSteps.includes("confirmation")) {
-            router.push("/artisan")
-            return
-          }
-
-          // Trouver la première étape non complétée
-          if (completedSteps.includes("profile")) {
-            // Si le profil est complété, vérifier les spécialités
-            if (!completedSteps.includes("specialties")) {
-              nextStep = "/onboarding/artisan/specialties"
-            } else if (!completedSteps.includes("documents")) {
-              // Si les spécialités sont complétées, vérifier les documents
-              nextStep = "/onboarding/artisan/documents"
-            } else if (!completedSteps.includes("confirmation")) {
-              // Si les documents sont complétés, passer à la confirmation
-              nextStep = "/onboarding/artisan/confirmation"
-            }
-          }
-
-          console.log("Redirection vers:", nextStep)
-          router.push(nextStep)
-        } catch (error) {
-          console.error("Erreur:", error)
-          toast({
-            title: "Erreur",
-            description: "Impossible de déterminer votre progression. Veuillez réessayer.",
-            variant: "destructive",
-          })
-          // En cas d'erreur, rediriger vers la première étape
-          router.push("/onboarding/artisan/profile")
-        } finally {
-          setIsLoading(false)
+      // Trouver la première étape non complétée
+      if (completedSteps.includes("profile")) {
+        // Si le profil est complété, vérifier la localisation
+        if (!completedSteps.includes("location")) {
+          nextStep = "/onboarding/artisan/location"
+        }
+        // Si la localisation est complétée, vérifier les spécialités
+        else if (!completedSteps.includes("specialties")) {
+          nextStep = "/onboarding/artisan/specialties"
+        } else if (!completedSteps.includes("documents")) {
+          // Si les spécialités sont complétées, vérifier les documents
+          nextStep = "/onboarding/artisan/documents"
+        } else if (!completedSteps.includes("confirmation")) {
+          // Si les documents sont complétés, passer à la confirmation
+          nextStep = "/onboarding/artisan/confirmation"
         }
       }
 
-      fetchProgress()
+      router.push(nextStep)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, router, session?.user?.id])
+  }, [status, router, session, completedSteps, isLoading])
 
   return (
     <div className="flex items-center justify-center min-h-screen">

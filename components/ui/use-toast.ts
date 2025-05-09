@@ -1,42 +1,35 @@
-// Hooks for controlling the toast
-import { useContext, createContext } from "react"
+// Hooks for controlling the toast with sonner
+import { toast as sonnerToast } from "sonner"
 
-type ToastProps = {
+export type ToastProps = {
   title?: string
   description?: string
   variant?: "default" | "destructive"
   duration?: number
 }
 
-type ToasterToast = ToastProps & {
-  id: string
-  action?: React.ReactNode
-}
+export type ToastActionElement = React.ReactElement<HTMLButtonElement>
 
-type ToastActionElement = React.ReactElement<HTMLButtonElement>
-
-type ToastContextType = {
-  toast: (props: ToastProps) => void
-  dismiss: (toastId?: string) => void
-  toasts: ToasterToast[]
-}
-
-const ToastContext = createContext<ToastContextType | null>(null)
-
-export function useToast() {
-  const context = useContext(ToastContext)
+// Fonction compatible avec l'ancien format de toast
+export function toast(props: ToastProps) {
+  const { title, description, variant, duration } = props
   
-  if (context === null) {
-    const dummyFunction = () => {} 
-    return {
-      toast: (props: ToastProps) => {
-        console.warn("Toast provider not found. Make sure your app is wrapped in the ToastProvider.")
-        return ""
-      },
-      dismiss: dummyFunction,
-      toasts: []
-    }
+  if (variant === "destructive") {
+    return sonnerToast.error(title, {
+      description,
+      duration: duration || 3000
+    })
   }
   
-  return context
+  return sonnerToast(title, {
+    description,
+    duration: duration || 3000
+  })
+}
+
+export function useToast() {
+  return {
+    toast,
+    dismiss: sonnerToast.dismiss
+  }
 } 

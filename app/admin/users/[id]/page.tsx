@@ -32,7 +32,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { toast } from "@/components/ui/toast"
+import { toast } from "sonner"
 
 interface User {
   id: string;
@@ -76,11 +76,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
         })
       } catch (error) {
         console.error("Erreur:", error)
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les détails de l'utilisateur.",
-          variant: "destructive",
-        })
+        toast.error("Impossible de charger les détails de l'utilisateur.")
       } finally {
         setIsLoading(false)
       }
@@ -117,17 +113,10 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
       const updatedUser = await response.json()
       setUser(updatedUser)
       
-      toast({
-        title: "Succès",
-        description: "Utilisateur mis à jour avec succès",
-      })
+      toast.success("Utilisateur mis à jour avec succès")
     } catch (error) {
       console.error("Erreur:", error)
-      toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Une erreur est survenue lors de la mise à jour",
-        variant: "destructive",
-      })
+      toast.error(error instanceof Error ? error.message : "Une erreur est survenue lors de la mise à jour")
     } finally {
       setIsSaving(false)
     }
@@ -150,20 +139,13 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
         throw new Error(error.error || "Erreur lors de la suppression de l'utilisateur")
       }
 
-      toast({
-        title: "Utilisateur supprimé",
-        description: "L'utilisateur a été supprimé avec succès",
-      })
+      toast.success("L'utilisateur a été supprimé avec succès")
 
       // Rediriger vers la liste des utilisateurs
       router.push("/admin/users")
     } catch (error) {
       console.error("Erreur:", error)
-      toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression",
-        variant: "destructive",
-      })
+      toast.error(error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression")
       setIsDeleting(false)
     }
   }
@@ -231,7 +213,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
           <CardHeader>
             <CardTitle>Utilisateur non trouvé</CardTitle>
             <CardDescription>
-              L'utilisateur que vous recherchez n'existe pas ou a été supprimé.
+              L&apos;utilisateur que vous recherchez n&apos;existe pas ou a été supprimé.
             </CardDescription>
           </CardHeader>
           <CardFooter>
@@ -294,7 +276,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Informations de l'utilisateur</CardTitle>
+            <CardTitle>Informations de l&apos;utilisateur</CardTitle>
             <CardDescription>
               Détails du compte utilisateur et paramètres.
             </CardDescription>
@@ -389,7 +371,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
           <CardHeader>
             <CardTitle>Activité et détails du compte</CardTitle>
             <CardDescription>
-              Informations sur l'historique du compte.
+              Informations sur l&apos;historique du compte.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -467,7 +449,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
                   disabled={user.status === "blocked"}
                   onClick={() => handleChange("status", "blocked")}
                 >
-                  Bloquer l'utilisateur
+                  Bloquer l&apos;utilisateur
                 </Button>
               </div>
             </div>

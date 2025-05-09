@@ -14,7 +14,8 @@ import {
   Trees, 
   Home,
   ArrowRight,
-  ChevronRight
+  ChevronRight,
+  ArrowLeft
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -128,16 +129,10 @@ export default function CategoryPage() {
     setShowServiceSelection(true)
     // Sauvegarder la sélection dans le localStorage
     localStorage.setItem("selectedCategory", value)
-    
-    // Débogage
-    console.log("Catégorie sélectionnée:", value)
-    console.log("Services disponibles:", servicesByCategory[value as keyof typeof servicesByCategory])
   }
 
   const handleServiceChange = (value: string) => {
     setSelectedService(value)
-    // Débogage
-    console.log("Service sélectionné:", value)
   }
   
   const handleNextStep = () => {
@@ -160,16 +155,6 @@ export default function CategoryPage() {
         categoryName = selectedCategoryObj.name
       }
       
-      console.log("CATÉGORIE SÉLECTIONNÉE:", {
-        id: selectedCategory,
-        name: categoryName
-      });
-      
-      console.log("SERVICE SÉLECTIONNÉ:", {
-        id: selectedService,
-        name: serviceName
-      });
-      
       // Sauvegarder les détails du projet
       const existingDetails = localStorage.getItem("projectDetails")
       const details = existingDetails ? JSON.parse(existingDetails) : {}
@@ -184,8 +169,6 @@ export default function CategoryPage() {
       if (!details.title) details.title = "";
       if (!details.description) details.description = "";
       
-      console.log("DÉTAILS À SAUVEGARDER:", details);
-      
       localStorage.setItem("projectDetails", JSON.stringify(details))
       
       // Naviguer vers l'étape suivante
@@ -197,7 +180,7 @@ export default function CategoryPage() {
     const category = categories.find(c => c.id === categoryId)
     if (category) {
       const IconComponent = category.icon
-      return <IconComponent className="h-6 w-6 text-primary" />
+      return <IconComponent className="h-5 w-5 md:h-6 md:w-6 text-primary" />
     }
     return null
   }
@@ -207,147 +190,178 @@ export default function CategoryPage() {
     return category ? category.name : ""
   }
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    },
+    exit: { opacity: 0 }
+  }
+
+  const itemVariants = {
+    hidden: { y: 10, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.3 } }
+  }
+
   return (
-    <div className="space-y-8">
-      {!showServiceSelection ? (
-        // Vue sélection de catégorie
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <h2 className="text-3xl font-bold tracking-tight">Sélectionnez une catégorie</h2>
-            <p className="text-muted-foreground text-lg">
-              Choisissez la catégorie qui correspond le mieux à votre projet
-            </p>
-          </div>
-
-          <RadioGroup 
-            value={selectedCategory || ""} 
-            onValueChange={handleCategoryChange}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-          >
-            {categories.map((category) => (
-              <div key={category.id}>
-                <RadioGroupItem
-                  value={category.id}
-                  id={category.id}
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor={category.id}
-                  className="flex flex-col h-full p-5 border-2 rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/[0.02] 
-                    peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 
-                    transition-all duration-200 shadow-sm hover:shadow"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="bg-primary/10 p-3 rounded-lg">
-                      <category.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <h3 className="font-medium text-lg">{category.name}</h3>
-                      <p className="text-sm text-muted-foreground">{category.description}</p>
-                    </div>
-                  </div>
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
-        </div>
-      ) : (
-        // Vue sélection de service
-        <div className="space-y-6">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <button 
-              onClick={() => setShowServiceSelection(false)}
-              className="hover:underline hover:text-primary transition-colors"
+    <form id="project-form" onSubmit={(e) => { e.preventDefault(); if (selectedService) handleNextStep(); }}>
+      <div className="space-y-6">
+        <AnimatePresence mode="wait">
+          {!showServiceSelection ? (
+            // Vue sélection de catégorie
+            <motion.div 
+              key="categories" 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-4 md:space-y-6"
             >
-              Catégories
-            </button>
-            <ChevronRight className="h-4 w-4" />
-            <span className="font-medium text-foreground">{getCategoryName(selectedCategory || "")}</span>
-          </div>
-        
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary/10 p-3 rounded-lg">
-                {getCategoryIcon(selectedCategory || "")}
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold tracking-tight">
-                  Choisissez un service
-                </h2>
-                <p className="text-muted-foreground">
-                  Sélectionnez le type de service dont vous avez besoin
+              <motion.div variants={itemVariants} className="space-y-2 md:space-y-3">
+                <h2 className="text-xl md:text-3xl font-bold tracking-tight">Sélectionnez une catégorie</h2>
+                <p className="text-muted-foreground text-sm md:text-base">
+                  Choisissez la catégorie qui correspond le mieux à votre projet
                 </p>
-              </div>
-            </div>
-          </div>
+              </motion.div>
 
-          <div className="border p-4 rounded-md bg-amber-50 dark:bg-amber-950/20 border-amber-200">
-            <p className="text-amber-800 dark:text-amber-400 text-sm font-medium">
-              <strong>Catégorie sélectionnée:</strong> {getCategoryName(selectedCategory || "")}
-            </p>
-            {selectedCategory && (
-              <p className="text-amber-800 dark:text-amber-400 text-sm mt-1">
-                <strong>Services disponibles:</strong> {servicesByCategory[selectedCategory as keyof typeof servicesByCategory]?.length || 0}
-              </p>
-            )}
-          </div>
-
-          {selectedCategory && (
-            <RadioGroup 
-              value={selectedService || ""} 
-              onValueChange={handleServiceChange}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              <motion.div variants={itemVariants}>
+                <RadioGroup 
+                  value={selectedCategory || ""} 
+                  onValueChange={handleCategoryChange}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4"
+                >
+                  {categories.map((category) => (
+                    <div key={category.id}>
+                      <RadioGroupItem
+                        value={category.id}
+                        id={category.id}
+                        className="peer sr-only"
+                      />
+                      <Label
+                        htmlFor={category.id}
+                        className="flex flex-col h-full p-3 md:p-5 border-2 rounded-xl cursor-pointer hover:border-primary/50 hover:bg-primary/[0.02] 
+                          peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 
+                          transition-all duration-200 shadow-sm hover:shadow"
+                      >
+                        <div className="flex items-start gap-3 md:gap-4">
+                          <div className="bg-primary/10 p-2 md:p-3 rounded-lg">
+                            <category.icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+                          </div>
+                          <div className="space-y-1 flex-1">
+                            <h3 className="font-medium text-base md:text-lg">{category.name}</h3>
+                            <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">{category.description}</p>
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              </motion.div>
+            </motion.div>
+          ) : (
+            // Vue sélection de service
+            <motion.div 
+              key="services"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="space-y-4 md:space-y-6"
             >
-              {selectedCategory && servicesByCategory[selectedCategory as keyof typeof servicesByCategory] ? (
-                servicesByCategory[selectedCategory as keyof typeof servicesByCategory].map((service) => (
-                  <div key={service.id}>
-                    <RadioGroupItem
-                      value={service.id}
-                      id={service.id}
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor={service.id}
-                      className="flex h-full p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-primary/50 hover:bg-primary/[0.02]
-                        peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 
-                        transition-all duration-200 shadow-sm hover:shadow"
-                    >
-                      <div className="space-y-1">
-                        <h3 className="font-medium text-foreground">{service.name}</h3>
-                        <p className="text-sm text-muted-foreground">{service.description}</p>
-                      </div>
-                    </Label>
+              <motion.div variants={itemVariants}>
+                <button 
+                  type="button"
+                  onClick={() => setShowServiceSelection(false)}
+                  className="flex items-center text-xs md:text-sm text-muted-foreground hover:text-primary transition-colors group mb-4"
+                >
+                  <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 group-hover:-translate-x-1 transition-transform" />
+                  Retour aux catégories
+                </button>
+
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-primary/10 p-2 md:p-3 rounded-lg">
+                    {getCategoryIcon(selectedCategory || "")}
                   </div>
-                ))
-              ) : (
-                <div className="col-span-2 p-6 border rounded-md bg-gray-50 dark:bg-gray-800/50 text-center">
-                  <p className="text-foreground">Aucun service disponible pour cette catégorie</p>
+                  <div>
+                    <h2 className="text-xl md:text-2xl font-bold tracking-tight">
+                      Choisissez un service
+                    </h2>
+                    <p className="text-xs md:text-sm text-muted-foreground">
+                      Sélectionnez le type de service dont vous avez besoin
+                    </p>
+                  </div>
                 </div>
-              )}
-            </RadioGroup>
-          )}
+              </motion.div>
 
-          <div className="pt-6 flex flex-col sm:flex-row gap-4 sm:justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setShowServiceSelection(false)}
-              className="w-full sm:w-auto"
-            >
-              Retour à la sélection de catégorie
-            </Button>
-            
-            <Button
-              onClick={handleNextStep}
-              disabled={!selectedService}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 py-6 px-8 rounded-xl text-base"
-              size="lg"
-            >
-              Continuer
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-      )}
-    </div>
+              <motion.div variants={itemVariants}>
+                <div className="border p-3 md:p-4 rounded-md bg-amber-50 dark:bg-amber-950/20 border-amber-200 mb-4">
+                  <p className="text-amber-800 dark:text-amber-400 text-xs md:text-sm font-medium">
+                    <strong>Catégorie sélectionnée:</strong> {getCategoryName(selectedCategory || "")}
+                  </p>
+                  {selectedCategory && (
+                    <p className="text-amber-800 dark:text-amber-400 text-xs md:text-sm mt-1">
+                      <strong>Services disponibles:</strong> {servicesByCategory[selectedCategory as keyof typeof servicesByCategory]?.length || 0}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+
+              {selectedCategory && (
+                <motion.div variants={itemVariants}>
+                  <RadioGroup 
+                    value={selectedService || ""} 
+                    onValueChange={handleServiceChange}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4"
+                  >
+                    {selectedCategory && servicesByCategory[selectedCategory as keyof typeof servicesByCategory] ? (
+                      servicesByCategory[selectedCategory as keyof typeof servicesByCategory].map((service) => (
+                        <div key={service.id}>
+                          <RadioGroupItem
+                            value={service.id}
+                            id={service.id}
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor={service.id}
+                            className="flex h-full p-3 md:p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-primary/50 hover:bg-primary/[0.02]
+                              peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 
+                              transition-all duration-200 shadow-sm hover:shadow"
+                          >
+                            <div className="space-y-1">
+                              <h3 className="font-medium text-foreground text-sm md:text-base">{service.name}</h3>
+                              <p className="text-xs md:text-sm text-muted-foreground">{service.description}</p>
+                            </div>
+                          </Label>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-2 p-4 md:p-6 border rounded-md bg-gray-50 dark:bg-gray-800/50 text-center">
+                        <p className="text-foreground text-sm">Aucun service disponible pour cette catégorie</p>
+                      </div>
+                    )}
+                  </RadioGroup>
+                </motion.div>
+              )}
+
+              <motion.div
+                variants={itemVariants}
+                className="pt-4 md:pt-6 flex flex-col sm:flex-row gap-3 sm:justify-between hidden sm:flex"
+              >              
+                <Button
+                  type="submit"
+                  disabled={!selectedService}
+                  className="w-full sm:w-auto flex items-center justify-center gap-2 py-5 md:py-6 px-6 md:px-8 rounded-xl text-sm md:text-base"
+                  size="lg"
+                >
+                  Continuer
+                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
+                </Button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </form>
   )
 } 

@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { Building2, Info, Loader2, MapPin, Phone, User, Calendar } from "lucide-react"
+import { Building2, Info, Loader2, Phone, User, Calendar } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -16,201 +16,87 @@ import { useToast } from "@/components/ui/use-toast"
 import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { OnboardingLayout } from "../components/OnboardingLayout"
+import { useOnboarding } from "../context/OnboardingContext"
 
 // Schéma de validation du formulaire
 const profileFormSchema = z.object({
+  firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
+  lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   companyName: z.string().min(2, "Le nom de l'entreprise doit contenir au moins 2 caractères"),
   siret: z.string().min(14, "Le numéro SIRET doit contenir 14 chiffres").max(14, "Le numéro SIRET doit contenir 14 chiffres"),
   phone: z.string().min(8, "Numéro de téléphone requis"),
-  address: z.string().min(5, "Adresse requise"),
-  city: z.string().min(2, "Ville requise"),
-  postalCode: z.string().min(5, "Code postal requis"),
   yearsOfExperience: z.coerce.number().min(0, "L'expérience ne peut pas être négative"),
-  preferredRadius: z.coerce.number().min(1, "Le rayon d'intervention doit être d'au moins 1 km"),
 })
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>
 
 export default function ArtisanProfilePage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
   const { toast } = useToast()
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
-  const [completedSteps, setCompletedSteps] = useState<string[]>([])
+  const { 
+    isLoading, 
+    isSaving, 
+    setIsSaving, 
+    updateProgress, 
+    currentUserData, 
+    silentMode, 
+    setSilentMode 
+  } = useOnboarding()
   const dataFetchedRef = useRef(false)
 
   // Initialiser le formulaire
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
       companyName: "",
       siret: "",
       phone: "",
-      address: "",
-      city: "",
-      postalCode: "",
       yearsOfExperience: 0,
-      preferredRadius: 50,
     },
   })
 
-  // Fonction pour récupérer l'état d'avancement de l'onboarding
-  const fetchOnboardingProgress = useCallback(async () => {
-    try {
-      const progressResponse = await fetch("/api/artisan/onboarding/progress", { 
-        method: "GET", 
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      })
-      
-      if (progressResponse.ok) {
-        const progressData = await progressResponse.json()
-        console.log("Données de progression:", progressData)
-        
-        // Transformer les données de progression en tableau d'étapes complétées
-        const completed: string[] = []
-        if (progressData?.progress?.profile) completed.push("profile")
-        if (progressData?.progress?.specialties) completed.push("specialties")
-        if (progressData?.progress?.documents) completed.push("documents")
-        if (progressData?.progress?.confirmation) completed.push("confirmation")
-        
-        setCompletedSteps(completed)
-        return progressData
-      }
-      return null
-    } catch (error) {
-      console.error("Erreur lors de la récupération de la progression:", error)
-      return null
-    }
-  }, [])
-
-  // Fonction pour récupérer le profil artisan
-  const fetchArtisanProfile = useCallback(async () => {
-    try {
-      const profileResponse = await fetch("/api/artisan/profile", { 
-        method: "GET", 
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache' }
-      })
-      
-      if (profileResponse.ok) {
-        const profileData = await profileResponse.json()
-        console.log("Données du profil existant:", profileData)
-        return profileData
-      }
-      return null
-    } catch (error) {
-      console.error("Erreur lors de la récupération du profil:", error)
-      return null
-    }
-  }, [])
-
-  // Effect principal pour charger les données initiales
+  // Effect pour remplir le formulaire avec les données existantes
   useEffect(() => {
-    if (dataFetchedRef.current) return;
-    
-    const initData = async () => {
-      if (status === "unauthenticated") {
-        router.push("/auth?tab=login&redirect=/onboarding/artisan/profile")
-        return
+    if (!dataFetchedRef.current && currentUserData && !isLoading) {
+      // Récupérer les informations de l'utilisateur à partir de la session
+      const userData = {
+        phone: session?.user?.phone || "",
       }
-
-      if (status === "authenticated" && session?.user) {
-        if (session.user.role !== "ARTISAN") {
-          router.push("/")
-          toast({
-            title: "Accès refusé",
-            description: "Cette section est réservée aux artisans.",
-            variant: "destructive"
-          })
-          return
-        }
-
-        try {
-          setIsLoading(true)
-          
-          // Récupérer l'état d'avancement de l'onboarding et le profil en parallèle
-          const [progressData, profileData] = await Promise.all([
-            fetchOnboardingProgress(),
-            fetchArtisanProfile()
-          ])
-          
-          if (profileData) {
-            // Récupérer les informations de l'utilisateur à partir de la session
-            const userData = {
-              phone: session.user.phone || "",
-              address: session.user.address || "",
-              city: session.user.city || "",
-              postalCode: session.user.postalCode || "",
-            }
-            
-            // Remplir le formulaire avec les données existantes
-            form.reset({
-              companyName: profileData.companyName || "",
-              siret: profileData.siret || "",
-              phone: profileData.phone || userData.phone || "",
-              address: profileData.address || userData.address || "",
-              city: profileData.city || userData.city || "",
-              postalCode: profileData.postalCode || userData.postalCode || "",
-              yearsOfExperience: profileData.yearsOfExperience || 0,
-              preferredRadius: profileData.preferredRadius || 50,
-            }, { keepDefaultValues: false })
-          }
-          
-          dataFetchedRef.current = true
-        } catch (error) {
-          console.error("Erreur lors du chargement des données:", error)
-        } finally {
-          setIsLoading(false)
+      
+      // Extraire prénom et nom depuis le nom complet si disponible
+      let firstName = "", lastName = "";
+      if (session?.user?.name) {
+        const nameParts = session.user.name.split(" ");
+        if (nameParts.length > 0) {
+          firstName = nameParts[0];
+          lastName = nameParts.slice(1).join(" ");
         }
       }
-    }
-
-    initData()
-  }, [status, router, session?.user, form, toast, fetchOnboardingProgress, fetchArtisanProfile])
-
-  // Fonction pour mettre à jour la progression de l'onboarding
-  const updateOnboardingProgress = useCallback(async () => {
-    try {
-      console.log("Début mise à jour progression du profil...")
-      const response = await fetch("/api/artisan/onboarding/progress", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache"
-        },
-        body: JSON.stringify({ step: "profile" }),
-        cache: "no-store"
-      })
-
-      if (!response.ok) {
-        console.error("Réponse API non OK:", response.status)
-        throw new Error("Erreur lors de la mise à jour de la progression")
-      }
-
-      const data = await response.json()
-      console.log("Réponse API progression:", data)
       
-      // Recharger la progression
-      await fetchOnboardingProgress()
+      // Remplir le formulaire avec les données existantes
+      form.reset({
+        firstName: currentUserData.firstName || firstName || "",
+        lastName: currentUserData.lastName || lastName || "",
+        companyName: currentUserData.companyName || "",
+        siret: currentUserData.siret || "",
+        phone: currentUserData.phone || userData.phone || "",
+        yearsOfExperience: currentUserData.yearsOfExperience || 0,
+      }, { keepDefaultValues: false })
       
-      return true
-    } catch (error) {
-      console.error("Erreur mise à jour progression:", error)
-      toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour votre progression.",
-        variant: "destructive",
-      })
-      return false
+      dataFetchedRef.current = true
     }
-  }, [toast, fetchOnboardingProgress])
+  }, [form, currentUserData, isLoading, session])
 
   // Soumission du formulaire
   const onSubmit = useCallback(async (data: ProfileFormValues) => {
     try {
       setIsSaving(true)
+      
+      // Activer le mode silencieux pour éviter les notifications en cascade
+      setSilentMode(true)
       
       // Enregistrer le profil
       const response = await fetch("/api/artisan/profile", {
@@ -228,19 +114,13 @@ export default function ArtisanProfilePage() {
       }
 
       // Mettre à jour la progression
-      const progressUpdated = await updateOnboardingProgress()
+      await updateProgress("profile")
       
-      toast({
-        title: "Profil enregistré",
-        description: "Vos informations ont été sauvegardées avec succès.",
-      })
-
-      if (progressUpdated) {
-        // Rediriger vers l'étape suivante
-        router.push("/onboarding/artisan/specialties")
-      }
+      // Rediriger vers l'étape suivante
+      router.push("/onboarding/artisan/location")
     } catch (error) {
       console.error("Erreur:", error)
+      setSilentMode(false)
       toast({
         title: "Erreur",
         description: "Impossible d'enregistrer votre profil.",
@@ -248,48 +128,66 @@ export default function ArtisanProfilePage() {
       })
     } finally {
       setIsSaving(false)
+      // On garde le mode silencieux actif
     }
-  }, [updateOnboardingProgress, toast, router])
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-        <p className="text-muted-foreground">Chargement de vos informations...</p>
-      </div>
-    )
-  }
+  }, [updateProgress, toast, router, setIsSaving, setSilentMode])
 
   return (
     <OnboardingLayout 
-      currentStep="profile"
-      completedSteps={completedSteps}
-      title="Informations de profil"
-      description="Complétez vos informations d'entreprise et personnelles pour être visible sur notre plateforme."
+      currentStep="profile" 
+      title="Informations de votre entreprise"
+      description="Complétez vos informations professionnelles pour permettre aux clients de vous contacter"
+      isLastStep={false}
     >
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Profil professionnel</CardTitle>
-          <CardDescription>
-            Ces informations seront visibles par vos clients potentiels.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-4">
-                <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900 rounded-md p-4">
-                  <div className="flex">
-                    <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5" />
-                    <div>
-                      <h4 className="font-medium text-blue-800 dark:text-blue-300">Informations entreprise</h4>
-                      <p className="text-sm text-blue-700 dark:text-blue-400 mt-1">
-                        Ces informations seront vérifiées lors de la validation de votre compte.
-                      </p>
-                    </div>
-                  </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center p-8">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : (
+        <Form {...form}>
+          <form id="onboarding-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Informations de l&apos;entreprise</CardTitle>
+                <CardDescription>Vos informations d&apos;identification professionnelle</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Prénom</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input className="pl-10" placeholder="Prénom" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nom</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                            <Input className="pl-10" placeholder="Nom" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
-
+                
                 <FormField
                   control={form.control}
                   name="companyName"
@@ -299,14 +197,14 @@ export default function ArtisanProfilePage() {
                       <FormControl>
                         <div className="relative">
                           <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input placeholder="Nom de votre entreprise" className="pl-10" {...field} />
+                          <Input className="pl-10" placeholder="Nom de votre entreprise" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
+                
                 <FormField
                   control={form.control}
                   name="siret"
@@ -314,167 +212,102 @@ export default function ArtisanProfilePage() {
                     <FormItem>
                       <FormLabel>Numéro SIRET</FormLabel>
                       <FormControl>
-                        <Input placeholder="14 chiffres" {...field} />
+                        <div className="relative">
+                          <Info className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            className="pl-10" 
+                            placeholder="14 chiffres" 
+                            maxLength={14}
+                            {...field} 
+                            onChange={(e) => {
+                              // Permettre uniquement les chiffres
+                              const value = e.target.value.replace(/\D/g, '');
+                              field.onChange(value);
+                            }}
+                          />
+                        </div>
                       </FormControl>
                       <FormDescription>
-                        Saisissez les 14 chiffres sans espaces.
+                        Le numéro SIRET à 14 chiffres de votre entreprise
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
-                <Separator />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Téléphone</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="Téléphone professionnel" className="pl-10" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="yearsOfExperience"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Années d&apos;expérience</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input type="number" min="0" className="pl-10" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <Separator />
-
-                <div className="bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900 rounded-md p-4">
-                  <div className="flex">
-                    <MapPin className="h-5 w-5 text-green-600 dark:text-green-400 mr-3 mt-0.5" />
-                    <div>
-                      <h4 className="font-medium text-green-800 dark:text-green-300">Zone d&apos;intervention</h4>
-                      <p className="text-sm text-green-700 dark:text-green-400 mt-1">
-                        Définissez votre adresse principale et votre rayon d&apos;intervention.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
+                
                 <FormField
                   control={form.control}
-                  name="address"
+                  name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Adresse</FormLabel>
+                      <FormLabel>Numéro de téléphone</FormLabel>
                       <FormControl>
-                        <Input placeholder="Adresse de l'entreprise" {...field} />
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            className="pl-10" 
+                            placeholder="Téléphone" 
+                            {...field} 
+                            onChange={(e) => {
+                              // Permettre uniquement les chiffres et +
+                              const value = e.target.value.replace(/[^\d+]/g, '');
+                              field.onChange(value);
+                            }}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Ville</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Ville" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="postalCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Code postal</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Code postal" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl">Informations professionnelles</CardTitle>
+                <CardDescription>Détails sur votre expérience</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="preferredRadius"
+                  name="yearsOfExperience"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Rayon d&apos;intervention (km)</FormLabel>
+                      <FormLabel>Années d&apos;expérience</FormLabel>
                       <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(parseInt(value))}
-                          defaultValue={field.value.toString()}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner un rayon d'intervention" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="10">10 km</SelectItem>
-                            <SelectItem value="25">25 km</SelectItem>
-                            <SelectItem value="50">50 km</SelectItem>
-                            <SelectItem value="100">100 km</SelectItem>
-                            <SelectItem value="200">200 km et plus</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="relative">
+                          <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            className="pl-10" 
+                            type="number" 
+                            min="0" 
+                            {...field} 
+                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                          />
+                        </div>
                       </FormControl>
-                      <FormDescription>
-                        Distance maximale à laquelle vous êtes prêt à vous déplacer pour vos clients.
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-
-              <div className="flex justify-between pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.push("/onboarding/artisan")}
-                >
-                  Retour
-                </Button>
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Enregistrement...
-                    </>
-                  ) : (
-                    "Continuer"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+              </CardContent>
+            </Card>
+            
+            {/* Boutons de navigation (visibles uniquement sur écrans > sm) */}
+            <div className="flex justify-end space-x-4 mt-8 hidden md:flex">
+              <Button type="submit" disabled={isSaving}>
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Enregistrement...
+                  </>
+                ) : "Continuer"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+      )}
     </OnboardingLayout>
   )
 } 

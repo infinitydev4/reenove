@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { toast } from '@/components/ui/toast'
+import { toast } from 'sonner'
 import { Loader2, CheckCircle, AlertCircle, Info, AlertTriangle, Send } from 'lucide-react'
 
 export function TestNotifications() {
@@ -17,10 +17,8 @@ export function TestNotifications() {
 
   const sendNotification = async () => {
     if (!title || !message) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs",
-        variant: "destructive"
+      toast.error("Erreur", {
+        description: "Veuillez remplir tous les champs"
       })
       return
     }
@@ -44,19 +42,15 @@ export function TestNotifications() {
       const data = await response.json()
 
       if (response.ok) {
-        toast({
-          title: "Succès",
-          description: "Notification envoyée avec succès",
-          variant: "default"
+        toast.success("Succès", {
+          description: "Notification envoyée avec succès"
         })
       } else {
         throw new Error(data.error || "Une erreur est survenue")
       }
     } catch (error) {
-      toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Une erreur est survenue",
-        variant: "destructive"
+      toast.error("Erreur", {
+        description: error instanceof Error ? error.message : "Une erreur est survenue"
       })
     } finally {
       setIsLoading(false)
@@ -171,7 +165,7 @@ export function TestNotifications() {
                     {message || "Message de la notification"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-2">
-                    À l'instant
+                    À l&apos;instant
                   </p>
                 </div>
               </div>

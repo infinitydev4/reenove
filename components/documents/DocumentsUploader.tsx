@@ -1,10 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Upload, X, FileText, File, Loader2, CheckCircle, AlertCircle } from "lucide-react"
+import { useDropzone } from "react-dropzone"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/components/ui/use-toast"
+import { cn } from "@/lib/utils"
 
 type DocumentsUploaderProps = {
   documentType: string
@@ -26,10 +28,7 @@ export function DocumentsUploader({
     existingDocument ? "pending" : null
   )
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  const processFile = async (file: File) => {
     // Vérifier le type de fichier
     const validTypes = ["image/jpeg", "image/png", "application/pdf"]
     if (!validTypes.includes(file.type)) {
@@ -114,6 +113,23 @@ export function DocumentsUploader({
     }
   }
 
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      processFile(acceptedFiles[0]);
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/jpeg': [],
+      'image/png': [],
+      'application/pdf': []
+    },
+    maxFiles: 1,
+    multiple: false
+  });
+
   const handleDelete = async () => {
     if (!existingDocument) return
 
@@ -166,10 +182,26 @@ export function DocumentsUploader({
     return null
   }
 
+  const getIconByFileType = (fileName: string) => {
+    const ext = fileName.split('.').pop()?.toLowerCase()
+    
+    if (ext === 'pdf') {
+      return <FileText className="h-5 w-5 text-red-500 flex-shrink-0" />
+    } else if (['jpg', 'jpeg', 'png'].includes(ext || '')) {
+      return <FileText className="h-5 w-5 text-blue-500 flex-shrink-0" />
+    }
+    
+    return <FileText className="h-5 w-5 text-blue-600 flex-shrink-0" />
+  }
+
   return (
-    <div className="border rounded-lg p-4">
+    <div className={cn(
+      "rounded-lg transition-all duration-200",
+      existingDocument ? "border p-3" : "border-dashed border-2",
+      isDragActive && !existingDocument && !uploading ? "border-primary bg-primary/5" : "border-muted-foreground/20"
+    )}>
       {uploading ? (
-        <div className="space-y-2">
+        <div className="space-y-2 p-2">
           <Progress value={progress} className="h-2" />
           <div className="flex justify-between items-center text-sm text-muted-foreground">
             <span className="flex items-center">
@@ -180,23 +212,22 @@ export function DocumentsUploader({
           </div>
         </div>
       ) : existingDocument ? (
-        <div className="space-y-3">
-          <div className="flex justify-between">
+        <div className="space-y-2">
+          <div className="flex justify-between items-start">
             <div className="flex items-start space-x-2 max-w-[70%]">
-              <FileText className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              {getIconByFileType(existingDocument.name)}
               <div className="min-w-0">
                 <p className="font-medium text-sm truncate">{existingDocument.name}</p>
                 {renderStatus()}
               </div>
             </div>
             <Button 
-              variant="destructive" 
-              size="sm" 
+              variant="ghost" 
+              size="icon"
               onClick={handleDelete}
-              className="flex-shrink-0"
+              className="h-7 w-7 rounded-full hover:bg-destructive/10 hover:text-destructive"
             >
-              <X className="h-4 w-4 mr-1" />
-              <span className="hidden sm:inline">Supprimer</span>
+              <X className="h-4 w-4" />
             </Button>
           </div>
           <div className="flex justify-end">
@@ -204,7 +235,7 @@ export function DocumentsUploader({
               href={existingDocument.url} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-sm text-blue-600 hover:underline flex items-center"
+              className="text-xs text-primary hover:underline flex items-center"
             >
               <File className="h-3 w-3 mr-1" />
               Consulter le document
@@ -212,22 +243,21 @@ export function DocumentsUploader({
           </div>
         </div>
       ) : (
-        <div>
-          <input
-            type="file"
-            id={`file-${documentType}`}
-            className="hidden"
-            accept=".pdf,.jpg,.jpeg,.png"
-            onChange={handleFileChange}
-          />
-          <Button
-            variant="outline"
-            onClick={() => document.getElementById(`file-${documentType}`)?.click()}
-            className="w-full"
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Télécharger un document
-          </Button>
+        <div {...getRootProps()} className="cursor-pointer py-4 px-3">
+          <input {...getInputProps()} />
+          <div className="flex flex-col items-center justify-center text-center space-y-2">
+            <div className="p-2 bg-primary/10 rounded-full">
+              <Upload className="h-5 w-5 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium">
+                {isDragActive ? "Déposez votre fichier ici" : "Glissez-déposez un fichier ou cliquez"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                PDF, JPG ou PNG (max. 5 Mo)
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

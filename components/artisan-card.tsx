@@ -33,7 +33,7 @@ export default function ArtisanCard({ name, profession, rating, reviews, image, 
           </div>
           <div className="flex items-center gap-1 bg-yellow-100 px-2 py-1 rounded-full">
             <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
-            <span className="text-sm font-medium">{rating}</span>
+            <span className="text-sm text-yellow-500 font-medium">{rating}</span>
           </div>
         </div>
         <div className="flex items-center mt-2 text-sm text-gray-500">

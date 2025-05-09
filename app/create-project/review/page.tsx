@@ -17,7 +17,17 @@ import {
   ArrowRight,
   InfoIcon,
   Loader2,
-  Euro
+  Euro,
+  Wrench,
+  Zap,
+  Hammer,
+  Paintbrush,
+  Construction,
+  Bath,
+  DoorOpen,
+  Trees,
+  Home,
+  Briefcase
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -29,6 +39,7 @@ import {
 } from "@/components/ui/accordion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
 
 interface Project {
   category?: string
@@ -55,6 +66,67 @@ interface Project {
     maxAmount?: number
   }
   photos?: { id: string, name: string, preview: string }[]
+}
+
+// Fonction pour obtenir l'icône de la catégorie
+const getCategoryIcon = (categoryName?: string) => {
+  if (!categoryName) return <Briefcase className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+
+  // Normaliser le nom de catégorie (supprimer les accents, mettre en minuscules)
+  const normalizedName = categoryName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+  
+  switch (normalizedName) {
+    case "plomberie":
+      return <Wrench className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    case "electricite":
+    case "électricité":
+      return <Zap className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    case "menuiserie":
+      return <Hammer className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    case "peinture":
+      return <Paintbrush className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    case "maconnerie":
+    case "maçonnerie":
+      return <Construction className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    case "salle de bain":
+      return <Bath className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    case "portes et fenetres":
+    case "portes et fenêtres":
+      return <DoorOpen className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    case "jardinage":
+      return <Trees className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    case "renovation generale":
+    case "rénovation générale":
+      return <Home className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+    default:
+      return <Briefcase className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+  }
+}
+
+// Fonction pour obtenir l'icône du service
+const getServiceIcon = (serviceName?: string) => {
+  if (!serviceName) return <Wrench className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+  
+  // On pourrait étendre cette fonction avec une logique plus spécifique pour les services
+  // Pour l'instant, on utilise une approche simple
+  
+  const normalizedService = serviceName.toLowerCase()
+  
+  if (normalizedService.includes("electricite") || normalizedService.includes("électricité"))
+    return <Zap className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+  if (normalizedService.includes("plomberie"))
+    return <Wrench className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+  if (normalizedService.includes("peinture"))
+    return <Paintbrush className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+  if (normalizedService.includes("menuiserie"))
+    return <Hammer className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+  if (normalizedService.includes("salle de bain"))
+    return <Bath className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+  if (normalizedService.includes("porte") || normalizedService.includes("fenetre") || normalizedService.includes("fenêtre"))
+    return <DoorOpen className="h-4 w-4 md:h-6 md:w-6 text-primary" />
+  
+  // Par défaut on utilise l'icône d'outil
+  return <Wrench className="h-4 w-4 md:h-6 md:w-6 text-primary" />
 }
 
 export default function ReviewPage() {
@@ -349,27 +421,27 @@ export default function ReviewPage() {
   }
   
   return (
-    <div className={`space-y-4 md:space-y-6 transition-opacity duration-500 px-2 sm:px-4 ${isVisible ? "opacity-100" : "opacity-0"}`}>
-      <div className="space-y-2">
-        <h2 className="text-xl md:text-2xl font-semibold">Récapitulatif de votre projet</h2>
-        <p className="text-sm md:text-base text-muted-foreground">
-          Vérifiez les informations de votre projet avant de le publier
+    <div className={`space-y-2 md:space-y-6 transition-opacity duration-500 px-0 sm:px-4 max-w-full ${isVisible ? "opacity-100" : "opacity-0"}`}>
+      <div className="space-y-1 md:space-y-2">
+        <h2 className="text-lg md:text-2xl font-semibold">Récapitulatif du projet</h2>
+        <p className="text-xs md:text-base text-muted-foreground">
+          Vérifiez les informations avant publication
         </p>
       </div>
 
       {!completionStatus.category && (
         <Card className="bg-amber-50 border-amber-200 dark:bg-amber-950/10 dark:border-amber-700/30">
-          <CardContent className="p-3 md:p-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              <div className="flex items-center gap-2">
-                <InfoIcon className="h-5 w-5 text-amber-600" />
-                <p className="text-sm text-amber-800 dark:text-amber-400 font-medium">
-                  Vous n'avez pas encore choisi de catégorie et de service pour votre projet
+          <CardContent className="p-2 md:p-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
+                <InfoIcon className="h-4 w-4 md:h-5 md:w-5 text-amber-600 shrink-0" />
+                <p className="text-xs md:text-sm text-amber-800 dark:text-amber-400 font-medium">
+                  Choisissez une catégorie pour votre projet
                 </p>
               </div>
               <Button 
                 size="sm" 
-                className="bg-amber-600 hover:bg-amber-700 text-white"
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs h-8"
                 onClick={() => router.push("/create-project/category")}
               >
                 Choisir maintenant
@@ -379,35 +451,53 @@ export default function ReviewPage() {
         </Card>
       )}
 
-      <div className="grid gap-4 md:gap-6">
+      <div className="grid gap-2 md:gap-6 max-w-full">
         <Accordion type="single" collapsible className="w-full" defaultValue="category">
           <AccordionItem value="category" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-3 px-2">
+            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
               <div className="flex items-center">
-                <div className={`mr-2 p-1 rounded-full ${completionStatus.category ? "bg-green-100 text-green-600" : "bg-amber-100 text-amber-600"}`}>
-                  {completionStatus.category ? <CheckCircle className="h-4 w-4 md:h-5 md:w-5" /> : <InfoIcon className="h-4 w-4 md:h-5 md:w-5" />}
+                <div className={`mr-1 md:mr-2 p-1 rounded-full ${
+                  completionStatus.category 
+                    ? "bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400" 
+                    : "bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400"
+                }`}>
+                  {completionStatus.category ? <CheckCircle className="h-3 w-3 md:h-5 md:w-5" /> : <InfoIcon className="h-3 w-3 md:h-5 md:w-5" />}
                 </div>
-                <span className="text-sm md:text-base">Catégorie et Service</span>
+                <span>Catégorie et Service</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <Card>
-                <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                    <div>
-                      <p className="text-xs md:text-sm text-muted-foreground">Catégorie</p>
-                      <p className="text-sm md:font-medium">{project.category || "Non spécifiée"}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs md:text-sm text-muted-foreground">Service</p>
-                      <p className="text-sm md:font-medium">{project.service || "Non spécifié"}</p>
-                    </div>
-                  </div>
+              <Card className="w-full max-w-full">
+                <CardContent className="pt-2 px-2 overflow-hidden w-full relative">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
+                    onClick={() => router.push("/create-project/category")}
+                  >
+                    <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
+                  </Button>
                   
-                  <div className="mt-3 md:mt-4 flex justify-end">
-                    <Button variant="outline" size="sm" onClick={() => router.push("/create-project/category")}>
-                      <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" /> Modifier
-                    </Button>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    <div className="flex items-center bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors rounded-lg p-3 md:p-4">
+                      <div className="mr-3 md:mr-4 p-2 bg-primary/10 dark:bg-primary/20 rounded-full flex-shrink-0">
+                        {getCategoryIcon(project.category)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] md:text-xs uppercase font-medium text-primary/80">Catégorie</p>
+                        <p className="text-xs md:text-base font-medium break-words">{project.category || "Non spécifiée"}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors rounded-lg p-3 md:p-4">
+                      <div className="mr-3 md:mr-4 p-2 bg-primary/10 dark:bg-primary/20 rounded-full flex-shrink-0">
+                        {getServiceIcon(project.service)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[10px] md:text-xs uppercase font-medium text-primary/80">Service</p>
+                        <p className="text-xs md:text-base font-medium break-words">{project.service || "Non spécifié"}</p>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -415,35 +505,45 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="details" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-3 px-2">
+            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
               <div className="flex items-center">
-                <div className={`mr-2 p-1 rounded-full ${completionStatus.details ? "bg-green-100 text-green-600" : "bg-amber-100 text-amber-600"}`}>
-                  {completionStatus.details ? <CheckCircle className="h-4 w-4 md:h-5 md:w-5" /> : <InfoIcon className="h-4 w-4 md:h-5 md:w-5" />}
+                <div className={`mr-1 md:mr-2 p-1 rounded-full ${
+                  completionStatus.details 
+                    ? "bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400" 
+                    : "bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400"
+                }`}>
+                  {completionStatus.details ? <CheckCircle className="h-3 w-3 md:h-5 md:w-5" /> : <InfoIcon className="h-3 w-3 md:h-5 md:w-5" />}
                 </div>
-                <span className="text-sm md:text-base">Informations générales</span>
+                <span>Informations générales</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <Card>
-                <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+              <Card className="w-full max-w-full">
+                <CardContent className="pt-2 md:pt-6 px-2 md:px-6 overflow-hidden w-full relative">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
+                    onClick={() => router.push("/create-project/details")}
+                  >
+                    <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
+                  </Button>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4 w-full">
                     <div className="md:col-span-2">
-                      <p className="text-xs md:text-sm text-muted-foreground">Titre du projet</p>
-                      <p className="text-sm md:font-medium">{project.title || "Non spécifié"}</p>
+                      <p className="text-[10px] md:text-sm text-muted-foreground">Titre du projet</p>
+                      <p className="text-xs md:text-sm md:font-medium break-words">{project.title || "Non spécifié"}</p>
                     </div>
                     <div>
-                      <p className="text-xs md:text-sm text-muted-foreground">Type de propriété</p>
-                      <p className="text-sm md:font-medium">{project.propertyType || "Non spécifié"}</p>
+                      <p className="text-[10px] md:text-sm text-muted-foreground">Type de propriété</p>
+                      <p className="text-xs md:text-sm md:font-medium break-words">{project.propertyType || "Non spécifié"}</p>
                     </div>
                   </div>
-                  <div className="mt-3 md:mt-4">
-                    <p className="text-xs md:text-sm text-muted-foreground">Description</p>
-                    <p className="text-sm whitespace-pre-line">{project.description || "Aucune description fournie"}</p>
+                  <div className="mt-2 md:mt-4 w-full">
+                    <p className="text-[10px] md:text-sm text-muted-foreground">Description</p>
+                    <div className="w-full overflow-hidden">
+                      <p style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }} className="text-xs md:text-sm max-w-full">{project.description || "Aucune description fournie"}</p>
                   </div>
-                  <div className="mt-3 md:mt-4 flex justify-end">
-                    <Button variant="outline" size="sm" onClick={() => router.push("/create-project/details")}>
-                      <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" /> Modifier
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -451,59 +551,66 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="budget" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-3 px-2">
+            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
               <div className="flex items-center">
-                <div className={`mr-2 p-1 rounded-full ${completionStatus.budget ? "bg-green-100 text-green-600" : "bg-amber-100 text-amber-600"}`}>
-                  {completionStatus.budget ? <CheckCircle className="h-4 w-4 md:h-5 md:w-5" /> : <InfoIcon className="h-4 w-4 md:h-5 md:w-5" />}
+                <div className={`mr-1 md:mr-2 p-1 rounded-full ${
+                  completionStatus.budget 
+                    ? "bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400" 
+                    : "bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400"
+                }`}>
+                  {completionStatus.budget ? <CheckCircle className="h-3 w-3 md:h-5 md:w-5" /> : <InfoIcon className="h-3 w-3 md:h-5 md:w-5" />}
                 </div>
-                <span className="text-sm md:text-base">Budget</span>
+                <span>Budget</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <Card>
-                <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
-                  <div className="flex items-start gap-2 md:gap-3">
-                    <div className="p-1.5 md:p-2 bg-primary/10 rounded-full">
-                      <Euro className="h-3 w-3 md:h-5 md:w-5 text-primary" />
+              <Card className="w-full max-w-full">
+                <CardContent className="pt-2 md:pt-6 px-2 md:px-6 overflow-hidden w-full relative">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
+                    onClick={() => router.push("/create-project/budget")}
+                  >
+                    <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
+                  </Button>
+                  
+                  <div className="flex items-start gap-1.5 md:gap-3">
+                    <div className="p-1 md:p-2 bg-primary/10 rounded-full flex-shrink-0">
+                      <Euro className="h-2.5 w-2.5 md:h-5 md:w-5 text-primary" />
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       {project.budget ? (
                         <>
                           {project.budget.type === "fixed" && (
-                            <p className="text-sm md:font-medium">
+                            <div className="text-xs md:text-sm md:font-medium word-break break-words">
                               Budget fixe: {project.budget.amount.toLocaleString('fr-FR')} €
-                            </p>
+                            </div>
                           )}
                           
                           {project.budget.type === "range" && (
-                            <p className="text-sm md:font-medium">
-                              Fourchette de budget: {project.budget.amount.toLocaleString('fr-FR')} € - {project.budget.maxAmount?.toLocaleString('fr-FR')} €
-                            </p>
+                            <div className="text-xs md:text-sm md:font-medium word-break break-words">
+                              Fourchette: {project.budget.amount.toLocaleString('fr-FR')} € - {project.budget.maxAmount?.toLocaleString('fr-FR')} €
+                            </div>
                           )}
                           
                           {project.budget.type === "hourly" && (
-                            <p className="text-sm md:font-medium">
+                            <div className="text-xs md:text-sm md:font-medium word-break break-words">
                               Taux horaire: {project.budget.amount.toLocaleString('fr-FR')} €/h
-                            </p>
+                            </div>
                           )}
                           
-                          <p className="text-xs md:text-sm text-muted-foreground mt-1">
-                            Type de budget: {
+                          <p className="text-[10px] md:text-sm text-muted-foreground mt-0.5 md:mt-1">
+                            Type: {
                               project.budget.type === "fixed" ? "Budget fixe" : 
                               project.budget.type === "range" ? "Fourchette" : "Taux horaire"
                             }
                           </p>
                         </>
                       ) : (
-                        <p className="text-sm text-muted-foreground">Aucun budget défini</p>
+                        <div className="text-xs md:text-sm text-muted-foreground word-break break-words">Aucun budget défini</div>
                       )}
                     </div>
-                  </div>
-                  
-                  <div className="mt-3 md:mt-4 flex justify-end">
-                    <Button variant="outline" size="sm" onClick={() => router.push("/create-project/budget")}>
-                      <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" /> Modifier
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -511,99 +618,126 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="location" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-3 px-2">
+            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
               <div className="flex items-center">
-                <div className={`mr-2 p-1 rounded-full ${completionStatus.location ? "bg-green-100 text-green-600" : "bg-amber-100 text-amber-600"}`}>
-                  {completionStatus.location ? <CheckCircle className="h-4 w-4 md:h-5 md:w-5" /> : <InfoIcon className="h-4 w-4 md:h-5 md:w-5" />}
+                <div className={`mr-1 md:mr-2 p-1 rounded-full ${
+                  completionStatus.location 
+                    ? "bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400" 
+                    : "bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400"
+                }`}>
+                  {completionStatus.location ? <CheckCircle className="h-3 w-3 md:h-5 md:w-5" /> : <InfoIcon className="h-3 w-3 md:h-5 md:w-5" />}
                 </div>
-                <span className="text-sm md:text-base">Localisation</span>
+                <span>Localisation</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <Card>
-                <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
-                  <div className="flex items-start gap-2 md:gap-3">
-                    <div className="p-1.5 md:p-2 bg-primary/10 rounded-full">
-                      <MapPin className="h-3 w-3 md:h-5 md:w-5 text-primary" />
+              <Card className="w-full max-w-full">
+                <CardContent className="pt-2 md:pt-6 px-2 md:px-6 overflow-hidden w-full relative">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
+                    onClick={() => router.push("/create-project/location")}
+                  >
+                    <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
+                  </Button>
+                  
+                  <div className="flex items-start gap-1.5 md:gap-3">
+                    <div className="p-1 md:p-2 bg-primary/10 rounded-full flex-shrink-0">
+                      <MapPin className="h-2.5 w-2.5 md:h-5 md:w-5 text-primary" />
                     </div>
-                    <div>
-                      <p className="text-sm md:font-medium">{project.location?.address || "Adresse non spécifiée"}</p>
-                      <p className="text-xs md:text-sm">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs md:text-sm md:font-medium word-break break-words">{project.location?.address || "Adresse non spécifiée"}</p>
+                      <p className="text-[10px] md:text-sm word-break break-words">
                         {project.location?.postalCode} {project.location?.city}
                         {project.location?.region && `, ${project.location.region}`}
                       </p>
                     </div>
                   </div>
                   
-                  {project.location?.accessibility && (
-                    <div className="mt-3 md:mt-4">
-                      <p className="text-xs md:text-sm text-muted-foreground">Accessibilité</p>
-                      <p className="text-sm">{project.location.accessibility}</p>
+                  {/* Carte Google Maps */}
+                  {project.location?.address && project.location.city && project.location.postalCode && (
+                    <div className="mt-3 md:mt-5 w-full">
+                      <GoogleMapComponent
+                        address={project.location.address}
+                        city={project.location.city}
+                        postalCode={project.location.postalCode}
+                        mapHeight="180px"
+                        className="w-full"
+                      />
                     </div>
                   )}
                   
-                  <div className="mt-3 md:mt-4 flex justify-end">
-                    <Button variant="outline" size="sm" onClick={() => router.push("/create-project/location")}>
-                      <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" /> Modifier
-                    </Button>
+                  {project.location?.accessibility && (
+                    <div className="mt-1.5 md:mt-4">
+                      <p className="text-[10px] md:text-sm text-muted-foreground">Accessibilité</p>
+                      <p className="text-xs md:text-sm">{project.location.accessibility}</p>
                   </div>
+                  )}
                 </CardContent>
               </Card>
             </AccordionContent>
           </AccordionItem>
           
           <AccordionItem value="schedule" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-3 px-2">
+            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
               <div className="flex items-center">
-                <div className={`mr-2 p-1 rounded-full ${completionStatus.schedule ? "bg-green-100 text-green-600" : "bg-amber-100 text-amber-600"}`}>
-                  {completionStatus.schedule ? <CheckCircle className="h-4 w-4 md:h-5 md:w-5" /> : <InfoIcon className="h-4 w-4 md:h-5 md:w-5" />}
+                <div className={`mr-1 md:mr-2 p-1 rounded-full ${
+                  completionStatus.schedule 
+                    ? "bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400" 
+                    : "bg-amber-100 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400"
+                }`}>
+                  {completionStatus.schedule ? <CheckCircle className="h-3 w-3 md:h-5 md:w-5" /> : <InfoIcon className="h-3 w-3 md:h-5 md:w-5" />}
                 </div>
-                <span className="text-sm md:text-base">Planification</span>
+                <span>Planification</span>
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <Card>
-                <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
-                  <div className="flex items-start gap-2 md:gap-3">
-                    <div className="p-1.5 md:p-2 bg-primary/10 rounded-full">
-                      <Calendar className="h-3 w-3 md:h-5 md:w-5 text-primary" />
+              <Card className="w-full max-w-full">
+                <CardContent className="pt-2 md:pt-6 px-2 md:px-6 overflow-hidden w-full relative">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
+                    onClick={() => router.push("/create-project/date")}
+                  >
+                    <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
+                  </Button>
+                  
+                  <div className="flex items-start gap-1.5 md:gap-3">
+                    <div className="p-1 md:p-2 bg-primary/10 rounded-full flex-shrink-0">
+                      <Calendar className="h-2.5 w-2.5 md:h-5 md:w-5 text-primary" />
                     </div>
-                    <div>
-                      <p className="text-sm md:font-medium">
-                        Date souhaitée: {formatDate(project.schedule?.startDate)}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs md:text-sm md:font-medium">
+                        Date: {formatDate(project.schedule?.startDate)}
                       </p>
-                      <p className="text-xs md:text-sm text-muted-foreground">
-                        {project.schedule?.flexibleDates ? "Dates flexibles (±7 jours)" : "Dates fixes"}
+                      <p className="text-[10px] md:text-sm text-muted-foreground">
+                        {project.schedule?.flexibleDates ? "Dates flexibles" : "Dates fixes"}
                       </p>
-                      <p className="mt-1 md:mt-2 text-sm">
-                        <span className="text-xs md:text-sm text-muted-foreground">Urgence: </span>
-                        <span className={`text-sm md:font-medium ${
+                      <p className="mt-1 text-[10px] md:text-sm">
+                        <span className="text-muted-foreground">Urgence: </span>
+                        <span className={`text-xs md:text-sm md:font-medium truncate ${
                           project.schedule?.urgency === "urgent" ? "text-red-600" : 
                           project.schedule?.urgency === "soon" ? "text-amber-600" : 
                           "text-blue-600"
                         }`}>
-                          {project.schedule?.urgency === "urgent" ? "Urgent (7 jours)" : 
-                           project.schedule?.urgency === "soon" ? "Dès que possible (15 jours)" : 
-                           "Normal (30 jours)"}
+                          {project.schedule?.urgency === "urgent" ? "Urgent (7j)" : 
+                           project.schedule?.urgency === "soon" ? "Dès que possible (15j)" : 
+                           "Normal (30j)"}
                         </span>
                       </p>
-                      <p className="mt-1">
-                        <span className="text-xs md:text-sm text-muted-foreground">Horaire préféré: </span>
-                        <span className="text-sm md:font-medium">
-                          {project.schedule?.preferredTime === "morning" ? "Matin (8h-12h)" :
-                           project.schedule?.preferredTime === "afternoon" ? "Après-midi (12h-17h)" :
-                           project.schedule?.preferredTime === "evening" ? "Fin de journée (17h-20h)" :
-                           project.schedule?.preferredTime === "weekend" ? "Week-end uniquement" :
+                      <p className="mt-0.5 md:mt-1">
+                        <span className="text-[10px] md:text-sm text-muted-foreground">Horaire: </span>
+                        <span className="text-xs md:text-sm md:font-medium">
+                          {project.schedule?.preferredTime === "morning" ? "Matin" :
+                           project.schedule?.preferredTime === "afternoon" ? "Après-midi" :
+                           project.schedule?.preferredTime === "evening" ? "Fin de journée" :
+                           project.schedule?.preferredTime === "weekend" ? "Week-end" :
                            "N'importe quand"}
                         </span>
                       </p>
                     </div>
-                  </div>
-                  
-                  <div className="mt-3 md:mt-4 flex justify-end">
-                    <Button variant="outline" size="sm" onClick={() => router.push("/create-project/date")}>
-                      <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" /> Modifier
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -611,51 +745,75 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="photos" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-3 px-2">
+            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
               <div className="flex items-center">
-                <div className={`mr-2 p-1 rounded-full ${project.photos && project.photos.length > 0 ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-600"}`}>
-                  <ImageIcon className="h-4 w-4 md:h-5 md:w-5" />
+                <div className={`mr-1 md:mr-2 p-1 rounded-full ${
+                  project.photos && project.photos.length > 0 
+                    ? "bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400" 
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                }`}>
+                  <ImageIcon className="h-3 w-3 md:h-5 md:w-5" />
                 </div>
-                <span className="text-sm md:text-base">Photos</span>
+                <span>Photos</span>
                 {project.photos && project.photos.length > 0 && (
-                  <span className="ml-2 text-xs bg-primary/10 text-primary rounded-full px-2 py-0.5">
+                  <span className="ml-1 md:ml-2 text-[10px] md:text-xs bg-primary/10 text-primary rounded-full px-1.5 md:px-2 py-0.5">
                     {project.photos.length}
                   </span>
                 )}
               </div>
             </AccordionTrigger>
             <AccordionContent>
-              <Card>
-                <CardContent className="pt-4 md:pt-6 px-3 md:px-6">
+              <Card className="w-full max-w-full">
+                <CardContent className="pt-2 md:pt-6 px-2 md:px-6 overflow-hidden w-full relative">
                   {project.photos && project.photos.length > 0 ? (
                     <div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
+                        onClick={() => router.push("/create-project/details")}
+                      >
+                        <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
+                      </Button>
+                      
+                      <div className="grid grid-cols-3 md:grid-cols-4 gap-1 md:gap-4">
                         {project.photos.map((photo, index) => (
                           <div key={photo.id} className="relative aspect-square rounded-md overflow-hidden border bg-gray-50">
-                            <img
+                            <Image
                               src={photo.preview}
                               alt={`Photo ${index + 1}`}
-                              className="object-cover w-full h-full"
-                              onError={(e) => {
+                              fill
+                              sizes="(max-width: 768px) 33vw, 25vw"
+                              className="object-cover"
+                              unoptimized={true}
+                              onError={() => {
                                 console.log("Erreur de chargement d'image:", photo.preview);
-                                e.currentTarget.src = "/placeholder.svg"; // Image de remplacement en cas d'erreur
+                                // Ne pas essayer de modifier la source ici pour éviter la boucle infinie
                               }}
                             />
                           </div>
                         ))}
                       </div>
-                      <div className="mt-3 md:mt-4 flex justify-end">
-                        <Button variant="outline" size="sm" onClick={() => router.push("/create-project/details")}>
-                          <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" /> Modifier
-                        </Button>
-                      </div>
                     </div>
                   ) : (
-                    <div className="text-center py-3 md:py-4">
-                      <ImageIcon className="h-8 w-8 md:h-12 md:w-12 mx-auto text-muted-foreground" />
-                      <p className="mt-2 text-sm text-muted-foreground">Aucune photo ajoutée</p>
-                      <Button variant="outline" className="mt-3 md:mt-4 text-sm" onClick={() => router.push("/create-project/details")}>
-                        Ajouter des photos
+                    <div className="text-center py-2 md:py-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
+                        onClick={() => router.push("/create-project/details")}
+                      >
+                        <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
+                      </Button>
+                      
+                      <ImageIcon className="h-6 w-6 md:h-12 md:w-12 mx-auto text-muted-foreground" />
+                      <p className="mt-1 md:mt-2 text-xs md:text-sm text-muted-foreground">Aucune photo ajoutée</p>
+                      <Button 
+                        variant="outline" 
+                        className="mt-2 md:mt-4 text-xs md:text-sm h-7 md:h-9" 
+                        onClick={() => router.push("/create-project/details")}
+                      >
+                        <span className="hidden md:inline">Ajouter des photos</span><span className="inline md:hidden">Photos</span>
                       </Button>
                     </div>
                   )}
@@ -665,59 +823,62 @@ export default function ReviewPage() {
           </AccordionItem>
         </Accordion>
         
-        <Card className="bg-primary-50 border-primary-100 dark:bg-primary-950/10 dark:border-primary-900/20">
-          <CardContent className="p-3 md:p-4">
-            <h3 className="text-sm md:text-base font-medium mb-2 flex items-center">
-              <FileText className="mr-2 h-4 w-4 md:h-5 md:w-5 text-primary" />
+        <Card className="bg-primary-50 border-primary-100 dark:bg-primary-950/10 dark:border-primary-900/20 w-full max-w-full">
+          <CardContent className="p-2 md:p-4 overflow-hidden">
+            <h3 className="text-xs md:text-base font-medium mb-1 md:mb-2 flex items-center">
+              <FileText className="mr-1 md:mr-2 h-3 w-3 md:h-5 md:w-5 text-primary" />
               Récapitulatif
             </h3>
-            <ul className="space-y-1.5 md:space-y-2 mb-3 md:mb-4">
+            <ul className="space-y-1 md:space-y-2 mb-2 md:mb-4">
               <li className="flex items-center">
-                <div className={`mr-2 ${completionStatus.category ? "text-green-600" : "text-amber-600"}`}>
-                  {completionStatus.category ? <CheckSquare className="h-3 w-3 md:h-4 md:w-4" /> : <div className="h-3 w-3 md:h-4 md:w-4 border rounded-sm"></div>}
+                <div className={`mr-1 md:mr-2 ${completionStatus.category ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
+                  {completionStatus.category ? <CheckSquare className="h-2.5 w-2.5 md:h-4 md:w-4" /> : <div className="h-2.5 w-2.5 md:h-4 md:w-4 border rounded-sm"></div>}
                 </div>
-                <span className="text-sm">Catégorie et service</span>
+                <span className="text-xs md:text-sm">Catégorie et service</span>
               </li>
               <li className="flex items-center">
-                <div className={`mr-2 ${completionStatus.details ? "text-green-600" : "text-amber-600"}`}>
-                  {completionStatus.details ? <CheckSquare className="h-3 w-3 md:h-4 md:w-4" /> : <div className="h-3 w-3 md:h-4 md:w-4 border rounded-sm"></div>}
+                <div className={`mr-1 md:mr-2 ${completionStatus.details ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
+                  {completionStatus.details ? <CheckSquare className="h-2.5 w-2.5 md:h-4 md:w-4" /> : <div className="h-2.5 w-2.5 md:h-4 md:w-4 border rounded-sm"></div>}
                 </div>
-                <span className="text-sm">Informations sur le projet</span>
+                <span className="text-xs md:text-sm">Informations sur le projet</span>
               </li>
               <li className="flex items-center">
-                <div className={`mr-2 ${completionStatus.budget ? "text-green-600" : "text-amber-600"}`}>
-                  {completionStatus.budget ? <CheckSquare className="h-3 w-3 md:h-4 md:w-4" /> : <div className="h-3 w-3 md:h-4 md:w-4 border rounded-sm"></div>}
+                <div className={`mr-1 md:mr-2 ${completionStatus.budget ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
+                  {completionStatus.budget ? <CheckSquare className="h-2.5 w-2.5 md:h-4 md:w-4" /> : <div className="h-2.5 w-2.5 md:h-4 md:w-4 border rounded-sm"></div>}
                 </div>
-                <span className="text-sm">Budget</span>
+                <span className="text-xs md:text-sm">Budget</span>
               </li>
               <li className="flex items-center">
-                <div className={`mr-2 ${completionStatus.location ? "text-green-600" : "text-amber-600"}`}>
-                  {completionStatus.location ? <CheckSquare className="h-3 w-3 md:h-4 md:w-4" /> : <div className="h-3 w-3 md:h-4 md:w-4 border rounded-sm"></div>}
+                <div className={`mr-1 md:mr-2 ${completionStatus.location ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
+                  {completionStatus.location ? <CheckSquare className="h-2.5 w-2.5 md:h-4 md:w-4" /> : <div className="h-2.5 w-2.5 md:h-4 md:w-4 border rounded-sm"></div>}
                 </div>
-                <span className="text-sm">Localisation</span>
+                <span className="text-xs md:text-sm">Localisation</span>
               </li>
               <li className="flex items-center">
-                <div className={`mr-2 ${completionStatus.schedule ? "text-green-600" : "text-amber-600"}`}>
-                  {completionStatus.schedule ? <CheckSquare className="h-3 w-3 md:h-4 md:w-4" /> : <div className="h-3 w-3 md:h-4 md:w-4 border rounded-sm"></div>}
+                <div className={`mr-1 md:mr-2 ${completionStatus.schedule ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>
+                  {completionStatus.schedule ? <CheckSquare className="h-2.5 w-2.5 md:h-4 md:w-4" /> : <div className="h-2.5 w-2.5 md:h-4 md:w-4 border rounded-sm"></div>}
                 </div>
-                <span className="text-sm">Planification</span>
+                <span className="text-xs md:text-sm">Planification</span>
               </li>
               <li className="flex items-center text-muted-foreground">
-                <div className={`mr-2 ${completionStatus.photos ? "text-green-600" : "text-gray-400"}`}>
-                  {completionStatus.photos ? <CheckSquare className="h-3 w-3 md:h-4 md:w-4" /> : <div className="h-3 w-3 md:h-4 md:w-4 border rounded-sm"></div>}
+                <div className={`mr-1 md:mr-2 ${completionStatus.photos ? "text-green-600 dark:text-green-400" : "text-gray-400 dark:text-gray-600"}`}>
+                  {completionStatus.photos ? <CheckSquare className="h-2.5 w-2.5 md:h-4 md:w-4" /> : <div className="h-2.5 w-2.5 md:h-4 md:w-4 border rounded-sm"></div>}
                 </div>
-                <span className="text-sm">Photos (optionnel)</span>
+                <span className="text-xs md:text-sm">Photos (optionnel)</span>
               </li>
             </ul>
             
+            {/* Bouton Publier supprimé pour la version mobile (il est déjà présent dans le layout) mais conservé pour desktop */}
+            <div className="hidden md:block">
             <Button
-              className="w-full py-2 md:py-3 text-sm md:text-base"
+                id="project-form"
               onClick={handleSubmit}
+                className="w-full py-1.5 md:py-3 text-xs md:text-base h-8 md:h-auto"
               disabled={!isFormComplete() || isSubmitting}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="mr-2 h-3 w-3 md:h-4 md:w-4 animate-spin" />
+                    <Loader2 className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4 animate-spin" />
                   Soumission en cours...
                 </>
               ) : (
@@ -726,6 +887,7 @@ export default function ReviewPage() {
                 </>
               )}
             </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

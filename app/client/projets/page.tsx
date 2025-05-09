@@ -48,7 +48,7 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
-import { toast } from "@/components/ui/toast-handler"
+import { toast } from "sonner"
 
 // Interface pour les projets
 interface Project {
@@ -145,11 +145,7 @@ export default function ProjectsPage() {
         setProjects(data)
       } catch (error) {
         console.error("Erreur:", error)
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger vos projets. Veuillez réessayer plus tard.",
-          variant: "destructive"
-        })
+        toast.error("Impossible de charger vos projets. Veuillez réessayer plus tard.")
       } finally {
         setIsLoading(false)
       }
@@ -337,11 +333,7 @@ export default function ProjectsPage() {
                         size="icon" 
                         className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
                         onClick={() => {
-                          toast({
-                            title: "Confirmation nécessaire",
-                            description: "Voulez-vous vraiment supprimer ce projet?",
-                            variant: "destructive",
-                          })
+                          toast.error("Voulez-vous vraiment supprimer ce projet?")
                         }}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -417,11 +409,7 @@ export default function ProjectsPage() {
                           size="sm" 
                           className="h-9 w-9 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
                           onClick={() => {
-                            toast({
-                              title: "Confirmation nécessaire",
-                              description: "Voulez-vous vraiment supprimer ce projet?",
-                              variant: "destructive",
-                            })
+                            toast.error("Voulez-vous vraiment supprimer ce projet?")
                           }}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -439,7 +427,7 @@ export default function ProjectsPage() {
       <div className="mt-6">
         <Card>
           <CardHeader>
-            <CardTitle>Vous avez besoin d'aide ?</CardTitle>
+            <CardTitle>Vous avez besoin d&apos;aide ?</CardTitle>
             <CardDescription>
               Notre équipe est là pour vous accompagner dans votre projet de rénovation
             </CardDescription>
