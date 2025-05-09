@@ -9,6 +9,15 @@ type ServicesMap = {
   [categoryId: string]: ServiceData[]
 }
 
+// Fonction pour diviser un tableau en lots
+function chunkArray<T>(array: T[], chunkSize: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    chunks.push(array.slice(i, i + chunkSize));
+  }
+  return chunks;
+}
+
 export async function POST(req: Request) {
   try {
     // Vérifier l'authentification et les permissions d'admin
@@ -46,116 +55,36 @@ export async function POST(req: Request) {
       slug: slugify(category.name)
     }))
     
-    const preparedServices: Record<string, any[]> = {}
-    for (const categoryId in services) {
-      preparedServices[categoryId] = services[categoryId].map((service: ServiceData) => ({
-        ...service,
-        slug: `${categoryId}-${slugify(service.name)}`
-      }))
+    // Diviser les catégories en plus petits lots (5 par lot)
+    const categoryChunks = chunkArray(preparedCategories, 5);
+
+    // Résultats cumulatifs
+    let totalCreatedCategories = 0;
+    let totalCreatedServices = 0;
+    let totalSkippedCategories: string[] = [];
+    let totalSkippedServices: string[] = [];
+
+    // Traiter les catégories par lots
+    for (const categoryChunk of categoryChunks) {
+      // Traiter ce lot de catégories
+      const result = await processCategories(categoryChunk, services);
+      
+      // Accumuler les résultats
+      totalCreatedCategories += result.createdCategories;
+      totalCreatedServices += result.createdServices;
+      totalSkippedCategories = [...totalSkippedCategories, ...result.skippedCategories];
+      totalSkippedServices = [...totalSkippedServices, ...result.skippedServices];
     }
-    
-    // Commencer une transaction pour garantir la cohérence des données
-    const result = await prisma.$transaction(async (tx) => {
-      const createdCategories: CategoryData[] = []
-      const createdServices: ServiceData[] = []
-      const skippedCategories: string[] = []
-      const skippedServices: string[] = []
-      
-      // Créer les catégories
-      for (const category of preparedCategories) {
-        // Vérifier si la catégorie existe déjà
-        const existingCategory = await tx.category.findFirst({
-          where: {
-            OR: [
-              { id: category.id },
-              { slug: category.slug }
-            ]
-          }
-        })
-        
-        if (!existingCategory) {
-          try {
-            const newCategory = await tx.category.create({
-              data: {
-                id: category.id,
-                name: category.name,
-                icon: category.icon,
-                description: category.description,
-                slug: slugify(category.name),
-                isActive: true,
-                order: 0
-              }
-            })
-            createdCategories.push(newCategory as unknown as CategoryData)
-          } catch (err) {
-            console.warn(`Impossible de créer la catégorie ${category.name} (${category.id}): `, err);
-            skippedCategories.push(category.name);
-            // Continuer avec la catégorie suivante
-            continue;
-          }
-        } else {
-          skippedCategories.push(category.name);
-        }
-      }
-      
-      // Créer les services pour chaque catégorie
-      for (const categoryId in preparedServices) {
-        const categoryServices = preparedServices[categoryId]
-        
-        if (Array.isArray(categoryServices)) {
-          for (const service of categoryServices) {
-            // Vérifier si le service existe déjà par ID ou par slug
-            const existingService = await tx.service.findFirst({
-              where: {
-                OR: [
-                  { id: service.id },
-                  { slug: service.slug }
-                ]
-              }
-            })
-            
-            if (!existingService) {
-              try {
-                const newService = await tx.service.create({
-                  data: {
-                    id: service.id,
-                    name: service.name,
-                    description: service.description,
-                    categoryId: categoryId,
-                    slug: service.slug,
-                    isActive: true,
-                    order: 0
-                  }
-                })
-                createdServices.push(newService as unknown as ServiceData)
-              } catch (err) {
-                console.warn(`Impossible de créer le service ${service.name} (${service.id}): `, err);
-                skippedServices.push(service.name);
-                // Continuer avec le prochain service
-                continue;
-              }
-            } else {
-              skippedServices.push(service.name);
-            }
-          }
-        }
-      }
-      
-      return {
-        categoriesCount: createdCategories.length,
-        servicesCount: createdServices.length,
-        skippedCategoriesCount: skippedCategories.length,
-        skippedServicesCount: skippedServices.length
-      }
-    }, {
-      // Augmenter le timeout de la transaction à 30 secondes pour gérer les nombreuses opérations
-      timeout: 30000 // 30 secondes au lieu des 5 secondes par défaut
-    })
     
     return NextResponse.json({
       success: true,
-      message: `Importation réussie: ${result.categoriesCount} catégories et ${result.servicesCount} services créés. ${result.skippedCategoriesCount} catégories et ${result.skippedServicesCount} services ignorés (déjà existants ou erreurs).`,
-      data: result
+      message: `Importation réussie: ${totalCreatedCategories} catégories et ${totalCreatedServices} services créés. ${totalSkippedCategories.length} catégories et ${totalSkippedServices.length} services ignorés (déjà existants ou erreurs).`,
+      data: {
+        categoriesCount: totalCreatedCategories,
+        servicesCount: totalCreatedServices,
+        skippedCategoriesCount: totalSkippedCategories.length,
+        skippedServicesCount: totalSkippedServices.length
+      }
     })
     
   } catch (error: any) {
@@ -165,4 +94,101 @@ export async function POST(req: Request) {
       { status: 500 }
     )
   }
+}
+
+// Fonction pour traiter un lot de catégories
+async function processCategories(categoryChunk: CategoryData[], allServices: Record<string, ServiceData[]>) {
+  // Résultats de ce lot
+  let createdCategories = 0;
+  let createdServices = 0;
+  let skippedCategories: string[] = [];
+  let skippedServices: string[] = [];
+
+  // Traiter chaque catégorie une par une (sans transaction)
+  for (const category of categoryChunk) {
+    try {
+      // Vérifier si la catégorie existe déjà
+      const existingCategory = await prisma.category.findFirst({
+        where: {
+          OR: [
+            { id: category.id },
+            { slug: slugify(category.name) }
+          ]
+        }
+      });
+
+      if (!existingCategory) {
+        // Créer la catégorie
+        await prisma.category.create({
+          data: {
+            id: category.id,
+            name: category.name,
+            icon: category.icon,
+            description: category.description,
+            slug: slugify(category.name),
+            isActive: true,
+            order: 0
+          }
+        });
+        createdCategories++;
+
+        // Traiter les services pour cette catégorie
+        const categoryServices = allServices[category.id];
+        if (Array.isArray(categoryServices)) {
+          // Traiter les services par petits lots (5 par lot)
+          const serviceChunks = chunkArray(categoryServices, 5);
+          for (const serviceChunk of serviceChunks) {
+            // Traiter chaque service du lot
+            for (const service of serviceChunk) {
+              try {
+                // Vérifier si le service existe déjà
+                const slug = `${category.id}-${slugify(service.name)}`;
+                const existingService = await prisma.service.findFirst({
+                  where: {
+                    OR: [
+                      { id: service.id },
+                      { slug }
+                    ]
+                  }
+                });
+
+                if (!existingService) {
+                  // Créer le service
+                  await prisma.service.create({
+                    data: {
+                      id: service.id,
+                      name: service.name,
+                      description: service.description,
+                      categoryId: category.id,
+                      slug,
+                      isActive: true,
+                      order: 0
+                    }
+                  });
+                  createdServices++;
+                } else {
+                  skippedServices.push(service.name);
+                }
+              } catch (err) {
+                console.warn(`Impossible de créer le service ${service.name} (${service.id}):`, err);
+                skippedServices.push(service.name);
+              }
+            }
+          }
+        }
+      } else {
+        skippedCategories.push(category.name);
+      }
+    } catch (err) {
+      console.warn(`Impossible de créer la catégorie ${category.name} (${category.id}):`, err);
+      skippedCategories.push(category.name);
+    }
+  }
+
+  return {
+    createdCategories,
+    createdServices,
+    skippedCategories,
+    skippedServices
+  };
 } 
