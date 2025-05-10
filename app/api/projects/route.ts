@@ -167,6 +167,19 @@ export async function POST(request: NextRequest) {
     // Extraire les photos avant de créer le projet car elles seront ajoutées séparément
     const photos = body.photos || []
     
+    // Traitement des photos pour s'assurer qu'elles sont des URLs valides
+    const processedPhotos = photos.map((photoUrl: string) => {
+      // Si c'est une référence sessionStorage, nous utilisons l'URL de placeholder
+      // car nous ne pouvons pas accéder au sessionStorage côté serveur
+      if (photoUrl.startsWith('session:')) {
+        console.log(`URL d'image avec préfixe session détectée: ${photoUrl}, remplacée par placeholder`);
+        // Ici, on pourrait implémenter une solution pour stocker les data URLs compressées
+        // dans un stockage cloud comme S3, mais pour l'instant nous utilisons un placeholder
+        return '/placeholder-project.png';
+      }
+      return photoUrl;
+    });
+
     // Création du projet
     const project = await prisma.project.create({
       data: {
@@ -203,10 +216,10 @@ export async function POST(request: NextRequest) {
     console.log("API - Projet créé:", project)
 
     // Si le projet a été créé avec succès et qu'il y a des photos
-    if (project && photos.length > 0) {
+    if (project && processedPhotos.length > 0) {
       // Créer les entrées pour les images
       await prisma.projectImage.createMany({
-        data: photos.map((photoUrl: string, index: number) => ({
+        data: processedPhotos.map((photoUrl: string, index: number) => ({
           url: photoUrl,
           caption: "",
           order: index,
@@ -214,7 +227,7 @@ export async function POST(request: NextRequest) {
         }))
       })
       
-      console.log(`API - ${photos.length} photo(s) ajoutée(s) au projet ${project.id}`)
+      console.log(`API - ${processedPhotos.length} photo(s) ajoutée(s) au projet ${project.id}`)
     }
 
     // Récupérer les images pour les inclure dans la réponse

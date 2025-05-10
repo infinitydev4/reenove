@@ -65,35 +65,46 @@ export async function GET(request: NextRequest) {
     })
 
     // Transformer les données pour le frontend
-    const formattedProjects = projects.map(project => ({
-      id: project.id,
-      title: project.title,
-      description: project.description,
-      status: project.status,
-      categoryId: project.categoryId,
-      categoryName: project.category?.name,
-      serviceId: project.serviceId,
-      serviceName: project.service?.name,
-      budget: project.budget || undefined,
-      budgetType: project.budgetType || undefined,
-      budgetMax: project.budgetMax || undefined,
-      location: project.location || undefined,
-      city: project.city || undefined,
-      postalCode: project.postalCode || undefined,
-      startDate: project.startDate ? project.startDate.toISOString() : undefined,
-      endDate: project.endDate ? project.endDate.toISOString() : undefined,
-      urgencyLevel: project.urgencyLevel || undefined,
-      createdAt: project.createdAt.toISOString(),
-      updatedAt: project.updatedAt.toISOString(),
-      completedAt: project.completedAt ? project.completedAt.toISOString() : undefined,
-      photos: project.images.map(image => image.url),
-      quotes: project.quotes.map(quote => ({
-        id: quote.id,
-        amount: quote.amount,
-        status: quote.status,
-        providerName: quote.provider.name
-      }))
-    }))
+    const formattedProjects = projects.map(project => {
+      // Vérifier les URLs des images
+      const photoUrls = project.images.map(image => {
+        if (image.url.startsWith('session:')) {
+          console.log("URL d'image non reconnue:", image.url);
+          return '/placeholder-project.png';
+        }
+        return image.url;
+      });
+
+      return {
+        id: project.id,
+        title: project.title,
+        description: project.description,
+        status: project.status,
+        categoryId: project.categoryId,
+        categoryName: project.category?.name,
+        serviceId: project.serviceId,
+        serviceName: project.service?.name,
+        budget: project.budget || undefined,
+        budgetType: project.budgetType || undefined,
+        budgetMax: project.budgetMax || undefined,
+        location: project.location || undefined,
+        city: project.city || undefined,
+        postalCode: project.postalCode || undefined,
+        startDate: project.startDate ? project.startDate.toISOString() : undefined,
+        endDate: project.endDate ? project.endDate.toISOString() : undefined,
+        urgencyLevel: project.urgencyLevel || undefined,
+        createdAt: project.createdAt.toISOString(),
+        updatedAt: project.updatedAt.toISOString(),
+        completedAt: project.completedAt ? project.completedAt.toISOString() : undefined,
+        photos: photoUrls,
+        quotes: project.quotes.map(quote => ({
+          id: quote.id,
+          amount: quote.amount,
+          status: quote.status,
+          providerName: quote.provider.name
+        }))
+      }
+    })
 
     return NextResponse.json(formattedProjects)
   } catch (error) {

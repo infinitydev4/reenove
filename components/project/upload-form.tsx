@@ -9,9 +9,10 @@ import { toast } from '@/components/ui/toast-handler'
 interface UploadFormProps {
   maxFiles?: number
   onUploadComplete?: (urls: string[]) => void
+  initialUrls?: string[]
 }
 
-export function UploadForm({ maxFiles = 6, onUploadComplete }: UploadFormProps) {
+export function UploadForm({ maxFiles = 6, onUploadComplete, initialUrls = [] }: UploadFormProps) {
   const [files, setFiles] = useState<File[]>([])
   const [previews, setPreviews] = useState<string[]>([])
   const [uploadedUrls, setUploadedUrls] = useState<string[]>([])
@@ -25,6 +26,14 @@ export function UploadForm({ maxFiles = 6, onUploadComplete }: UploadFormProps) 
       onUploadComplete(uploadedUrls);
     }
   }, [uploadedUrls, onUploadComplete]);
+
+  useEffect(() => {
+    // Synchroniser les previews et uploadedUrls avec les images déjà uploadées (S3)
+    if (initialUrls.length > 0) {
+      setPreviews(initialUrls)
+      setUploadedUrls(initialUrls)
+    }
+  }, [initialUrls])
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return

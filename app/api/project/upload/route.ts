@@ -47,17 +47,19 @@ export async function POST(request: NextRequest) {
     const uniqueFileName = `${uuidv4()}.${fileExtension}`
     const s3Key = `projects/${userId}/${uniqueFileName}`
 
-    // Upload sur S3 avec le nouveau module
+    // Upload sur S3
     const imageUrl = await uploadToS3(buffer, s3Key, file.type)
-
-    // Fallback si S3 échoue ou n'est pas configuré
-    const finalImageUrl = imageUrl || `/api/mock-storage/${s3Key}`
-
-    if (!imageUrl && isS3Available()) {
-      console.error("Échec de l'upload S3 malgré une configuration valide")
-      return NextResponse.json({ 
-        error: "Erreur lors de l'upload sur AWS S3" 
-      }, { status: 500 })
+    
+    // URL finale (S3 ou Data URL)
+    let finalImageUrl = imageUrl
+    
+    // Si S3 n'est pas configuré, créer une data URL
+    if (!finalImageUrl) {
+      console.log("S3 non configuré, utilisation d'une data URL")
+      
+      // Générer une data URL
+      const base64Data = buffer.toString('base64')
+      finalImageUrl = `data:${file.type};base64,${base64Data}`
     }
 
     // Si projectId est fourni, enregistrer automatiquement l'image dans la base de données

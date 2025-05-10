@@ -24,7 +24,8 @@ import {
   CircleDollarSign,
   Share,
   Truck,
-  MessageSquare
+  MessageSquare,
+  Trash2
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -35,6 +36,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 // Interface pour les projets
 interface Project {
@@ -136,6 +145,27 @@ const getProjectProgress = (status: string) => {
   }
 }
 
+// Fonction pour récupérer les vraies URLs depuis les références sessionStorage
+const getImageFromSessionStorage = (imageUrl: string) => {
+  if (imageUrl.startsWith('session:')) {
+    const key = imageUrl.replace('session:', '');
+    try {
+      const sessionImage = typeof window !== 'undefined' ? sessionStorage.getItem(key) : null;
+      if (sessionImage) {
+        console.log("Image récupérée avec succès depuis sessionStorage:", key);
+        return sessionImage;
+      } else {
+        console.warn("Image non trouvée dans sessionStorage:", key);
+        return '/placeholder-project.png';
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'image depuis sessionStorage:", error);
+      return '/placeholder-project.png';
+    }
+  }
+  return imageUrl;
+};
+
 export default function ProjectDetailPage() {
   const { data: session } = useSession()
   const params = useParams()
@@ -145,6 +175,11 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [activeTab, setActiveTab] = useState("details")
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  
+  // États pour la gestion de la suppression
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   
   // Récupérer les détails du projet
   useEffect(() => {
@@ -230,41 +265,68 @@ export default function ProjectDetailPage() {
     )
   }
   
+  // Fonction pour gérer la suppression de projet
+  const handleDeleteProject = async () => {
+    try {
+      setIsDeleting(true)
+      
+      const response = await fetch(`/api/client/projects/${projectId}`, {
+        method: 'DELETE',
+      })
+      
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Erreur lors de la suppression du projet")
+      }
+      
+      toast.success("Projet supprimé avec succès")
+      
+      // Rediriger vers la liste des projets après suppression
+      router.push('/client/projets')
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error)
+      toast.error("Impossible de supprimer le projet. Veuillez réessayer plus tard.")
+    } finally {
+      setIsDeleting(false)
+      setDeleteDialogOpen(false)
+    }
+  }
+  
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="icon">
+        <div className="flex items-center gap-2 w-full overflow-hidden">
+          <Button asChild variant="outline" size="icon" className="shrink-0">
             <Link href="/client/projets">
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">{project.title}</h1>
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <span>{project.categoryName}</span>
+          <div className="min-w-0 overflow-hidden">
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight truncate">{project.title}</h1>
+            <div className="flex items-center gap-1 md:gap-2 text-muted-foreground text-xs md:text-sm overflow-hidden">
+              <span className="truncate">{project.categoryName}</span>
               {project.serviceName && (
                 <>
-                  <span>•</span>
-                  <span>{project.serviceName}</span>
+                  <span className="shrink-0">•</span>
+                  <span className="truncate">{project.serviceName}</span>
                 </>
               )}
-              <span>•</span>
-              <span>Créé le {formatDate(project.createdAt)}</span>
+              <span className="shrink-0">•</span>
+              <span className="truncate shrink-0">Créé le {formatDate(project.createdAt)}</span>
             </div>
           </div>
         </div>
         
-        <div className="flex gap-2">
-          <Button variant="outline" asChild>
+        <div className="flex gap-2 mt-2 md:mt-0 shrink-0">
+          <Button variant="outline" asChild className="h-8 md:h-10 text-xs md:text-sm px-2 md:px-4">
             <Link href={`/client/projets/${projectId}/edit`}>
-              <Edit className="mr-2 h-4 w-4" />
-              Modifier
+              <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+              <span className="truncate">Modifier</span>
             </Link>
           </Button>
-          <Button variant="outline">
-            <Share className="mr-2 h-4 w-4" />
-            Partager
+          <Button variant="outline" className="h-8 md:h-10 text-xs md:text-sm px-2 md:px-4">
+            <Share className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+            <span className="truncate">Partager</span>
           </Button>
         </div>
       </div>
@@ -450,20 +512,46 @@ export default function ProjectDetailPage() {
               </CardHeader>
               <CardContent>
                 {project.photos && project.photos.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {project.photos.map((photo, index) => (
-                      <div key={index} className="relative aspect-square rounded-md overflow-hidden border bg-muted">
-                        <img
-                          src={photo}
-                          alt={`Photo ${index + 1}`}
-                          className="object-cover w-full h-full"
-                          onError={(e) => {
-                            console.error(`Erreur de chargement de l'image: ${photo}`);
-                            e.currentTarget.src = "/placeholder-project.svg";
-                          }}
-                        />
+                  <div className="space-y-3">
+                    {/* Image principale sélectionnée */}
+                    <div className="relative aspect-video w-full rounded-md overflow-hidden border bg-muted">
+                      <img
+                        src={getImageFromSessionStorage(project.photos[selectedImageIndex])}
+                        alt={`Photo principale`}
+                        className="object-cover w-full h-full"
+                        onError={(e) => {
+                          console.error(`Erreur de chargement de l'image principale`);
+                          e.currentTarget.src = "/placeholder-project.png";
+                        }}
+                      />
+                    </div>
+                    
+                    {/* Galerie de miniatures */}
+                    {project.photos && project.photos.length > 1 && (
+                      <div className="grid grid-cols-6 md:grid-cols-8 gap-2">
+                        {project.photos.map((photo, index) => (
+                          <div 
+                            key={index} 
+                            className={`relative aspect-square rounded-md overflow-hidden border cursor-pointer transition-all duration-200 ${
+                              selectedImageIndex === index 
+                                ? "border-primary ring-2 ring-primary/50" 
+                                : "border-muted bg-muted hover:border-primary/30"
+                            }`}
+                            onClick={() => setSelectedImageIndex(index)}
+                          >
+                            <img
+                              src={getImageFromSessionStorage(photo)}
+                              alt={`Miniature ${index + 1}`}
+                              className="object-cover w-full h-full"
+                              onError={(e) => {
+                                console.error(`Erreur de chargement de la miniature ${index + 1}`);
+                                e.currentTarget.src = "/placeholder-project.png";
+                              }}
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-6">
@@ -655,15 +743,61 @@ export default function ProjectDetailPage() {
             </Button>
           )}
           {["DRAFT", "PUBLISHED", "PENDING"].includes(project.status) && (
-            <Button variant="destructive" onClick={() => toast.info("Fonctionnalité à venir", {
-              description: "L'annulation de projet sera bientôt disponible"
-            })}>
-              <XCircle className="mr-2 h-4 w-4" />
-              Annuler le projet
+            <Button 
+              variant="destructive" 
+              onClick={() => setDeleteDialogOpen(true)}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Suppression...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Supprimer
+                </>
+              )}
             </Button>
           )}
         </div>
       </div>
+      
+      {/* Boîte de dialogue de confirmation pour la suppression */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Êtes-vous sûr de vouloir supprimer ce projet ?</DialogTitle>
+            <DialogDescription>
+              Cette action est irréversible. Toutes les données associées à ce projet seront définitivement supprimées.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setDeleteDialogOpen(false)} 
+              disabled={isDeleting}
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={handleDeleteProject}
+              disabled={isDeleting}
+              variant="destructive"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Suppression...
+                </>
+              ) : (
+                <>Supprimer</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

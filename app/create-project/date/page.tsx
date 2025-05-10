@@ -35,6 +35,8 @@ export default function DatePage() {
   const [isFormValid, setIsFormValid] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
+  const [startDateOpen, setStartDateOpen] = useState(false)
+  const [endDateOpen, setEndDateOpen] = useState(false)
 
   // Dates minimales (aujourd'hui + 2 jours pour laisser le temps aux artisans de répondre)
   const today = new Date()
@@ -119,6 +121,17 @@ export default function DatePage() {
         duration: 0.3,
       },
     }
+  }
+
+  // Gestionnaires pour les dates qui ferment le popover après sélection
+  const handleStartDateSelect = (date: Date | undefined) => {
+    setStartDate(date);
+    setStartDateOpen(false);
+  }
+
+  const handleEndDateSelect = (date: Date | undefined) => {
+    setEndDate(date);
+    setEndDateOpen(false);
   }
 
   return (
@@ -221,7 +234,7 @@ export default function DatePage() {
                   ? "À partir de" 
                   : "Date souhaitée"}
             </Label>
-            <Popover>
+            <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -242,16 +255,19 @@ export default function DatePage() {
                 <Calendar
                   mode="single"
                   selected={startDate}
-                  onSelect={setStartDate}
+                  onSelect={handleStartDateSelect}
                   disabled={(date) => date < minDate}
                   initialFocus
-                    classNames={{
-                      caption_label: "text-sm font-medium",
-                      table: "w-full border-collapse",
-                      head_cell: "text-xs font-normal text-muted-foreground",
-                      cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                      day: "h-7 w-7 md:h-9 md:w-9 p-0 font-normal aria-selected:opacity-100"
-                    }}
+                  locale={fr}
+                  classNames={{
+                    caption_label: "text-sm font-medium",
+                    table: "w-full border-collapse space-y-1",
+                    head_row: "flex",
+                    head_cell: "text-xs font-normal text-muted-foreground w-9 rounded-md",
+                    row: "flex w-full mt-2",
+                    cell: "text-center text-sm relative p-0 [&:has([aria-selected])]:bg-accent h-9 w-9 rounded-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                    day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+                  }}
                 />
               </PopoverContent>
             </Popover>
@@ -260,7 +276,7 @@ export default function DatePage() {
           {timeFrame === "specific" && (
               <div className="space-y-1 md:space-y-3">
                 <Label className="text-xs md:text-lg font-medium">Date de fin</Label>
-              <Popover>
+              <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -281,18 +297,21 @@ export default function DatePage() {
                   <Calendar
                     mode="single"
                     selected={endDate}
-                    onSelect={setEndDate}
+                    onSelect={handleEndDateSelect}
                     disabled={(date: Date): boolean => 
                       Boolean(date < minDate || (startDate && date < startDate))
                     }
                     initialFocus
-                      classNames={{
-                        caption_label: "text-sm font-medium",
-                        table: "w-full border-collapse",
-                        head_cell: "text-xs font-normal text-muted-foreground",
-                        cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                        day: "h-7 w-7 md:h-9 md:w-9 p-0 font-normal aria-selected:opacity-100"
-                      }}
+                    locale={fr}
+                    classNames={{
+                      caption_label: "text-sm font-medium",
+                      table: "w-full border-collapse space-y-1",
+                      head_row: "flex",
+                      head_cell: "text-xs font-normal text-muted-foreground w-9 rounded-md",
+                      row: "flex w-full mt-2",
+                      cell: "text-center text-sm relative p-0 [&:has([aria-selected])]:bg-accent h-9 w-9 rounded-md first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                      day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+                    }}
                   />
                 </PopoverContent>
               </Popover>

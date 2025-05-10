@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Role } from "@/lib/generated/prisma"
 import { 
-  HomeIcon, 
+  Home as HomeIcon, 
   PlusCircle, 
   Bell, 
   Wrench, 
@@ -38,12 +38,11 @@ export default function BottomNavbar() {
   // On récupère le rôle de l'utilisateur seulement une fois monté côté client
   const isArtisan = status === "authenticated" && session?.user?.role === Role.ARTISAN
   const isLoggedIn = status === "authenticated"
-  const isDarkTheme = theme === "dark"
 
   // Déterminer les liens en fonction du rôle et de l'état de connexion
   const getActionLink = () => {
     if (!isLoggedIn) return "/auth?tab=login"
-    if (isArtisan) return "/artisan/projects"
+    if (isArtisan) return "/artisan/projets"
     return "/create-project/category"
   }
 
@@ -64,105 +63,34 @@ export default function BottomNavbar() {
     if (isArtisan) return "/artisan"
     return "/client"
   }
-  
-  // Classes pour les éléments de navigation avec design neumorphique
-  const getNavItemClasses = (isActive: boolean) => {
-    return cn(
-      // Base classes
-      "flex flex-col items-center justify-center rounded-lg transition-all duration-300 py-1.5 px-3",
-      // Neumorphic styles basés sur le thème
-      isDarkTheme
-        ? isActive
-          ? "bg-gray-850 shadow-[inset_1px_1px_2px_rgba(0,0,0,0.5),_inset_-1px_-1px_2px_rgba(255,255,255,0.03)]"
-          : "hover:bg-gray-850/80 hover:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.3),_inset_-1px_-1px_2px_rgba(255,255,255,0.02)]"
-        : isActive
-          ? "bg-gray-50 shadow-[inset_1px_1px_2px_rgba(0,0,0,0.03),_inset_-1px_-1px_2px_rgba(255,255,255,0.8)]"
-          : "hover:bg-gray-50/80 hover:shadow-[inset_1px_1px_2px_rgba(0,0,0,0.02),_inset_-1px_-1px_2px_rgba(255,255,255,0.5)]",
-      // Text color based on active state and theme
-      isActive
-        ? "text-yellow-400"
-        : isDarkTheme
-          ? "text-gray-400 hover:text-gray-200"
-          : "text-gray-500 hover:text-gray-700"
-    )
-  }
+
+  const navigation = [
+    { name: "Accueil", href: "/", icon: HomeIcon },
+    { name: "Messages", href: getMessagesLink(), icon: MessageSquare },
+    { name: isArtisan ? "Projets" : "Créer", href: getActionLink(), icon: isArtisan ? Wrench : PlusCircle },
+    { name: "Alertes", href: getNotificationsLink(), icon: Bell },
+    { name: "Tableau", href: getDashboardLink(), icon: LayoutGrid },
+  ]
 
   return (
-    <>
-      {/* Espace pour éviter que le contenu ne soit caché sous la barre */}
-      <div className="h-16 md:hidden" aria-hidden="true"></div>
-      
-      {/* Barre de navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
-        {/* Bulle centrale - positionnée en dehors du conteneur principal pour qu'elle soit au premier plan */}
-        <div className="absolute left-1/2 -translate-x-1/2 -top-6 z-10">
+    <div className="fixed bottom-4 left-4 right-4 md:hidden z-20 bg-white dark:bg-black/95 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 p-2 backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
+      <div className="flex items-center justify-around">
+        {navigation.map((item) => (
           <Link
-            href={getActionLink()}
+            key={item.name}
+            href={item.href}
             className={cn(
-              "flex items-center justify-center w-14 h-14 rounded-full",
-              "transition-all duration-300 active:scale-95",
-              isDarkTheme
-                ? "bg-gradient-to-br from-yellow-500 to-amber-600 shadow-[3px_3px_8px_rgba(0,0,0,0.25),_-2px_-2px_6px_rgba(255,255,255,0.05)]"
-                : "bg-gradient-to-br from-yellow-400 to-amber-500 shadow-[3px_3px_10px_rgba(0,0,0,0.1),_-3px_-3px_10px_rgba(255,255,255,0.8)]"
+              "flex flex-col items-center justify-center p-1.5 rounded-lg transition-colors",
+              pathname === item.href ? "text-primary" : "text-muted-foreground"
             )}
           >
-            {isArtisan ? (
-              <Wrench className="h-6 w-6 text-white" />
-            ) : (
-              <PlusCircle className="h-6 w-6 text-white" />
-            )}
+            <div className="relative">
+              <item.icon className="h-5 w-5 mb-1" />
+            </div>
+            <span className="text-[10px]">{item.name}</span>
           </Link>
-        </div>
-
-        {/* Conteneur principal */}
-        <div className={cn(
-          "py-2 backdrop-blur-xl h-16",
-          isDarkTheme 
-            ? "bg-[#121212]/85 border-t border-gray-800/80 shadow-[0_-5px_20px_rgba(0,0,0,0.25)]" 
-            : "bg-[#f8f9fa]/85 border-t border-gray-200/80 shadow-[0_-5px_20px_rgba(0,0,0,0.07)]"
-        )}>
-          <div className="max-w-sm mx-auto h-full flex items-center justify-between px-4">
-            {/* Accueil */}
-            <Link 
-              href="/" 
-              className={getNavItemClasses(true)}
-            >
-              <HomeIcon className="h-5 w-5 mb-1" />
-              <span className="text-[11px] font-medium">Accueil</span>
-            </Link>
-            
-            {/* Messages */}
-            <Link 
-              href={getMessagesLink()} 
-              className={getNavItemClasses(false)}
-            >
-              <MessageSquare className="h-5 w-5 mb-1" />
-              <span className="text-[11px] font-medium">Messages</span>
-            </Link>
-            
-            {/* Espace pour la bulle centrale */}
-            <div className="w-14"></div>
-            
-            {/* Notifications */}
-            <Link 
-              href={getNotificationsLink()} 
-              className={getNavItemClasses(false)}
-            >
-              <Bell className="h-5 w-5 mb-1" />
-              <span className="text-[11px] font-medium">Alertes</span>
-            </Link>
-            
-            {/* Tableau de bord */}
-            <Link 
-              href={getDashboardLink()} 
-              className={getNavItemClasses(false)}
-            >
-              <LayoutGrid className="h-5 w-5 mb-1" />
-              <span className="text-[11px] font-medium">Tableau</span>
-            </Link>
-          </div>
-        </div>
+        ))}
       </div>
-    </>
+    </div>
   )
 } 

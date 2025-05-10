@@ -1,13 +1,15 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import Link from "next/link"
 import Navbar from "@/components/navbar"
 import { Card } from "@/components/ui/card"
-import { CheckCircle, ArrowLeft, ArrowRight } from "lucide-react"
+import { CheckCircle, ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
+import { useEffect } from "react"
 
 interface StepProps {
   href: string
@@ -62,7 +64,29 @@ export default function CreateProjectLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { theme } = useTheme();
+  const { status } = useSession();
   const isDarkTheme = theme === "dark";
+  
+  // Rediriger vers la page de connexion si non authentifié
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push(`/auth?callbackUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [status, router, pathname]);
+
+  // Afficher un loader pendant la vérification de l'authentification
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Ne rien afficher si non authentifié (la redirection sera gérée par le useEffect)
+  if (status === "unauthenticated") {
+    return null;
+  }
   
   // Identifier l'étape active
   const activeStepIndex = projectSteps.findIndex(step => pathname.includes(step.path));
@@ -84,14 +108,23 @@ export default function CreateProjectLayout({
   
   // Gérer la soumission du formulaire ou la navigation à l'étape suivante
   const handleNextStep = () => {
-    // Soumettre le formulaire actuel si nous ne sommes pas à la dernière étape
-    if (activeStepIndex < projectSteps.length - 1) {
-      // Trouver le formulaire sur la page et le soumettre
-      const form = document.getElementById('project-form') as HTMLFormElement | null;
-      if (form) {
-        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-      } else {
-        // S'il n'y a pas de formulaire, naviguer directement
+    // Si nous sommes sur la dernière étape (révision), soumettre le projet
+    if (isLastStep) {
+      // Sur la page de révision, le bouton s'appelle "project-form"
+      const publishButton = document.querySelector('button[id="project-form"]') as HTMLButtonElement | null;
+      if (publishButton) {
+        publishButton.click();
+        return;
+      }
+    }
+    
+    // Soumettre le formulaire pour les autres étapes
+    const form = document.getElementById('project-form') as HTMLFormElement | null;
+    if (form) {
+      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    } else {
+      // S'il n'y a pas de formulaire, naviguer directement
+      if (activeStepIndex < projectSteps.length - 1) {
         router.push(projectSteps[activeStepIndex + 1].path);
       }
     }
@@ -199,19 +232,8 @@ export default function CreateProjectLayout({
             
             {isLastStep && (
               <Button
-                onClick={() => {
-                  const form = document.getElementById('project-form') as HTMLFormElement | null;
-                  if (form) {
-                    form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-                  } else {
-                    // Si nous sommes sur la page de révision et qu'il n'y a pas de formulaire standard
-                    // déclencher directement le handleSubmit qui est attaché au bouton de publication
-                    const publishButton = document.querySelector('button[id="project-form"]') as HTMLButtonElement | null;
-                    if (publishButton) {
-                      publishButton.click();
-                    }
-                  }
-                }}
+                type="submit"
+                form="project-form"
                 className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white"
                 size="sm"
               >

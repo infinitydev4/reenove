@@ -65,14 +65,24 @@
       "short_name": "Nouveau projet",
       "description": "Créer un nouveau projet de rénovation",
       "url": "/create-project",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Voir mes projets",
       "short_name": "Mes projets",
       "description": "Consulter mes projets en cours",
       "url": "/dashboard",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
-} 
+}

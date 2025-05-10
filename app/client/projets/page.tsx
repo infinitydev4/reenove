@@ -21,7 +21,8 @@ import {
   MapPin,
   CalendarDays,
   Euro,
-  Trash2
+  Trash2,
+  Loader2
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -49,6 +50,14 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 // Interface pour les projets
 interface Project {
@@ -123,12 +132,38 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('fr-FR', options)
 }
 
+// Fonction pour récupérer les vraies URLs depuis les références sessionStorage
+const getImageFromSessionStorage = (imageUrl: string) => {
+  if (imageUrl.startsWith('session:')) {
+    const key = imageUrl.replace('session:', '');
+    try {
+      const sessionImage = typeof window !== 'undefined' ? sessionStorage.getItem(key) : null;
+      if (sessionImage) {
+        console.log("Image récupérée avec succès depuis sessionStorage:", key);
+        return sessionImage;
+      } else {
+        console.warn("Image non trouvée dans sessionStorage:", key);
+        return '/placeholder-project.png';
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'image depuis sessionStorage:", error);
+      return '/placeholder-project.png';
+    }
+  }
+  return imageUrl;
+};
+
 export default function ProjectsPage() {
   const { data: session } = useSession()
   const [projects, setProjects] = useState<Project[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string | null>(null)
+  
+  // États pour la gestion de la suppression
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   
   // Récupérer les projets de l'utilisateur
   useEffect(() => {
@@ -166,20 +201,55 @@ export default function ProjectsPage() {
     return matchesSearch && matchesStatus
   })
   
+  // Fonction pour gérer la suppression de projet
+  const handleDeleteProject = async (projectId: string) => {
+    try {
+      setIsDeleting(true)
+      
+      const response = await fetch(`/api/client/projects/${projectId}`, {
+        method: 'DELETE',
+      })
+      
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Erreur lors de la suppression du projet")
+      }
+      
+      // Mettre à jour la liste des projets après suppression
+      setProjects(prev => prev.filter(project => project.id !== projectId))
+      
+      toast.success("Projet supprimé avec succès")
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error)
+      toast.error("Impossible de supprimer le projet. Veuillez réessayer plus tard.")
+    } finally {
+      setIsDeleting(false)
+      setDeleteDialogOpen(false)
+      setProjectToDelete(null)
+    }
+  }
+  
+  // Fonction pour ouvrir la boîte de dialogue de confirmation
+  const openDeleteDialog = (projectId: string, e: React.MouseEvent) => {
+    e.stopPropagation() // Empêcher la navigation vers la page de détails
+    setProjectToDelete(projectId)
+    setDeleteDialogOpen(true)
+  }
+  
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Mes projets</h1>
-          <p className="text-muted-foreground">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-4">
+        <div className="flex-1">
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Mes projets</h1>
+          <p className="text-xs md:text-sm text-muted-foreground">
             Gérez et suivez tous vos projets de rénovation
           </p>
         </div>
         
-        <Button asChild>
-          <Link href="/create-project/category">
-            <Plus className="mr-2 h-4 w-4" />
-            Nouveau projet
+        <Button asChild className="self-end md:self-auto h-9 md:h-10 text-sm w-full md:w-auto">
+          <Link href="/create-project/category" className="flex items-center justify-center">
+            <Plus className="mr-2 h-3.5 w-3.5 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">Nouveau projet</span>
           </Link>
         </Button>
       </div>
@@ -277,16 +347,41 @@ export default function ProjectsPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {filteredProjects.map((project) => (
                 <Card key={project.id} className="overflow-hidden">
-                  <div className="h-40 bg-muted relative">
+                  <div className="h-[300px] bg-muted relative">
                     {project.photos && project.photos.length > 0 ? (
-                      <img
-                        src={project.photos[0]}
-                        alt={project.title}
-                        className="object-cover w-full h-full"
-                        onError={(e) => {
-                          e.currentTarget.src = "/placeholder-project.svg"
-                        }}
-                      />
+                      <>
+                        <img
+                          src={getImageFromSessionStorage(project.photos[0])}
+                          alt={project.title}
+                          className="object-cover w-full h-full"
+                          onError={(e) => {
+                            e.currentTarget.src = "/placeholder-project.png"
+                          }}
+                        />
+                        
+                        {/* Afficher des miniatures des images supplémentaires si disponibles */}
+                        {project.photos.length > 1 && (
+                          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1 p-1 bg-black/30 backdrop-blur-sm rounded-lg">
+                            {project.photos.slice(1, 4).map((photo, index) => (
+                              <div key={index} className="h-16 w-16 rounded-md overflow-hidden border border-white/30">
+                                <img
+                                  src={getImageFromSessionStorage(photo)}
+                                  alt={`Photo ${index + 2}`}
+                                  className="object-cover w-full h-full"
+                                  onError={(e) => {
+                                    e.currentTarget.src = "/placeholder-project.png"
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            {project.photos.length > 4 && (
+                              <div className="h-16 w-16 rounded-md overflow-hidden border border-white/30 flex items-center justify-center bg-black/50 text-white font-medium">
+                                +{project.photos.length - 4}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </>
                     ) : (
                       <div className="flex items-center justify-center h-full bg-muted">
                         <Building className="h-12 w-12 text-muted-foreground" />
@@ -332,11 +427,14 @@ export default function ProjectsPage() {
                         variant="outline" 
                         size="icon" 
                         className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        onClick={() => {
-                          toast.error("Voulez-vous vraiment supprimer ce projet?")
-                        }}
+                        onClick={(e) => openDeleteDialog(project.id, e)}
+                        disabled={isDeleting}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        {isDeleting && projectToDelete === project.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </CardContent>
@@ -408,11 +506,14 @@ export default function ProjectsPage() {
                           variant="outline" 
                           size="sm" 
                           className="h-9 w-9 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
-                          onClick={() => {
-                            toast.error("Voulez-vous vraiment supprimer ce projet?")
-                          }}
+                          onClick={(e) => openDeleteDialog(project.id, e)}
+                          disabled={isDeleting}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          {isDeleting && projectToDelete === project.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -444,6 +545,41 @@ export default function ProjectsPage() {
           </CardContent>
         </Card>
       </div>
+      
+      {/* Boîte de dialogue de confirmation pour la suppression */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Êtes-vous sûr de vouloir supprimer ce projet ?</DialogTitle>
+            <DialogDescription>
+              Cette action est irréversible. Toutes les données associées à ce projet seront définitivement supprimées.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setDeleteDialogOpen(false)} 
+              disabled={isDeleting}
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={() => projectToDelete && handleDeleteProject(projectToDelete)}
+              disabled={isDeleting}
+              variant="destructive"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Suppression...
+                </>
+              ) : (
+                <>Supprimer</>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

@@ -7,6 +7,7 @@ import ArtisanCard from "@/components/artisan-card"
 import CategoryCard from "@/components/category-card"
 import { ImageGallery } from "@/components/image-gallery"
 import Navbar from "@/components/navbar"
+import { Footer } from "@/components/Footer"
 
 export default function Home() {
   return (
@@ -53,9 +54,9 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="mx-auto w-full max-w-[500px] lg:max-w-none">
+              <div className="mx-auto w-full lg:max-w-none">
                 <Image
-                  src="https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=2069"
+                  src="/images/plumber.png"
                   alt="Artisan travaillant sur un projet"
                   className="w-full h-auto rounded-xl object-cover"
                   width={550}
@@ -137,7 +138,7 @@ export default function Home() {
         <section className="w-full py-12 md:py-24 lg:py-32 dark:bg-black">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-              <div className="mx-auto w-full max-w-[500px] lg:max-w-none order-2 lg:order-1">
+              <div className="mx-auto w-full lg:max-w-none order-2 lg:order-1">
                 <Image
                   src="/images/artisan-app.png"
                   alt="Client consultant des profils d'artisans"
@@ -213,25 +214,7 @@ export default function Home() {
           </div>
         </section> */}
       </main>
-      <footer className="w-full border-t py-6 md:py-0 dark:border-gray-800">
-        <div className="container flex flex-col md:flex-row items-center justify-between gap-4 md:h-16">
-          <p className="text-sm text-gray-500 dark:text-gray-400">© 2024 Reenove. Tous droits réservés.</p>
-          <nav className="flex gap-4 sm:gap-6">
-            <Link href="/about" className="text-sm font-medium">
-              À propos
-            </Link>
-            <Link href="/terms" className="text-sm font-medium">
-              Conditions
-            </Link>
-            <Link href="/privacy" className="text-sm font-medium">
-              Confidentialité
-            </Link>
-            <Link href="/contact" className="text-sm font-medium">
-              Contact
-            </Link>
-          </nav>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

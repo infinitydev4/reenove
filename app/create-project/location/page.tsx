@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,13 @@ import { Label } from "@/components/ui/label"
 import { PageHeader } from "@/components/page-header"
 import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
 
+// Définir les types pour l'autocomplétion Google
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 export default function LocationPage() {
   const router = useRouter()
   const [address, setAddress] = useState("")
@@ -20,7 +27,10 @@ export default function LocationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [showMap, setShowMap] = useState(false)
-
+  
+  // Référence à l'input d'adresse pour l'autocomplétion
+  const addressInputRef = useRef<HTMLInputElement>(null)
+  
   useEffect(() => {
     // Animation d'entrée
     setIsVisible(true)
@@ -39,7 +49,49 @@ export default function LocationPage() {
       }
     }
   }, [])
-
+  
+  // Effet pour initialiser l'autocomplétion Google
+  useEffect(() => {
+    // S'assurer que l'API Google Maps est chargée et que l'input existe
+    if (window.google && window.google.maps && addressInputRef.current) {
+      // Créer l'autocomplétion
+      const autocomplete = new google.maps.places.Autocomplete(addressInputRef.current, {
+        componentRestrictions: { country: "fr" },
+        fields: ["address_components", "formatted_address", "geometry"],
+        types: ["address"]
+      })
+      
+      // Écouter les changements d'adresse sélectionnée
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace()
+        
+        if (place.formatted_address) {
+          setAddress(place.formatted_address)
+        }
+        
+        // Extraire le code postal et la ville des composants d'adresse
+        if (place.address_components) {
+          place.address_components.forEach(component => {
+            // Code postal
+            if (component.types.includes("postal_code")) {
+              setPostalCode(component.long_name)
+            }
+            
+            // Ville
+            if (component.types.includes("locality")) {
+              setCity(component.long_name)
+            }
+          })
+        }
+      })
+      
+      return () => {
+        // Nettoyer les écouteurs lors du démontage
+        google.maps.event.clearInstanceListeners(autocomplete)
+      }
+    }
+  }, []) // Ne s'exécute qu'une fois, lors du montage
+  
   useEffect(() => {
     // Valider le formulaire
     const valid = 
@@ -106,11 +158,7 @@ export default function LocationPage() {
   return (
     <form id="project-form" onSubmit={(e) => { 
       e.preventDefault(); 
-      // Vérifier que la soumission vient du bouton Suivant
-      const submitter = (e.nativeEvent as any).submitter;
-      if (submitter && submitter.id === "submit-button") {
-        saveAndContinue();
-      }
+      saveAndContinue();
     }}>
       <div className="space-y-2 md:space-y-6">
         <PageHeader
@@ -149,11 +197,15 @@ export default function LocationPage() {
               <Label htmlFor="address" className="text-xs md:text-base font-medium">Adresse</Label>
               <Input
                 id="address"
+                ref={addressInputRef}
                 placeholder="Numéro et nom de rue"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 className="text-sm py-1 md:py-2"
               />
+              <p className="text-[9px] md:text-xs text-muted-foreground">
+                Commencez à taper pour voir les suggestions d'adresses
+              </p>
             </div>
             
             <div className="grid grid-cols-2 gap-2 md:gap-4">

@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { 
   LayoutDashboard, 
   Mail, 
@@ -118,6 +118,7 @@ export function ArtisanSidebar({ isOpen, closeSidebar }: ArtisanSidebarProps) {
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2.5 h-auto font-normal text-sm rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 transition-colors"
+              onClick={() => signOut({ callbackUrl: "/" })}
             >
               <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
               <span>Déconnexion</span>

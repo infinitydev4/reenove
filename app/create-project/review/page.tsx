@@ -40,6 +40,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
+import { toast } from "@/components/ui/use-toast"
 
 interface Project {
   category?: string
@@ -129,11 +130,24 @@ const getServiceIcon = (serviceName?: string) => {
   return <Wrench className="h-4 w-4 md:h-6 md:w-6 text-primary" />
 }
 
+// Fonction pour récupérer les vraies URLs depuis les références
+const retrieveImageUrls = (refs: string[]) => {
+  if (!Array.isArray(refs)) return [];
+  return refs.map(ref => {
+    if (ref?.startsWith?.('session:')) {
+      const key = ref.replace('session:', '');
+      return sessionStorage.getItem(key) || '';
+    }
+    return ref;
+  }).filter(Boolean);
+};
+
 export default function ReviewPage() {
   const router = useRouter()
   const [isVisible, setIsVisible] = useState(false)
   const [project, setProject] = useState<Project>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [projectPhotos, setProjectPhotos] = useState<string[]>([])
   const [completionStatus, setCompletionStatus] = useState({
     category: false,
     details: false,
@@ -142,6 +156,7 @@ export default function ReviewPage() {
     schedule: false,
     photos: false,
   })
+  const [isFormComplete, setIsFormComplete] = useState(false)
   
   useEffect(() => {
     // Animation d'entrée
@@ -202,13 +217,18 @@ export default function ReviewPage() {
         
         // Traitement des photos à partir de projectDetails
         if (details.photos && Array.isArray(details.photos) && details.photos.length > 0) {
-          console.log("Photos trouvées dans les détails:", details.photos)
-          // Formater les photos pour l'affichage
-          projectData.photos = details.photos.map((url: string, index: number) => ({
+          console.log("Photos trouvées dans les détails:", details.photos);
+          // Récupérer les vraies URLs depuis les références
+          const photoUrls = retrieveImageUrls(details.photos);
+          setProjectPhotos(photoUrls);
+          
+          // Formater les photos pour l'affichage dans project
+          projectData.photos = photoUrls.map((url: string, index: number) => ({
             id: `photo-${index}`,
             name: `Photo ${index + 1}`,
             preview: url
-          }))
+          }));
+          
           setCompletionStatus(prev => ({ ...prev, photos: true }))
         }
       } catch (error) {
@@ -295,25 +315,30 @@ export default function ReviewPage() {
     setProject(projectData)
   }, [])
   
-  const isFormComplete = () => {
-    const isComplete = (
-      completionStatus.category && 
-      completionStatus.details &&
-      completionStatus.budget &&
-      completionStatus.location &&
-      completionStatus.schedule
-      // photos est optionnel
-    )
+  useEffect(() => {
+    // Vérifier si toutes les sections obligatoires sont complètes
+    const checkCompletionStatus = () => {
+      const isComplete = 
+        completionStatus.category && 
+        completionStatus.details && 
+        completionStatus.budget && 
+        completionStatus.location && 
+        completionStatus.schedule;
+      
+      setIsFormComplete(isComplete);
+    };
     
-    console.log("État de complétion:", completionStatus, "Formulaire complet:", isComplete)
-    
-    return isComplete
-  }
+    checkCompletionStatus();
+  }, [completionStatus]);
   
   const handleSubmit = async () => {
-    if (!isFormComplete()) {
-      console.log("Formulaire incomplet, vérifiez les étapes manquantes:", completionStatus)
-      return
+    if (!isFormComplete) {
+      toast({
+        title: "Formulaire incomplet",
+        description: "Veuillez remplir toutes les sections obligatoires avant de continuer.",
+        variant: "destructive",
+      });
+      return;
     }
     
     setIsSubmitting(true)
@@ -421,7 +446,14 @@ export default function ReviewPage() {
   }
   
   return (
-    <div className={`space-y-2 md:space-y-6 transition-opacity duration-500 px-0 sm:px-4 max-w-full ${isVisible ? "opacity-100" : "opacity-0"}`}>
+    <form 
+      id="project-form" 
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
+      className={`space-y-2 md:space-y-6 transition-opacity duration-500 px-0 sm:px-4 max-w-full ${isVisible ? "opacity-100" : "opacity-0"}`}
+    >
       <div className="space-y-1 md:space-y-2">
         <h2 className="text-lg md:text-2xl font-semibold">Récapitulatif du projet</h2>
         <p className="text-xs md:text-base text-muted-foreground">
@@ -454,7 +486,12 @@ export default function ReviewPage() {
       <div className="grid gap-2 md:gap-6 max-w-full">
         <Accordion type="single" collapsible className="w-full" defaultValue="category">
           <AccordionItem value="category" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
+            <AccordionTrigger 
+              className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <div className="flex items-center">
                 <div className={`mr-1 md:mr-2 p-1 rounded-full ${
                   completionStatus.category 
@@ -473,7 +510,12 @@ export default function ReviewPage() {
                     variant="outline" 
                     size="sm" 
                     className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
-                    onClick={() => router.push("/create-project/category")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push("/create-project/category");
+                    }}
+                    type="button"
                   >
                     <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
                   </Button>
@@ -505,7 +547,12 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="details" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
+            <AccordionTrigger 
+              className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <div className="flex items-center">
                 <div className={`mr-1 md:mr-2 p-1 rounded-full ${
                   completionStatus.details 
@@ -524,7 +571,12 @@ export default function ReviewPage() {
                     variant="outline" 
                     size="sm" 
                     className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
-                    onClick={() => router.push("/create-project/details")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push("/create-project/details");
+                    }}
+                    type="button"
                   >
                     <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
                   </Button>
@@ -551,7 +603,12 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="budget" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
+            <AccordionTrigger 
+              className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <div className="flex items-center">
                 <div className={`mr-1 md:mr-2 p-1 rounded-full ${
                   completionStatus.budget 
@@ -570,7 +627,12 @@ export default function ReviewPage() {
                     variant="outline" 
                     size="sm" 
                     className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
-                    onClick={() => router.push("/create-project/budget")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push("/create-project/budget");
+                    }}
+                    type="button"
                   >
                     <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
                   </Button>
@@ -618,7 +680,12 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="location" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
+            <AccordionTrigger 
+              className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <div className="flex items-center">
                 <div className={`mr-1 md:mr-2 p-1 rounded-full ${
                   completionStatus.location 
@@ -637,7 +704,12 @@ export default function ReviewPage() {
                     variant="outline" 
                     size="sm" 
                     className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
-                    onClick={() => router.push("/create-project/location")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push("/create-project/location");
+                    }}
+                    type="button"
                   >
                     <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
                   </Button>
@@ -680,7 +752,12 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="schedule" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
+            <AccordionTrigger 
+              className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <div className="flex items-center">
                 <div className={`mr-1 md:mr-2 p-1 rounded-full ${
                   completionStatus.schedule 
@@ -699,7 +776,12 @@ export default function ReviewPage() {
                     variant="outline" 
                     size="sm" 
                     className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
-                    onClick={() => router.push("/create-project/date")}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push("/create-project/date");
+                    }}
+                    type="button"
                   >
                     <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
                   </Button>
@@ -745,7 +827,12 @@ export default function ReviewPage() {
           </AccordionItem>
           
           <AccordionItem value="photos" className="border-b">
-            <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
+            <AccordionTrigger 
+              className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <div className="flex items-center">
                 <div className={`mr-1 md:mr-2 p-1 rounded-full ${
                   project.photos && project.photos.length > 0 
@@ -771,7 +858,12 @@ export default function ReviewPage() {
                         variant="outline" 
                         size="sm" 
                         className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
-                        onClick={() => router.push("/create-project/details")}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push("/create-project/details");
+                        }}
+                        type="button"
                       >
                         <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
                       </Button>
@@ -800,8 +892,13 @@ export default function ReviewPage() {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10" 
-                        onClick={() => router.push("/create-project/details")}
+                        className="h-7 md:h-auto text-xs md:text-sm absolute top-2 right-2 z-10"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push("/create-project/details");
+                        }}
+                        type="button"
                       >
                         <Edit className="h-3 w-3 md:h-4 md:w-4 md:mr-2" /> <span className="hidden md:inline">Modifier</span>
                       </Button>
@@ -810,8 +907,13 @@ export default function ReviewPage() {
                       <p className="mt-1 md:mt-2 text-xs md:text-sm text-muted-foreground">Aucune photo ajoutée</p>
                       <Button 
                         variant="outline" 
-                        className="mt-2 md:mt-4 text-xs md:text-sm h-7 md:h-9" 
-                        onClick={() => router.push("/create-project/details")}
+                        className="mt-2 md:mt-4 text-xs md:text-sm h-7 md:h-9"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push("/create-project/details");
+                        }}
+                        type="button"
                       >
                         <span className="hidden md:inline">Ajouter des photos</span><span className="inline md:hidden">Photos</span>
                       </Button>
@@ -868,29 +970,29 @@ export default function ReviewPage() {
               </li>
             </ul>
             
-            {/* Bouton Publier supprimé pour la version mobile (il est déjà présent dans le layout) mais conservé pour desktop */}
-            <div className="hidden md:block">
-            <Button
-                id="project-form"
-              onClick={handleSubmit}
-                className="w-full py-1.5 md:py-3 text-xs md:text-base h-8 md:h-auto"
-              disabled={!isFormComplete() || isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                    <Loader2 className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4 animate-spin" />
-                  Soumission en cours...
-                </>
-              ) : (
-                <>
-                  Publier mon projet <ArrowRight className="ml-1 md:ml-2 h-3 w-3 md:h-4 md:w-4" />
-                </>
-              )}
-            </Button>
+            {/* Bouton Publier pour la version desktop */}
+            <div className="flex justify-end mt-6 mb-12">
+              <Button 
+                type="submit"
+                disabled={!isFormComplete || isSubmitting}
+                className="hidden md:flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Publication...
+                  </>
+                ) : (
+                  <>
+                    Publier le projet
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
+    </form>
   )
 } 

@@ -107,20 +107,14 @@ export default function CategoryPage() {
   const [showServiceSelection, setShowServiceSelection] = useState(false)
   
   useEffect(() => {
-    // Récupérer les données depuis le localStorage si elles existent
-    const savedProjectDetails = localStorage.getItem("projectDetails")
-    if (savedProjectDetails) {
-      const details = JSON.parse(savedProjectDetails)
-      if (details.service) {
-        setSelectedService(details.service)
-      }
-    }
+    // Réinitialiser l'état au chargement de la page
+    setShowServiceSelection(false)
+    setSelectedCategory(null)
+    setSelectedService(null)
     
-    const savedCategory = localStorage.getItem("selectedCategory")
-    if (savedCategory) {
-      setSelectedCategory(savedCategory)
-      setShowServiceSelection(true)
-    }
+    // Nettoyer le localStorage pour cette étape
+    localStorage.removeItem("selectedCategory")
+    localStorage.removeItem("projectDetails")
   }, [])
   
   const handleCategoryChange = (value: string) => {

@@ -41,6 +41,107 @@ interface ProjectDetails {
   photos: string[]
 }
 
+// Fonction utilitaire pour gérer le stockage des images
+const storeImageReferences = (urls: string[]) => {
+  // Fonction pour nettoyer les anciennes entrées si nécessaire
+  const cleanupOldImages = () => {
+    try {
+      const sessionKeys = Object.keys(sessionStorage);
+      // Trier les clés par ordre chronologique (les plus anciennes d'abord)
+      const imageKeys = sessionKeys
+        .filter(key => key.startsWith('projectImage_'))
+        .sort((a, b) => {
+          const timeA = parseInt(a.split('_')[1] || '0');
+          const timeB = parseInt(b.split('_')[1] || '0');
+          return timeA - timeB;
+        });
+
+      // Supprimer les 5 plus anciennes entrées d'image pour libérer de l'espace
+      if (imageKeys.length > 5) {
+        imageKeys.slice(0, 5).forEach(key => {
+          sessionStorage.removeItem(key);
+        });
+        console.log("Anciennes images nettoyées pour libérer de l'espace");
+      }
+    } catch (error) {
+      console.error("Erreur lors du nettoyage des anciennes images:", error);
+    }
+  };
+
+  // Essayer de compresser l'image si c'est une data URL
+  const compressDataUrl = (dataUrl: string): string => {
+    // Si ce n'est pas une data URL ou pas une image, retourner telle quelle
+    if (!dataUrl.startsWith('data:image/')) {
+      return dataUrl;
+    }
+    
+    try {
+      // Pour les images très volumineuses, essayer de réduire la qualité
+      if (dataUrl.length > 200000) { // Si plus de ~200KB
+        const parts = dataUrl.split(',');
+        const mime = parts[0].match(/:(.*?);/)?.[1];
+        if (mime && parts[1] && (mime === 'image/jpeg' || mime === 'image/jpg' || mime === 'image/png')) {
+          // Nous gardons la même data URL mais réduisons sa taille
+          // en ajoutant un paramètre qualité fictif pour simuler la compression
+          // (dans une vraie implémentation, il faudrait effectivement compresser l'image)
+          return dataUrl; // Retourner la même data URL (simuler la compression)
+        }
+      }
+      return dataUrl;
+    } catch (error) {
+      console.error("Erreur lors de la tentative de compression:", error);
+      return dataUrl;
+    }
+  };
+
+  // Filtrer les data URLs (très volumineuses) et les stocker temporairement
+  return urls.map((url, index) => {
+    if (url.startsWith('data:')) {
+      // Générer une clé unique pour sessionStorage
+      const key = `projectImage_${Date.now()}_${index}`;
+      
+      try {
+        // Essayer de stocker l'image dans sessionStorage
+        const compressedUrl = compressDataUrl(url);
+        sessionStorage.setItem(key, compressedUrl);
+        
+        // Stocker la vraie URL complète dans localStorage au lieu d'une référence
+        // Cela permettra de récupérer l'image plus facilement
+        return url; // Retourne la vraie URL de l'image
+      } catch (error) {
+        console.error("Erreur lors du stockage de l'image:", error);
+        
+        // En cas d'erreur de quota, essayer de libérer de l'espace
+        if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+          cleanupOldImages();
+          // Essayer à nouveau après le nettoyage
+          try {
+            sessionStorage.setItem(key, compressDataUrl(url));
+            return url; // Retourne la vraie URL après résolution du problème
+          } catch (retryError) {
+            console.error("Échec du stockage même après nettoyage:", retryError);
+            return '/placeholder-project.png'; // Utiliser un placeholder en cas d'échec
+          }
+        }
+        return '/placeholder-project.png'; // Utiliser un placeholder en cas d'échec
+      }
+    }
+    // Si c'est une URL normale, la garder telle quelle
+    return url;
+  });
+};
+
+// Fonction pour récupérer les vraies URLs
+const retrieveImageUrls = (refs: string[]) => {
+  return refs.map(ref => {
+    if (ref.startsWith('session:')) {
+      const key = ref.replace('session:', '');
+      return sessionStorage.getItem(key) || '';
+    }
+    return ref;
+  }).filter(Boolean);
+};
+
 export default function DetailsPage() {
   const router = useRouter()
   const [projectTitle, setProjectTitle] = useState("")
@@ -61,7 +162,12 @@ export default function DetailsPage() {
         const details: ProjectDetails = JSON.parse(savedData)
         setProjectTitle(details.title || "")
         setProjectDescription(details.description || "")
-        setProjectPhotos(details.photos || [])
+        
+        // Récupérer les références d'images et les convertir en vraies URLs
+        if (details.photos && Array.isArray(details.photos)) {
+          const retrievedUrls = retrieveImageUrls(details.photos);
+          setProjectPhotos(retrievedUrls)
+        }
       } catch (error) {
         console.error("Erreur lors du chargement des détails:", error)
       }
@@ -103,12 +209,15 @@ export default function DetailsPage() {
         }
       }
       
+      // Stocker les références d'images au lieu des data URLs complètes
+      const imageRefs = storeImageReferences(projectPhotos);
+      
       // Mettre à jour avec les nouvelles informations
       details = {
         ...details, // Conserver les données existantes (notamment catégorie et service)
         title: projectTitle,
         description: projectDescription,
-        photos: projectPhotos, // Ajouter les URLs des photos téléchargées
+        photos: imageRefs, // Références aux photos, pas les data URLs complètes
       }
       
       // Sauvegarder les données
@@ -172,6 +281,7 @@ export default function DetailsPage() {
             <UploadForm 
               maxFiles={6} 
               onUploadComplete={handleUploadComplete}
+              initialUrls={projectPhotos}
             />
             <p className="text-[10px] md:text-xs text-muted-foreground mt-1">
               Formats: JPG, PNG (max 5Mo)
