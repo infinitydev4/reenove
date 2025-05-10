@@ -48,6 +48,8 @@ export default function GoogleAddressAutocomplete({
     })
     
     // Écouter les événements de sélection de lieu
+    if (!autocompleteRef.current) return
+    
     const listener = autocompleteRef.current.addListener('place_changed', () => {
       if (!autocompleteRef.current) return
       
@@ -65,7 +67,7 @@ export default function GoogleAddressAutocomplete({
     
     // Nettoyage
     return () => {
-      if (window.google) {
+      if (window.google && listener) {
         window.google.maps.event.removeListener(listener)
       }
     }

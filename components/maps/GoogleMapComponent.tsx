@@ -45,25 +45,31 @@ export default function GoogleMapComponent({
     // Utiliser l'API de géocodage pour obtenir les coordonnées
     if (window.google && window.google.maps) {
       const geocoder = new window.google.maps.Geocoder()
-      geocoder.geocode({ address: fullAddress }, (results, status) => {
-        if (status === "OK" && results && results[0] && results[0].geometry && results[0].geometry.location) {
-          const location = results[0].geometry.location
-          setCoordinates({
-            lat: location.lat(),
-            lng: location.lng()
-          })
-          
-          // Centrer la carte sur la nouvelle position
-          if (mapRef) {
-            mapRef.panTo({
+      geocoder.geocode(
+        { address: fullAddress }, 
+        (
+          results: google.maps.GeocoderResult[] | null, 
+          status: google.maps.GeocoderStatus
+        ) => {
+          if (status === "OK" && results && results[0] && results[0].geometry && results[0].geometry.location) {
+            const location = results[0].geometry.location
+            setCoordinates({
               lat: location.lat(),
               lng: location.lng()
             })
+            
+            // Centrer la carte sur la nouvelle position
+            if (mapRef) {
+              mapRef.panTo({
+                lat: location.lat(),
+                lng: location.lng()
+              })
+            }
+          } else {
+            console.error("Géocodage impossible pour cette adresse:", fullAddress)
           }
-        } else {
-          console.error("Géocodage impossible pour cette adresse:", fullAddress)
         }
-      })
+      )
     }
   }, [isLoaded, address, city, postalCode, mapRef])
 

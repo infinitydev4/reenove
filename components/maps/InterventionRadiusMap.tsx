@@ -71,50 +71,56 @@ export default function InterventionRadiusMap({
     // Utiliser l'API de géocodage pour obtenir les coordonnées
     if (window.google && window.google.maps) {
       const geocoder = new window.google.maps.Geocoder()
-      geocoder.geocode({ address: fullAddress }, (results, status) => {
-        if (status === "OK" && results && results[0] && results[0].geometry && results[0].geometry.location) {
-          const location = results[0].geometry.location
-          setCoordinates({
-            lat: location.lat(),
-            lng: location.lng()
-          })
-          
-          // Centrer la carte sur la nouvelle position et ajuster le zoom selon le rayon
-          if (mapRef) {
-            mapRef.panTo({
+      geocoder.geocode(
+        { address: fullAddress }, 
+        (
+          results: google.maps.GeocoderResult[] | null, 
+          status: google.maps.GeocoderStatus
+        ) => {
+          if (status === "OK" && results && results[0] && results[0].geometry && results[0].geometry.location) {
+            const location = results[0].geometry.location
+            setCoordinates({
               lat: location.lat(),
               lng: location.lng()
             })
             
-            const zoomLevel = getZoomLevelForRadius(radiusInMeters)
-            mapRef.setZoom(zoomLevel)
-            
-            // Recréer immédiatement le cercle
-            if (!circleRef.current && window.google && window.google.maps) {
-              circleRef.current = new window.google.maps.Circle({
-                map: mapRef,
-                center: {
-                  lat: location.lat(),
-                  lng: location.lng()
-                },
-                radius: radiusInMeters,
-                strokeColor: "#F59E0B", // Couleur jaune/ambre pour le contour
-                strokeOpacity: 0.8,
-                strokeWeight: radius > 100 ? 3 : 2,
-                fillColor: "#F59E0B", // Couleur jaune/ambre pour le remplissage
-                fillOpacity: Math.max(0.08, 0.2 - (radius / 1000)),
-                clickable: false,
-                draggable: false,
-                editable: false,
-                visible: true,
-                zIndex: 1
-              });
+            // Centrer la carte sur la nouvelle position et ajuster le zoom selon le rayon
+            if (mapRef) {
+              mapRef.panTo({
+                lat: location.lat(),
+                lng: location.lng()
+              })
+              
+              const zoomLevel = getZoomLevelForRadius(radiusInMeters)
+              mapRef.setZoom(zoomLevel)
+              
+              // Recréer immédiatement le cercle
+              if (!circleRef.current && window.google && window.google.maps) {
+                circleRef.current = new window.google.maps.Circle({
+                  map: mapRef,
+                  center: {
+                    lat: location.lat(),
+                    lng: location.lng()
+                  },
+                  radius: radiusInMeters,
+                  strokeColor: "#F59E0B", // Couleur jaune/ambre pour le contour
+                  strokeOpacity: 0.8,
+                  strokeWeight: radius > 100 ? 3 : 2,
+                  fillColor: "#F59E0B", // Couleur jaune/ambre pour le remplissage
+                  fillOpacity: Math.max(0.08, 0.2 - (radius / 1000)),
+                  clickable: false,
+                  draggable: false,
+                  editable: false,
+                  visible: true,
+                  zIndex: 1
+                });
+              }
             }
+          } else {
+            console.error("Géocodage impossible pour cette adresse:", fullAddress)
           }
-        } else {
-          console.error("Géocodage impossible pour cette adresse:", fullAddress)
         }
-      })
+      )
     }
   }, [isLoaded, address, city, postalCode, mapRef, radiusInMeters, radius])
 
