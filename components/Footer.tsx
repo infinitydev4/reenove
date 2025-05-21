@@ -1,8 +1,33 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 
 export function Footer() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const isHomePage = pathname === "/"
+
+  // Fonction qui gère le scroll vers les sections
+  const scrollToSection = (sectionId: string) => {
+    // Si nous ne sommes pas sur la page d'accueil, naviguer d'abord vers la page d'accueil
+    if (!isHomePage) {
+      router.push(`/#${sectionId}`)
+      return
+    }
+
+    const section = document.getElementById(sectionId)
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      })
+    }
+  }
+  
   return (
     <footer className="bg-[#0E261C] border-t border-white/10 pt-16 pb-8">
       <div className="container px-4 md:px-6">
@@ -55,23 +80,18 @@ export function Footer() {
             <h3 className="font-bold text-white mb-4">Services</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/services" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Rénovation
-                </Link>
+                <button onClick={() => scrollToSection("services")} className="text-white/70 hover:text-[#FCDA89] transition-colors text-left">
+                  Nos services
+                </button>
               </li>
               <li>
-                <Link href="/services" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Construction
-                </Link>
+                <button onClick={() => scrollToSection("categories")} className="text-white/70 hover:text-[#FCDA89] transition-colors text-left">
+                  Catégories
+                </button>
               </li>
               <li>
-                <Link href="/services" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Décoration
-                </Link>
-              </li>
-              <li>
-                <Link href="/services" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Aménagement extérieur
+                <Link href="/create-project-ai" className="text-white/70 hover:text-[#FCDA89] transition-colors">
+                  Publier un projet
                 </Link>
               </li>
             </ul>
@@ -80,23 +100,18 @@ export function Footer() {
             <h3 className="font-bold text-white mb-4">À propos</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/about" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Notre histoire
-                </Link>
+                <button onClick={() => scrollToSection("why-reenove")} className="text-white/70 hover:text-[#FCDA89] transition-colors text-left">
+                  Pourquoi Reenove
+                </button>
               </li>
               <li>
-                <Link href="/about" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Notre équipe
-                </Link>
+                <button onClick={() => scrollToSection("how-it-works")} className="text-white/70 hover:text-[#FCDA89] transition-colors text-left">
+                  Comment ça marche
+                </button>
               </li>
               <li>
-                <Link href="/careers" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Carrières
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Blog
+                <Link href="/contact" className="text-white/70 hover:text-[#FCDA89] transition-colors">
+                  Contact
                 </Link>
               </li>
             </ul>
@@ -105,30 +120,25 @@ export function Footer() {
             <h3 className="font-bold text-white mb-4">Support</h3>
             <ul className="space-y-3">
               <li>
-                <Link href="/contact" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-                  Contact
-          </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-white/70 hover:text-[#FCDA89] transition-colors">
+                <button onClick={() => scrollToSection("faq")} className="text-white/70 hover:text-[#FCDA89] transition-colors text-left">
                   FAQ
-          </Link>
+                </button>
               </li>
               <li>
                 <Link href="/privacy" className="text-white/70 hover:text-[#FCDA89] transition-colors">
-            Confidentialité
-          </Link>
+                  Confidentialité
+                </Link>
               </li>
               <li>
                 <Link href="/terms" className="text-white/70 hover:text-[#FCDA89] transition-colors">
                   Conditions d'utilisation
-          </Link>
+                </Link>
               </li>
             </ul>
           </div>
         </div>
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/60 text-sm">
-          <p>© {new Date().getFullYear()} Renoveo. Tous droits réservés.</p>
+          <p>© {new Date().getFullYear()} Reenove. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

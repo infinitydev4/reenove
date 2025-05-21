@@ -6,6 +6,7 @@ import { AuthProvider } from "@/components/auth-provider"
 import { Toaster } from "sonner"
 import Navbar from "@/components/navbar"
 import BottomNavbar from "@/components/bottom-navbar"
+import { CookieBanner } from "@/components/CookieBanner"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -70,6 +71,7 @@ export default function RootLayout({
             <main className="flex-1 flex flex-col relative h-full w-full">
               {children}
             </main>
+            <CookieBanner />
           </AuthProvider>
           </ThemeProvider>
       </body>
