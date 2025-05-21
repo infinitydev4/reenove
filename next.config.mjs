@@ -26,8 +26,8 @@ const nextConfig = {
     // Les formats sont limités à avif et webp uniquement
     formats: ['image/avif', 'image/webp'],
     domains: ['localhost'],
-    // Activer cette option pour autoriser les data URLs en développement
-    unoptimized: process.env.NODE_ENV === 'development',
+    // Activer cette option pour autoriser les data URLs en développement et temporairement en production
+    unoptimized: true, // Permet d'utiliser les data URLs à la fois en développement et en production
   },
   eslint: {
     // Ignorez les avertissements ESLint en production

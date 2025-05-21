@@ -4,13 +4,8 @@ import { authOptions } from "@/lib/auth"
 import { v4 as uuidv4 } from "uuid"
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3"
 
-// Configuration Cloudinary (en fallback)
-const cloudinary = require('cloudinary').v2
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-})
+// Définir une région par défaut cohérente
+const DEFAULT_REGION = "eu-north-1"
 
 // Vérification des variables d'environnement S3
 const s3Enabled = !!(
@@ -24,7 +19,7 @@ const s3Enabled = !!(
 let s3Client: S3Client | null = null
 if (s3Enabled) {
   s3Client = new S3Client({
-    region: process.env.REENOVE_AWS_REGION || "eu-west-3",
+    region: process.env.REENOVE_AWS_REGION || DEFAULT_REGION,
     credentials: {
       accessKeyId: process.env.REENOVE_AWS_ACCESS_KEY_ID || "",
       secretAccessKey: process.env.REENOVE_AWS_SECRET_ACCESS_KEY || ""
@@ -34,6 +29,16 @@ if (s3Enabled) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Logs de débogage pour les variables d'environnement S3
+    console.log("Variables d'environnement S3:", {
+      region: process.env.REENOVE_AWS_REGION || DEFAULT_REGION,
+      accessKey: process.env.REENOVE_AWS_ACCESS_KEY_ID ? `${process.env.REENOVE_AWS_ACCESS_KEY_ID.substring(0, 3)}...` : "non défini",
+      secretKey: process.env.REENOVE_AWS_SECRET_ACCESS_KEY ? "défini (masqué)" : "non défini",
+      bucket: process.env.REENOVE_AWS_S3_BUCKET_NAME || "non défini",
+      s3Enabled: s3Enabled,
+      nodeEnv: process.env.NODE_ENV
+    });
+
     // Pour les besoins de démo, désactivons la vérification d'authentification
     // Nous voulons permettre l'upload même sans session
     const session = await getServerSession(authOptions)
@@ -82,6 +87,7 @@ export async function POST(request: NextRequest) {
     if (s3Client && s3Enabled && process.env.REENOVE_AWS_S3_BUCKET_NAME) {
       try {
         console.log("Tentative d'upload vers S3 avec le bucket:", process.env.REENOVE_AWS_S3_BUCKET_NAME)
+        
         await s3Client.send(new PutObjectCommand({
           Bucket: process.env.REENOVE_AWS_S3_BUCKET_NAME,
           Key: s3Key,
@@ -89,56 +95,34 @@ export async function POST(request: NextRequest) {
           ContentType: file.type
         }))
         
-        imageUrl = `https://${process.env.REENOVE_AWS_S3_BUCKET_NAME}.s3.${process.env.REENOVE_AWS_REGION}.amazonaws.com/${s3Key}`
+        imageUrl = `https://${process.env.REENOVE_AWS_S3_BUCKET_NAME}.s3.${process.env.REENOVE_AWS_REGION || DEFAULT_REGION}.amazonaws.com/${s3Key}`
         console.log("Upload S3 réussi:", imageUrl)
       } catch (s3Error) {
         console.error("Erreur AWS S3:", s3Error)
-        // Si S3 échoue, utiliser Cloudinary comme fallback
+        // Si S3 échoue, utiliser le stockage en base64 comme solution de secours
       }
     } else {
-      console.log("S3 désactivé ou mal configuré, utilisation du stockage local")
+      console.log("S3 désactivé ou mal configuré, utilisation du stockage base64 temporaire")
+      if (!process.env.REENOVE_AWS_S3_BUCKET_NAME) {
+        console.error("Variable manquante: REENOVE_AWS_S3_BUCKET_NAME")
+      }
     }
 
-    // Si l'URL d'image n'est pas définie, utiliser le stockage local
+    // Si l'URL d'image n'est pas définie, utiliser le stockage base64 temporairement
     if (!imageUrl) {
       try {
-        // En mode développement, utiliser un stockage local temporaire à la place de Cloudinary
-        if (process.env.NODE_ENV === 'development') {
-          // Solution temporaire pour les tests - stocker localement l'image (en base64)
-          const base64Data = buffer.toString("base64")
-          // Ne pas tronquer les données base64 pour l'affichage correct des images
-          imageUrl = `data:${file.type};base64,${base64Data}`
-          console.log("Image stockée en base64 (développement uniquement) - Taille:", base64Data.length)
-        } else if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
-          // Si en production et Cloudinary est configuré
-          const base64Data = buffer.toString("base64")
-          const result = await new Promise((resolve, reject) => {
-            cloudinary.uploader.upload(
-              `data:${file.type};base64,${base64Data}`,
-              { 
-                public_id: uniqueFileName.split(".")[0],
-                folder: "renoveo",
-                resource_type: "image"
-              },
-              (error: any, result: any) => {
-                if (error) reject(error)
-                else resolve(result)
-              }
-            )
-          })
-          
-          // Corriger cette ligne avec le type approprié
-          imageUrl = (result as any).secure_url
-          console.log("Upload Cloudinary réussi:", imageUrl)
-        }
-      } catch (cloudinaryError) {
-        console.error("Erreur lors du stockage de l'image:", cloudinaryError)
+        // Solution temporaire - stocker l'image en base64
+        const base64Data = buffer.toString("base64")
+        imageUrl = `data:${file.type};base64,${base64Data}`
+        console.log("Image stockée en base64 (solution temporaire) - Taille:", base64Data.length)
+      } catch (error) {
+        console.error("Erreur lors du stockage de l'image en base64:", error)
       }
     }
 
     if (!imageUrl) {
       return NextResponse.json({ 
-        error: "Aucun service de stockage configuré correctement" 
+        error: "Impossible de stocker l'image. Veuillez vérifier la configuration S3." 
       }, { status: 500 })
     }
 

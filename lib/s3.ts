@@ -5,9 +5,12 @@ const isS3Configured = !!(process.env.REENOVE_AWS_ACCESS_KEY_ID &&
                         process.env.REENOVE_AWS_SECRET_ACCESS_KEY && 
                         process.env.REENOVE_AWS_S3_BUCKET_NAME)
 
+// Définir une région par défaut cohérente
+const DEFAULT_REGION = "eu-north-1"
+
 // Configuration AWS S3 seulement si les clés sont définies
 const s3Client = isS3Configured ? new S3Client({
-  region: process.env.REENOVE_AWS_REGION || "eu-west-3",
+  region: process.env.REENOVE_AWS_REGION || DEFAULT_REGION,
   credentials: {
     accessKeyId: process.env.REENOVE_AWS_ACCESS_KEY_ID || "",
     secretAccessKey: process.env.REENOVE_AWS_SECRET_ACCESS_KEY || ""
@@ -42,7 +45,7 @@ export async function uploadToS3(buffer: Buffer, key: string, contentType: strin
     }))
     
     // Générer l'URL du fichier
-    const fileUrl = `https://${bucketName}.s3.${process.env.REENOVE_AWS_REGION || "eu-west-3"}.amazonaws.com/${key}`
+    const fileUrl = `https://${bucketName}.s3.${process.env.REENOVE_AWS_REGION || DEFAULT_REGION}.amazonaws.com/${key}`
     console.log("Fichier uploadé avec succès:", fileUrl)
     
     return fileUrl
