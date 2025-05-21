@@ -792,7 +792,7 @@ export default function ChatContainer({ onSaveProject }: ChatContainerProps) {
     >
       <Card className="flex-1 flex flex-col h-full w-full border-0 md:border shadow-none md:shadow-sm bg-background overflow-hidden rounded-none md:rounded-md">
         <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-          {/* En-tête du chat */}
+          {/* En-tête du chat - Fixé en haut pour qu'il soit toujours visible */}
           <div className="py-3 px-4 border-b bg-[#0E261C] flex items-center sticky top-0 z-10">
             <div className="flex items-center gap-3 flex-1">
               <div className="bg-white p-2 rounded-full">
@@ -812,8 +812,14 @@ export default function ChatContainer({ onSaveProject }: ChatContainerProps) {
             </button>
           </div>
           
-          {/* Zone des messages - Réduite en hauteur quand le formulaire est affiché */}
-          <div className={`flex-1 overflow-hidden ${isDrawerOpen ? "max-h-[5vh]" : ""}`}>
+          {/* Zone des messages - Ajustée pour une hauteur adaptative sur mobile */}
+          <div 
+            className={`flex-1 overflow-hidden ${isDrawerOpen ? "max-h-[5vh]" : ""}`} 
+            style={{ 
+              height: isDrawerOpen ? undefined : 'calc(100vh - 200px)',
+              maxHeight: '100%' 
+            }}
+          >
             <ChatMessages 
               messages={messages} 
               isLoading={isLoading} 
