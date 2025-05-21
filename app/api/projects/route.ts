@@ -136,120 +136,96 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/projects - Créer un nouveau projet
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    console.log("Démarrage de l'API POST /api/projects");
-    console.log("Instance Prisma:", prisma ? "OK" : "NULL");
-    
+    // Vérifier l'authentification
     const session = await getServerSession(authOptions)
-
+    
     if (!session?.user) {
       return NextResponse.json(
         { error: "Vous devez être connecté pour créer un projet" },
         { status: 401 }
       )
     }
-
-    const userId = session.user.id
-    const body = await request.json()
     
-    console.log("API - Création de projet - Données reçues:", JSON.stringify(body))
-    console.log("API - Création de projet - Utilisateur:", userId)
-
-    // Validation des données requises
-    if (!body.title || !body.description || !body.categoryId || !body.serviceId) {
+    // Récupérer les données du projet
+    const data = await req.json()
+    
+    // Valider les données requises
+    if (!data.title || !data.categoryId || !data.serviceId) {
       return NextResponse.json(
-        { error: "Les champs titre, description, catégorie et service sont obligatoires" },
+        { error: "Les champs titre, catégorie et service sont obligatoires" },
         { status: 400 }
       )
     }
-
-    // Extraire les photos avant de créer le projet car elles seront ajoutées séparément
-    const photos = body.photos || []
     
-    // Traitement des photos pour s'assurer qu'elles sont des URLs valides
-    const processedPhotos = photos.map((photoUrl: string) => {
-      // Si c'est une référence sessionStorage, nous utilisons l'URL de placeholder
-      // car nous ne pouvons pas accéder au sessionStorage côté serveur
-      if (photoUrl.startsWith('session:')) {
-        console.log(`URL d'image avec préfixe session détectée: ${photoUrl}, remplacée par placeholder`);
-        // Ici, on pourrait implémenter une solution pour stocker les data URLs compressées
-        // dans un stockage cloud comme S3, mais pour l'instant nous utilisons un placeholder
-        return '/placeholder-project.png';
-      }
-      return photoUrl;
-    });
-
-    // Création du projet
-    const project = await prisma.project.create({
-      data: {
-        title: body.title,
-        description: body.description,
-        categoryId: body.categoryId,
-        serviceId: body.serviceId,
-        userId,
-        status: validateProjectStatus(body.status),
-        visibility: validateVisibility(body.visibility),
-        
-        // Optionnels - Détails de localisation
-        location: body.location,
-        postalCode: body.postalCode,
-        city: body.city,
-        region: body.region,
-        accessibility: validateAccessibility(body.accessibility),
-        
-        // Optionnels - Détails de planning
-        startDate: body.startDate ? new Date(body.startDate) : undefined,
-        endDate: body.endDate ? new Date(body.endDate) : undefined,
-        urgencyLevel: convertUrgencyLevel(body.urgencyLevel),
-        flexibleDates: body.flexibleDates,
-        preferredTime: validatePreferredTime(body.preferredTime),
-        
-        // Optionnels - Autres détails
-        propertyType: validatePropertyType(body.propertyType),
-        budget: body.budget ? parseFloat(body.budget) : undefined,
-        budgetMax: body.budgetMax ? parseFloat(body.budgetMax) : undefined,
-        budgetType: body.budgetType,
-      },
+    // Vérifier que la catégorie et le service existent
+    const category = await prisma.category.findUnique({
+      where: { id: data.categoryId }
     })
-
-    console.log("API - Projet créé:", project)
-
-    // Si le projet a été créé avec succès et qu'il y a des photos
-    if (project && processedPhotos.length > 0) {
-      // Créer les entrées pour les images
-      await prisma.projectImage.createMany({
-        data: processedPhotos.map((photoUrl: string, index: number) => ({
-          url: photoUrl,
-          caption: "",
-          order: index,
-          projectId: project.id
-        }))
-      })
-      
-      console.log(`API - ${processedPhotos.length} photo(s) ajoutée(s) au projet ${project.id}`)
+    
+    if (!category) {
+      return NextResponse.json(
+        { error: "Catégorie non trouvée" },
+        { status: 404 }
+      )
     }
-
-    // Récupérer les images pour les inclure dans la réponse
-    const imagesFromDb = await prisma.projectImage.findMany({
-      where: { projectId: project.id },
-      orderBy: { order: "asc" }
+    
+    const service = await prisma.service.findUnique({
+      where: { id: data.serviceId }
     })
     
-    const imageUrls = imagesFromDb.map(image => image.url)
-    console.log("API - Photos du projet:", imageUrls)
-
-    return NextResponse.json({
-      message: "Projet créé avec succès",
-      project: {
-        ...project,
-        images: imagesFromDb
+    if (!service) {
+      return NextResponse.json(
+        { error: "Service non trouvé" },
+        { status: 404 }
+      )
+    }
+    
+    // Préparer les données du projet
+    const projectData = {
+      title: data.title,
+      description: data.description || "",
+      categoryId: data.categoryId,
+      serviceId: data.serviceId,
+      userId: session.user.id,
+      status: data.status || "PUBLISHED",
+      location: data.location,
+      postalCode: data.postalCode,
+      city: data.city,
+      // Si nous avons un budget min et max, on crée une fourchette
+      budget: data.budget || null,
+      budgetType: data.budgetMin && data.budgetMax ? "Range" : (data.budget ? "Fixed" : null),
+      budgetMax: data.budgetMax || null,
+    }
+    
+    // Créer le projet
+    const project = await prisma.project.create({
+      data: projectData
+    })
+    
+    // Créer une étape initiale pour le projet
+    await prisma.projectStep.create({
+      data: {
+        projectId: project.id,
+        stepNumber: 1,
+        title: "Création du projet",
+        completed: true,
+        content: {
+          description: "Projet créé via l'assistant IA",
+          estimatedPrice: {
+            min: data.budgetMin,
+            max: data.budgetMax
+          }
+        }
       }
-    }, { status: 201 })
-  } catch (error) {
+    })
+    
+    return NextResponse.json(project, { status: 201 })
+  } catch (error: any) {
     console.error("Erreur lors de la création du projet:", error)
     return NextResponse.json(
-      { error: "Une erreur est survenue lors de la création du projet" },
+      { error: "Erreur lors de la création du projet" },
       { status: 500 }
     )
   }

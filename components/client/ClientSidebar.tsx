@@ -47,7 +47,7 @@ export function ClientSidebar({ isOpen, closeSidebar }: ClientSidebarProps) {
       {/* Overlay pour fermer la sidebar sur mobile */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-gray-800/50 z-30 md:hidden" 
+          className="fixed inset-0 bg-black/50 z-30 md:hidden" 
           onClick={closeSidebar}
         />
       )}
@@ -55,29 +55,29 @@ export function ClientSidebar({ isOpen, closeSidebar }: ClientSidebarProps) {
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed top-20 bottom-20 md:top-24 md:bottom-8 left-4 z-40 w-64 bg-white dark:bg-black/95",
-          "rounded-xl shadow-lg border border-gray-100 dark:border-gray-800",
-          "transform transition-transform duration-300 ease-in-out overflow-hidden",
+          "fixed top-20 bottom-20 md:top-24 md:bottom-8 left-4 z-40 w-64 bg-[#0E261C]/95",
+          "rounded-xl shadow-lg border border-white/10",
+          "transform transition-transform duration-300 ease-in-out overflow-hidden text-white",
           isOpen ? "translate-x-0" : "-translate-x-[calc(100%+16px)] md:translate-x-0"
         )}
       >
         <div className="flex flex-col h-full p-4">
           {/* Header mobile uniquement */}
           <div className="flex justify-between items-center md:hidden mb-4">
-            <Button variant="ghost" size="icon" onClick={closeSidebar} className="h-8 w-8">
+            <Button variant="ghost" size="icon" onClick={closeSidebar} className="h-8 w-8 text-white hover:bg-white/10">
               <X className="h-5 w-5" />
             </Button>
           </div>
 
           {/* Profil utilisateur */}
           <div className="flex items-center gap-3 mb-6 px-2">
-            <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+            <Avatar className="h-10 w-10 ring-2 ring-[#FCDA89]/30">
               <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
-              <AvatarFallback>{getInitials(session?.user?.name || "")}</AvatarFallback>
+              <AvatarFallback className="bg-[#FCDA89]/20 text-white">{getInitials(session?.user?.name || "")}</AvatarFallback>
             </Avatar>
             <div className="overflow-hidden">
-              <p className="font-medium text-sm truncate">{session?.user?.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{session?.user?.email}</p>
+              <p className="font-medium text-sm truncate text-white">{session?.user?.name}</p>
+              <p className="text-xs text-white/70 truncate">{session?.user?.email}</p>
             </div>
           </div>
 
@@ -90,15 +90,15 @@ export function ClientSidebar({ isOpen, closeSidebar }: ClientSidebarProps) {
                 className={cn(
                   "flex items-center px-3 py-2.5 text-sm rounded-lg transition-colors",
                   pathname === item.href
-                    ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted"
+                    ? "bg-[#FCDA89]/20 text-[#FCDA89] font-medium"
+                    : "text-white/80 hover:bg-white/10 hover:text-white"
                 )}
                 onClick={closeSidebar}
               >
                 <item.icon className="mr-3 h-5 w-5 flex-shrink-0" />
                 <span>{item.name}</span>
                 {item.count && (
-                  <span className="ml-auto bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs">
+                  <span className="ml-auto bg-[#FCDA89]/20 text-[#FCDA89] px-2 py-0.5 rounded-full text-xs">
                     {item.count}
                   </span>
                 )}
@@ -107,10 +107,10 @@ export function ClientSidebar({ isOpen, closeSidebar }: ClientSidebarProps) {
           </nav>
 
           {/* Footer */}
-          <div className="space-y-1 pt-2 border-t">
+          <div className="space-y-1 pt-2 border-t border-white/10">
             <Link
               href="/aide"
-              className="flex items-center px-3 py-2.5 text-sm rounded-lg text-muted-foreground hover:bg-muted transition-colors"
+              className="flex items-center px-3 py-2.5 text-sm rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors"
               onClick={closeSidebar}
             >
               <LifeBuoy className="mr-3 h-5 w-5 flex-shrink-0" />
@@ -118,7 +118,7 @@ export function ClientSidebar({ isOpen, closeSidebar }: ClientSidebarProps) {
             </Link>
             <Button
               variant="ghost"
-              className="w-full justify-start px-3 py-2.5 h-auto font-normal text-sm rounded-lg text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30 transition-colors"
+              className="w-full justify-start px-3 py-2.5 h-auto font-normal text-sm rounded-lg text-red-400 hover:bg-red-900/30 hover:text-red-300 transition-colors"
             >
               <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />
               <span>Déconnexion</span>

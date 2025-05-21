@@ -87,7 +87,7 @@ export function DropdownMenuContent({
 
   return (
     <div 
-      className={`absolute z-50 mt-2 min-w-[8rem] overflow-hidden rounded-md border bg-white shadow-md animate-in fade-in-80 ${alignClasses[align]} ${className}`}
+      className={`absolute z-50 mt-2 min-w-[8rem] overflow-hidden rounded-md border border-white/10 bg-[#0E261C] text-white shadow-md animate-in fade-in-80 ${alignClasses[align]} ${className}`}
       {...props}
     >
       <div className="p-1">
@@ -105,7 +105,7 @@ export function DropdownMenuItem({
 }: DropdownMenuItemProps & React.HTMLAttributes<HTMLDivElement>) {
   if (asChild && React.isValidElement(children)) {
     return React.cloneElement(children as React.ReactElement<any>, { 
-      className: `relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 ${className}`,
+      className: `relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-white/10 hover:text-white ${className}`,
       ...props 
     })
   }
@@ -113,7 +113,7 @@ export function DropdownMenuItem({
   return (
     <div 
       role="menuitem"
-      className={`relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-gray-100 ${className}`}
+      className={`relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-white/10 hover:text-white ${className}`}
       {...props}
     >
       {children}
@@ -137,14 +137,14 @@ export function DropdownMenuLabel({
 }
 
 export function DropdownMenuSeparator() {
-  return <div className="my-1 h-px bg-gray-200" />
+  return <div className="my-1 h-px bg-white/10" />
 }
 
 export function DropdownMenuCheckboxItem({ children, checked, ...props }: { children: React.ReactNode, checked?: boolean } & React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div 
       role="menuitemcheckbox"
-      className="relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors hover:bg-gray-100"
+      className="relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors hover:bg-white/10"
       data-state={checked ? "checked" : "unchecked"}
       aria-checked={checked}
       {...props}
@@ -165,7 +165,7 @@ export function DropdownMenuRadioItem({ children, value, ...props }: { children:
   return (
     <div 
       role="menuitemradio"
-      className="relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors hover:bg-gray-100"
+      className="relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors hover:bg-white/10"
       {...props}
     >
       <span className="absolute left-2 flex h-4 w-4 items-center justify-center">

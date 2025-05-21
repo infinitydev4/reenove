@@ -2,7 +2,6 @@
 
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 import { Loader2 } from "lucide-react"
 
 // Fonction utilitaire pour nettoyer le stockage
@@ -40,26 +39,22 @@ const cleanProjectStorage = () => {
 
 export default function CreateProjectPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
 
   useEffect(() => {
     // Nettoyer le stockage avant de commencer un nouveau projet
     cleanProjectStorage()
     
-    if (status === "unauthenticated") {
-      router.push("/auth?callbackUrl=/create-project/category")
-    } else if (status === "authenticated") {
-      router.push("/create-project/category")
-    }
-  }, [status, router])
+    // Rediriger directement vers la page de catégorie (sans vérification d'authentification)
+    router.push("/create-project/category")
+  }, [router])
 
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  // Afficher un indicateur de chargement pendant la redirection
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#0E261C]">
+      <div className="flex flex-col items-center">
+        <Loader2 className="h-12 w-12 animate-spin text-[#FCDA89] mb-4" />
+        <p className="text-white">Préparation de votre projet...</p>
       </div>
-    )
-  }
-
-  return null
+    </div>
+  )
 } 

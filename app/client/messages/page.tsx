@@ -264,64 +264,64 @@ export default function ClientMessagesPage() {
 
   const ConversationList = ({ conversations = sortedConversations }: { conversations?: Conversation[] }) => (
     <div className="flex flex-col h-full">
-      <div className="p-3 border-b">
+      <div className="p-3 border-b border-white/10">
         <div className="flex items-center gap-2 mb-3">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/70" />
             <Input
               type="search"
               placeholder="Rechercher un message..."
-              className="pl-9 h-9"
+              className="pl-9 h-9 bg-white/5 border-white/10 text-white placeholder:text-white/50"
             />
           </div>
-          <Button variant="outline" size="icon" className="h-9 w-9">
+          <Button variant="outline" size="icon" className="h-9 w-9 border-white/10 bg-white/5 hover:bg-white/10 text-white">
             <Filter className="h-4 w-4" />
           </Button>
         </div>
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="w-full grid grid-cols-2 h-8">
-            <TabsTrigger value="all" className="text-xs">Toutes</TabsTrigger>
-            <TabsTrigger value="unread" className="text-xs">Non lues</TabsTrigger>
+          <TabsList className="w-full grid grid-cols-2 h-8 bg-white/10 text-white">
+            <TabsTrigger value="all" className="text-xs data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">Toutes</TabsTrigger>
+            <TabsTrigger value="unread" className="text-xs data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">Non lues</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
       <div className="flex-1 overflow-auto">
         {conversations.length > 0 ? (
-          <div className="divide-y">
+          <div className="divide-y divide-white/10">
             {conversations.map((conv) => (
               <div
                 key={conv.id}
                 className={cn(
-                  "hover:bg-muted/50 transition-colors cursor-pointer p-3",
-                  selectedConversation?.id === conv.id && "bg-muted"
+                  "hover:bg-white/5 transition-colors cursor-pointer p-3",
+                  selectedConversation?.id === conv.id && "bg-white/10"
                 )}
                 onClick={() => handleSelectConversation(conv)}
               >
                 <div className="flex gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={conv.recipient.avatar} alt={conv.recipient.name} />
-                    <AvatarFallback>{conv.recipient.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="bg-[#FCDA89]/20 text-white">{conv.recipient.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-0.5">
                       <p className="font-medium text-sm truncate">{conv.recipient.name}</p>
-                      <p className="text-xs text-muted-foreground shrink-0">{conv.lastMessage.timestamp}</p>
+                      <p className="text-xs text-white/70 shrink-0">{conv.lastMessage.timestamp}</p>
                     </div>
                     <div className="flex items-center gap-1">
                       {conv.projectTitle && (
-                        <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 truncate max-w-[100px]">
+                        <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 truncate max-w-[100px] border-[#FCDA89]/30 bg-[#FCDA89]/10 text-[#FCDA89]">
                           {conv.projectTitle}
                         </Badge>
                       )}
                     </div>
                     <div className="flex justify-between items-center mt-1">
-                      <p className="text-xs text-muted-foreground truncate max-w-[210px]">
+                      <p className="text-xs text-white/70 truncate max-w-[210px]">
                         {conv.lastMessage.isFromMe && "Vous: "}
                         {conv.lastMessage.content}
                       </p>
                       {!conv.lastMessage.isRead && !conv.lastMessage.isFromMe && (
-                        <span className="h-2 w-2 rounded-full bg-primary"></span>
+                        <span className="h-2 w-2 rounded-full bg-[#FCDA89]"></span>
                       )}
                     </div>
                   </div>
@@ -331,9 +331,9 @@ export default function ClientMessagesPage() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-            <Mail className="h-10 w-10 text-muted-foreground mb-2" />
+            <Mail className="h-10 w-10 text-[#FCDA89] mb-2" />
             <h3 className="text-base font-medium">Aucune conversation</h3>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-white/70 mt-1">
               Vous n&apos;avez pas encore de conversations avec des artisans.
             </p>
           </div>
@@ -347,23 +347,23 @@ export default function ClientMessagesPage() {
 
     return (
       <div className="flex flex-col h-full overflow-hidden">
-        <div className="p-3 border-b flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={handleBackToList} className="md:hidden h-8 w-8">
+        <div className="p-3 border-b border-white/10 flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={handleBackToList} className="md:hidden h-8 w-8 text-white hover:bg-white/10">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <Avatar className="h-8 w-8">
             <AvatarImage src={selectedConversation.recipient.avatar} alt={selectedConversation.recipient.name} />
-            <AvatarFallback>{selectedConversation.recipient.name.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="bg-[#FCDA89]/20 text-white">{selectedConversation.recipient.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className="flex-1 overflow-hidden">
             <p className="font-medium text-sm truncate">{selectedConversation.recipient.name}</p>
             {selectedConversation.projectTitle && (
-              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
+              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-[#FCDA89]/30 bg-[#FCDA89]/10 text-[#FCDA89]">
                 {selectedConversation.projectTitle}
               </Badge>
             )}
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-white hover:bg-white/10">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </div>
@@ -381,13 +381,13 @@ export default function ClientMessagesPage() {
                 className={cn(
                   "px-3 py-2 rounded-lg",
                   message.isFromMe
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted"
+                    ? "bg-[#FCDA89] text-[#0E261C]"
+                    : "bg-white/10 text-white"
                 )}
               >
                 <p>{message.content}</p>
               </div>
-              <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
+              <div className="flex items-center gap-1 mt-1 text-xs text-white/70">
                 <p>{message.timestamp}</p>
                 {message.isFromMe && (
                   <>
@@ -401,7 +401,7 @@ export default function ClientMessagesPage() {
                       <CheckCheck className="h-3 w-3" />
                     )}
                     {message.status === "read" && (
-                      <CheckCheck className="h-3 w-3 text-blue-500" />
+                      <CheckCheck className="h-3 w-3 text-[#FCDA89]" />
                     )}
                   </>
                 )}
@@ -411,15 +411,15 @@ export default function ClientMessagesPage() {
           <div ref={messagesEndRef} />
         </div>
         
-        <form onSubmit={handleSendMessage} className="p-3 border-t flex items-center gap-2">
+        <form onSubmit={handleSendMessage} className="p-3 border-t border-white/10 flex items-center gap-2">
           <Input
             type="text"
             placeholder="Écrivez votre message..."
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            className="flex-1"
+            className="flex-1 bg-white/5 border-white/10 text-white placeholder:text-white/50"
           />
-          <Button type="submit" size="icon" disabled={!newMessage.trim()}>
+          <Button type="submit" size="icon" disabled={!newMessage.trim()} className="bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90">
             <Send className="h-4 w-4" />
           </Button>
         </form>
@@ -431,10 +431,10 @@ export default function ClientMessagesPage() {
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center h-10 mb-3">
         <h1 className="text-lg font-bold flex items-center gap-2">
-          <Mail className="h-5 w-5 text-primary" />
+          <Mail className="h-5 w-5 text-[#FCDA89]" />
           Messages
         </h1>
-        <Button size="sm" variant="outline" asChild className="h-8">
+        <Button size="sm" variant="outline" asChild className="h-8 border-white/10 bg-white/5 hover:bg-white/10 text-white">
           <Link href="/client/projets">
             <LayoutList className="h-4 w-4 mr-2" />
             Mes projets
@@ -442,10 +442,10 @@ export default function ClientMessagesPage() {
         </Button>
       </div>
 
-      <Card className="flex-1 overflow-hidden">
+      <Card className="flex-1 overflow-hidden bg-white/5 border-white/10 text-white">
         <div className="flex h-full">
           <div className={cn(
-            "border-r w-full md:w-80 lg:w-96 flex-shrink-0",
+            "border-r border-white/10 w-full md:w-80 lg:w-96 flex-shrink-0",
             selectedConversation ? "hidden md:block" : "block"
           )}>
             <ConversationList />
@@ -458,9 +458,9 @@ export default function ClientMessagesPage() {
               <ConversationView />
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center p-4">
-                <Mail className="h-12 w-12 text-muted-foreground mb-3" />
-                <h3 className="text-lg font-medium">Sélectionnez une conversation</h3>
-                <p className="text-sm text-muted-foreground mt-1 max-w-xs">
+                <Mail className="h-12 w-12 text-[#FCDA89] mb-3" />
+                <h3 className="text-lg font-medium mb-2">Sélectionnez une conversation</h3>
+                <p className="text-white/70 mt-1 max-w-xs">
                   Choisissez une conversation dans la liste ou commencez une nouvelle discussion.
                 </p>
               </div>

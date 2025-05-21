@@ -211,22 +211,22 @@ export default function ProjectDetailPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" className="border-white/10 bg-white/5 hover:bg-white/10 text-white">
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-8 w-40 bg-white/10" />
         </div>
         
-        <Card>
+        <Card className="bg-white/5 border-white/10 text-white">
           <CardHeader>
-            <Skeleton className="h-8 w-3/4 mb-2" />
-            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-8 w-3/4 mb-2 bg-white/10" />
+            <Skeleton className="h-4 w-1/2 bg-white/10" />
           </CardHeader>
           <CardContent className="space-y-6">
-            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-40 w-full bg-white/10" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Skeleton className="h-24 w-full" />
-              <Skeleton className="h-24 w-full" />
+              <Skeleton className="h-24 w-full bg-white/10" />
+              <Skeleton className="h-24 w-full bg-white/10" />
             </div>
           </CardContent>
         </Card>
@@ -238,7 +238,7 @@ export default function ProjectDetailPage() {
     return (
       <div className="space-y-6">
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon" className="border-white/10 bg-white/5 hover:bg-white/10 text-white">
             <Link href="/client/projets">
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -246,14 +246,14 @@ export default function ProjectDetailPage() {
           <h1 className="text-2xl font-bold">Projet non trouvé</h1>
         </div>
         
-        <Card>
+        <Card className="bg-white/5 border-white/10 text-white">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+            <FileText className="h-12 w-12 text-[#FCDA89] mb-4" />
             <h3 className="text-lg font-medium mb-2">Projet introuvable</h3>
-            <p className="text-muted-foreground text-center max-w-md mb-6">
+            <p className="text-white/70 text-center max-w-md mb-6">
               Ce projet n&apos;existe pas ou vous n&apos;avez pas les permissions pour y accéder.
             </p>
-            <Button asChild>
+            <Button asChild className="bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90">
               <Link href="/client/projets">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Retour aux projets
@@ -296,14 +296,14 @@ export default function ProjectDetailPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-2 w-full overflow-hidden">
-          <Button asChild variant="outline" size="icon" className="shrink-0">
+          <Button asChild variant="outline" size="icon" className="shrink-0 border-white/10 bg-white/5 hover:bg-white/10 text-white">
             <Link href="/client/projets">
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
           <div className="min-w-0 overflow-hidden">
             <h1 className="text-xl md:text-2xl font-bold tracking-tight truncate">{project.title}</h1>
-            <div className="flex items-center gap-1 md:gap-2 text-muted-foreground text-xs md:text-sm overflow-hidden">
+            <div className="flex items-center gap-1 md:gap-2 text-white/70 text-xs md:text-sm overflow-hidden">
               <span className="truncate">{project.categoryName}</span>
               {project.serviceName && (
                 <>
@@ -318,13 +318,13 @@ export default function ProjectDetailPage() {
         </div>
         
         <div className="flex gap-2 mt-2 md:mt-0 shrink-0">
-          <Button variant="outline" asChild className="h-8 md:h-10 text-xs md:text-sm px-2 md:px-4">
+          <Button variant="outline" asChild className="h-8 md:h-10 text-xs md:text-sm px-2 md:px-4 border-white/10 bg-white/5 hover:bg-white/10 text-white">
             <Link href={`/client/projets/${projectId}/edit`}>
               <Edit className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
               <span className="truncate">Modifier</span>
             </Link>
           </Button>
-          <Button variant="outline" className="h-8 md:h-10 text-xs md:text-sm px-2 md:px-4">
+          <Button variant="outline" className="h-8 md:h-10 text-xs md:text-sm px-2 md:px-4 border-white/10 bg-white/5 hover:bg-white/10 text-white">
             <Share className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
             <span className="truncate">Partager</span>
           </Button>
@@ -332,7 +332,7 @@ export default function ProjectDetailPage() {
       </div>
       
       {/* Barre de progression et statut */}
-      <Card>
+      <Card className="bg-white/5 border-white/10 text-white">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
             <div className="flex items-center gap-2">
@@ -340,7 +340,7 @@ export default function ProjectDetailPage() {
               {getStatusBadge(project.status)}
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="border-white/10 bg-white/5 hover:bg-white/10 text-white">
                 <MessageSquare className="mr-2 h-4 w-4" />
                 Contacter un artisan
               </Button>
@@ -352,19 +352,19 @@ export default function ProjectDetailPage() {
               <span>Progression</span>
               <span>{getProjectProgress(project.status)}%</span>
             </div>
-            <Progress value={getProjectProgress(project.status)} className="h-2" />
+            <Progress value={getProjectProgress(project.status)} className="h-2" indicatorClassName="bg-[#FCDA89]" />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-2 mt-6">
-            <div className="bg-muted/30 rounded-xl p-3">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+            <div className="bg-white/5 rounded-xl p-3">
+              <div className="flex items-center gap-2 text-xs text-white/70 mb-1">
                 <ClipboardList className="h-3.5 w-3.5" />
                 <span>Création</span>
               </div>
               <span className="text-sm font-medium">✓ Terminé</span>
             </div>
-            <div className={`rounded-xl p-3 ${project.status === "DRAFT" ? "bg-muted/30" : "bg-blue-50 dark:bg-blue-900/20"}`}>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+            <div className={`rounded-xl p-3 ${project.status === "DRAFT" ? "bg-white/5" : "bg-[#FCDA89]/10"}`}>
+              <div className="flex items-center gap-2 text-xs text-white/70 mb-1">
                 <FileText className="h-3.5 w-3.5" />
                 <span>Publication</span>
               </div>
@@ -372,8 +372,8 @@ export default function ProjectDetailPage() {
                 {project.status === "DRAFT" ? "En attente" : "✓ Terminé"}
               </span>
             </div>
-            <div className={`rounded-xl p-3 ${["DRAFT", "PUBLISHED", "PENDING"].includes(project.status) ? "bg-muted/30" : "bg-blue-50 dark:bg-blue-900/20"}`}>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+            <div className={`rounded-xl p-3 ${["DRAFT", "PUBLISHED", "PENDING"].includes(project.status) ? "bg-white/5" : "bg-[#FCDA89]/10"}`}>
+              <div className="flex items-center gap-2 text-xs text-white/70 mb-1">
                 <User className="h-3.5 w-3.5" />
                 <span>Attribution</span>
               </div>
@@ -381,8 +381,8 @@ export default function ProjectDetailPage() {
                 {["DRAFT", "PUBLISHED", "PENDING"].includes(project.status) ? "En attente" : "✓ Terminé"}
               </span>
             </div>
-            <div className={`rounded-xl p-3 ${project.status === "COMPLETED" ? "bg-green-50 dark:bg-green-900/20" : "bg-muted/30"}`}>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+            <div className={`rounded-xl p-3 ${project.status === "COMPLETED" ? "bg-green-900/20" : "bg-white/5"}`}>
+              <div className="flex items-center gap-2 text-xs text-white/70 mb-1">
                 <Check className="h-3.5 w-3.5" />
                 <span>Réalisation</span>
               </div>
@@ -396,23 +396,23 @@ export default function ProjectDetailPage() {
       
       {/* Contenu principal */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="flex w-full md:w-auto">
-          <TabsTrigger value="details" className="flex-1 md:flex-initial">
+        <TabsList className="flex w-full md:w-auto bg-white/10 text-white">
+          <TabsTrigger value="details" className="flex-1 md:flex-initial data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">
             <FileText className="mr-2 h-4 w-4" />
             Détails
           </TabsTrigger>
-          <TabsTrigger value="devis" className="flex-1 md:flex-initial">
+          <TabsTrigger value="devis" className="flex-1 md:flex-initial data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">
             <CircleDollarSign className="mr-2 h-4 w-4" />
             Devis
             {project.quotes && project.quotes.length > 0 && (
-              <Badge className="ml-2 bg-primary/20 text-primary">{project.quotes.length}</Badge>
+              <Badge className="ml-2 bg-[#FCDA89]/20 text-[#FCDA89]">{project.quotes.length}</Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="planning" className="flex-1 md:flex-initial">
+          <TabsTrigger value="planning" className="flex-1 md:flex-initial data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">
             <Calendar className="mr-2 h-4 w-4" />
             Planning
           </TabsTrigger>
-          <TabsTrigger value="messages" className="flex-1 md:flex-initial">
+          <TabsTrigger value="messages" className="flex-1 md:flex-initial data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">
             <MessagesSquare className="mr-2 h-4 w-4" />
             Messages
           </TabsTrigger>
@@ -420,7 +420,7 @@ export default function ProjectDetailPage() {
         
         {/* Onglet Détails */}
         <TabsContent value="details" className="space-y-6">
-          <Card>
+          <Card className="bg-white/5 border-white/10 text-white">
             <CardHeader>
               <CardTitle>Description du projet</CardTitle>
             </CardHeader>
@@ -431,7 +431,7 @@ export default function ProjectDetailPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Informations financières */}
-            <Card>
+            <Card className="bg-white/5 border-white/10 text-white">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Informations financières</CardTitle>
               </CardHeader>
@@ -439,7 +439,7 @@ export default function ProjectDetailPage() {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <Euro className="h-4 w-4 text-muted-foreground" />
+                      <Euro className="h-4 w-4 text-white/70" />
                       <span className="text-sm">Budget</span>
                     </div>
                     <span className="font-medium">
@@ -449,7 +449,7 @@ export default function ProjectDetailPage() {
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+                      <CircleDollarSign className="h-4 w-4 text-white/70" />
                       <span className="text-sm">Type de budget</span>
                     </div>
                     <span className="font-medium">
@@ -459,10 +459,10 @@ export default function ProjectDetailPage() {
                        "Non défini"}
                     </span>
                   </div>
-                  <Separator />
+                  <Separator className="bg-white/10" />
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                      <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+                      <CircleDollarSign className="h-4 w-4 text-white/70" />
                       <span className="text-sm">Devis reçus</span>
                     </div>
                     <span className="font-medium">
@@ -474,17 +474,17 @@ export default function ProjectDetailPage() {
             </Card>
             
             {/* Localisation */}
-            <Card>
+            <Card className="bg-white/5 border-white/10 text-white">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">Localisation</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
+                    <MapPin className="h-4 w-4 text-white/70 mt-0.5" />
                     <div>
                       <div className="font-medium">{project.location || "Adresse non spécifiée"}</div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-white/70">
                         {project.postalCode && project.city ? `${project.postalCode} ${project.city}` : ""}
                       </div>
                     </div>
@@ -497,112 +497,10 @@ export default function ProjectDetailPage() {
                         city={project.city}
                         postalCode={project.postalCode}
                         mapHeight="200px"
-                        className="w-full rounded-md border"
+                        className="w-full rounded-md border border-white/10"
                       />
                     </div>
                   )}
-                </div>
-              </CardContent>
-            </Card>
-            
-            {/* Photos du projet */}
-            <Card className="md:col-span-2">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Photos du projet</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {project.photos && project.photos.length > 0 ? (
-                  <div className="space-y-3">
-                    {/* Image principale sélectionnée */}
-                    <div className="relative aspect-video w-full rounded-md overflow-hidden border bg-muted">
-                      <img
-                        src={getImageFromSessionStorage(project.photos[selectedImageIndex])}
-                        alt={`Photo principale`}
-                        className="object-cover w-full h-full"
-                        onError={(e) => {
-                          console.error(`Erreur de chargement de l'image principale`);
-                          e.currentTarget.src = "/placeholder-project.png";
-                        }}
-                      />
-                    </div>
-                    
-                    {/* Galerie de miniatures */}
-                    {project.photos && project.photos.length > 1 && (
-                      <div className="grid grid-cols-6 md:grid-cols-8 gap-2">
-                        {project.photos.map((photo, index) => (
-                          <div 
-                            key={index} 
-                            className={`relative aspect-square rounded-md overflow-hidden border cursor-pointer transition-all duration-200 ${
-                              selectedImageIndex === index 
-                                ? "border-primary ring-2 ring-primary/50" 
-                                : "border-muted bg-muted hover:border-primary/30"
-                            }`}
-                            onClick={() => setSelectedImageIndex(index)}
-                          >
-                            <img
-                              src={getImageFromSessionStorage(photo)}
-                              alt={`Miniature ${index + 1}`}
-                              className="object-cover w-full h-full"
-                              onError={(e) => {
-                                console.error(`Erreur de chargement de la miniature ${index + 1}`);
-                                e.currentTarget.src = "/placeholder-project.png";
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-6">
-                    <Building className="h-12 w-12 text-muted-foreground mb-2" />
-                    <p className="text-muted-foreground">Aucune photo ajoutée à ce projet</p>
-                    <Button asChild variant="outline" className="mt-4">
-                      <Link href={`/client/projets/${projectId}/edit`}>
-                        Ajouter des photos
-                      </Link>
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            {/* Planning */}
-            <Card className="md:col-span-2">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">Planning</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-2">
-                      <CalendarDays className="h-4 w-4 text-muted-foreground mt-0.5" />
-                      <div>
-                        <div className="text-sm">Date de début souhaitée</div>
-                        <div className="font-medium">{formatDate(project.startDate)}</div>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <CalendarDays className="h-4 w-4 text-muted-foreground mt-0.5" />
-                      <div>
-                        <div className="text-sm">Date de fin estimée</div>
-                        <div className="font-medium">{formatDate(project.endDate)}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-2">
-                      <Clock className="h-4 w-4 text-muted-foreground mt-0.5" />
-                      <div>
-                        <div className="text-sm">Niveau d&apos;urgence</div>
-                        <div className="font-medium">
-                          {project.urgencyLevel === "URGENT" ? "Urgent (7 jours)" : 
-                           project.urgencyLevel === "SOON" ? "Dès que possible (15 jours)" : 
-                           "Normal (30 jours)"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -729,7 +627,7 @@ export default function ProjectDetailPage() {
       
       {/* Actions */}
       <div className="flex justify-between gap-4">
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10 text-white">
           <Link href="/client/projets">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Retour à la liste
@@ -738,7 +636,7 @@ export default function ProjectDetailPage() {
         
         <div className="flex gap-2">
           {project.status === "DRAFT" && (
-            <Button className="bg-green-600 hover:bg-green-700">
+            <Button className="bg-green-600 hover:bg-green-700 text-white">
               Publier le projet
             </Button>
           )}
@@ -747,6 +645,7 @@ export default function ProjectDetailPage() {
               variant="destructive" 
               onClick={() => setDeleteDialogOpen(true)}
               disabled={isDeleting}
+              className="bg-red-500 hover:bg-red-600 text-white"
             >
               {isDeleting ? (
                 <>
@@ -766,10 +665,10 @@ export default function ProjectDetailPage() {
       
       {/* Boîte de dialogue de confirmation pour la suppression */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
+        <DialogContent className="bg-[#0E261C] border-white/10 text-white">
           <DialogHeader>
             <DialogTitle>Êtes-vous sûr de vouloir supprimer ce projet ?</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-white/70">
               Cette action est irréversible. Toutes les données associées à ce projet seront définitivement supprimées.
             </DialogDescription>
           </DialogHeader>
@@ -778,6 +677,7 @@ export default function ProjectDetailPage() {
               variant="outline" 
               onClick={() => setDeleteDialogOpen(false)} 
               disabled={isDeleting}
+              className="border-white/10 bg-white/5 hover:bg-white/10 text-white"
             >
               Annuler
             </Button>
@@ -785,6 +685,7 @@ export default function ProjectDetailPage() {
               onClick={handleDeleteProject}
               disabled={isDeleting}
               variant="destructive"
+              className="bg-red-500 hover:bg-red-600 text-white"
             >
               {isDeleting ? (
                 <>

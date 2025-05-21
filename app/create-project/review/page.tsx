@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 import Image from "next/image"
+import Link from "next/link"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import {
@@ -27,7 +29,9 @@ import {
   DoorOpen,
   Trees,
   Home,
-  Briefcase
+  Briefcase,
+  UserPlus,
+  LogIn
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -144,10 +148,12 @@ const retrieveImageUrls = (refs: string[]) => {
 
 export default function ReviewPage() {
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [isVisible, setIsVisible] = useState(false)
   const [project, setProject] = useState<Project>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [projectPhotos, setProjectPhotos] = useState<string[]>([])
+  const [showAuthOptions, setShowAuthOptions] = useState(false)
   const [completionStatus, setCompletionStatus] = useState({
     category: false,
     details: false,
@@ -332,91 +338,30 @@ export default function ReviewPage() {
   }, [completionStatus]);
   
   const handleSubmit = async () => {
-    if (!isFormComplete) {
-      toast({
-        title: "Formulaire incomplet",
-        description: "Veuillez remplir toutes les sections obligatoires avant de continuer.",
-        variant: "destructive",
-      });
-      return;
+    // Vérification si l'utilisateur est connecté
+    if (status !== "authenticated") {
+      // Afficher les options d'authentification
+      setShowAuthOptions(true)
+      return
     }
     
     setIsSubmitting(true)
     
+    // Simulation d'une soumission de projet (à remplacer par votre API)
     try {
-      // Récupérer toutes les données du localStorage
-      const projectDetails = localStorage.getItem("projectDetails") 
-        ? JSON.parse(localStorage.getItem("projectDetails") || "{}") 
-        : {}
-      const projectBudget = localStorage.getItem("projectBudget")
-        ? JSON.parse(localStorage.getItem("projectBudget") || "{}")
-        : {}
-      const projectLocation = localStorage.getItem("projectLocation") 
-        ? JSON.parse(localStorage.getItem("projectLocation") || "{}") 
-        : {}
-      const projectDate = localStorage.getItem("projectDate") 
-        ? JSON.parse(localStorage.getItem("projectDate") || "{}") 
-        : {}
+      // Attendre 2 secondes pour simuler une requête API
+      await new Promise(resolve => setTimeout(resolve, 2000))
       
-      // Préparer les données à envoyer à l'API
-      const projectData = {
-        title: projectDetails.title || "",
-        description: projectDetails.description || "",
-        categoryId: projectDetails.categoryId || "",
-        serviceId: projectDetails.serviceId || "",
-        propertyType: projectDetails.propertyType || "HOUSE",
-        
-        // Photos
-        photos: projectDetails.photos || [],
-        
-        // Budget
-        budget: projectBudget.budget || null,
-        budgetType: projectBudget.budgetType || "Fixed",
-        budgetMax: projectBudget.budgetType === "range" ? projectBudget.budgetMax : null,
-        
-        // Localisation
-        location: projectLocation.address || "",
-        postalCode: projectLocation.postalCode || "",
-        city: projectLocation.city || "",
-        accessibility: projectLocation.accessibility || "EASY",
-        
-        // Planification
-        startDate: projectDate.startDate ? new Date(projectDate.startDate).toISOString() : null,
-        endDate: projectDate.endDate ? new Date(projectDate.endDate).toISOString() : null,
-        urgencyLevel: convertUrgencyLevel(projectDate.urgency),
-        flexibleDates: projectDate.timeFrame === "flexible",
-        preferredTime: projectDate.preferredTime || "ANY",
-        
-        // Statut
-        status: "PUBLISHED",
-        visibility: "PUBLIC",
-      }
-      
-      console.log("Données à envoyer:", projectData)
-      
-      // Appel à l'API
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(projectData),
-      })
-      
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || "Erreur lors de la création du projet")
-      }
-      
-      const result = await response.json()
-      console.log("Projet créé avec succès:", result)
-      
-      // Rediriger vers la page de succès
+      // Redirection vers la page de succès
       router.push("/create-project/success")
     } catch (error) {
-      console.error("Erreur lors de la création du projet:", error)
+      console.error("Erreur lors de la soumission du projet:", error)
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la soumission de votre projet. Veuillez réessayer."
+      })
       setIsSubmitting(false)
-      // Ici, vous pourriez mettre en place un affichage d'erreur pour l'utilisateur
     }
   }
   
@@ -992,6 +937,75 @@ export default function ReviewPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
+      
+      {showAuthOptions && (
+        <Card className="border-[#FCDA89]/20 bg-[#0E261C] text-white mb-4">
+          <CardContent className="p-6 space-y-4">
+            <div className="flex items-center gap-3 text-[#FCDA89]">
+              <InfoIcon className="h-5 w-5" />
+              <h3 className="text-lg font-semibold">Connectez-vous pour continuer</h3>
+            </div>
+            
+            <p className="text-white/80">
+              Pour soumettre votre projet et recevoir des devis d'artisans qualifiés, 
+              vous devez vous connecter ou créer un compte gratuitement.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <Button 
+                variant="outline" 
+                className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10"
+                onClick={() => router.push(`/auth?tab=login&callbackUrl=${encodeURIComponent('/create-project/review')}`)}
+              >
+                <LogIn className="mr-2 h-4 w-4" />
+                Se connecter
+              </Button>
+              <Button 
+                className="w-full sm:w-auto bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C]"
+                onClick={() => router.push(`/register/role?callbackUrl=${encodeURIComponent('/create-project/review')}`)}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Créer un compte
+              </Button>
+            </div>
+            
+            <p className="text-xs text-white/60 pt-2">
+              Vos informations de projet seront conservées pendant votre inscription.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+      
+      <div className="flex items-center gap-4 pt-2 pb-10">
+        <Button
+          variant="outline"
+          disabled={isSubmitting}
+          onClick={() => router.back()}
+          className="px-4"
+        >
+          Retour
+        </Button>
+        
+        <Button
+          className="flex-1 bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C]"
+          disabled={!isFormComplete || isSubmitting}
+          onClick={handleSubmit}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Soumission en cours...
+            </>
+          ) : showAuthOptions ? (
+            "Continuer après connexion"
+          ) : (
+            <>
+              Soumettre le projet
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </>
+          )}
+        </Button>
       </div>
     </form>
   )

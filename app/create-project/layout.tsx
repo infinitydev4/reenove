@@ -1,7 +1,6 @@
 "use client"
 
 import { usePathname, useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 import Link from "next/link"
 import Navbar from "@/components/navbar"
 import { Card } from "@/components/ui/card"
@@ -9,7 +8,6 @@ import { CheckCircle, ArrowLeft, ArrowRight, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useTheme } from "next-themes"
-import { useEffect } from "react"
 
 interface StepProps {
   href: string
@@ -64,29 +62,7 @@ export default function CreateProjectLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { theme } = useTheme();
-  const { status } = useSession();
   const isDarkTheme = theme === "dark";
-  
-  // Rediriger vers la page de connexion si non authentifié
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push(`/auth?callbackUrl=${encodeURIComponent(pathname)}`);
-    }
-  }, [status, router, pathname]);
-
-  // Afficher un loader pendant la vérification de l'authentification
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // Ne rien afficher si non authentifié (la redirection sera gérée par le useEffect)
-  if (status === "unauthenticated") {
-    return null;
-  }
   
   // Identifier l'étape active
   const activeStepIndex = projectSteps.findIndex(step => pathname.includes(step.path));

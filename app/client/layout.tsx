@@ -37,15 +37,15 @@ export default function ClientDashboardLayout({ children }: PropsWithChildren) {
   // Afficher un état de chargement pendant la vérification
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[#0E261C]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FCDA89]"></div>
       </div>
     )
   }
 
   return (
     <NotificationProvider>
-      <div className="h-screen overflow-hidden bg-gray-50 dark:bg-black/95 flex flex-col">
+      <div className="h-screen overflow-hidden bg-[#0E261C] text-white flex flex-col">
         {/* Header flottant */}
         <ClientHeader toggleSidebar={() => setSidebarOpen(true)} />
 

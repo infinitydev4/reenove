@@ -42,6 +42,13 @@ enum PropertyType {
   COMMERCIAL
 }
 
+enum PropertyCondition {
+  NEW // Neuf
+  GOOD // Bon état
+  OLD // Vétuste
+  DEMOLISH // À démolir
+}
+
 enum AccessibilityLevel {
   EASY
   MODERATE
@@ -229,6 +236,12 @@ model Project {
 
   // Type de propriété
   propertyType PropertyType?
+
+  // Nouveaux champs pour les détails du bien
+  surface     Float? // Surface en m²
+  floor       Int? // Étage (0 = RDC)
+  hasElevator Boolean? // Présence d'un ascenseur
+  condition   PropertyCondition? // État actuel du bien
 
   // Statut et visibilité
   status     ProjectStatus     @default(DRAFT)

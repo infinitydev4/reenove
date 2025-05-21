@@ -8,7 +8,6 @@ const protectedRoutes = [
   '/admin',
   '/profile',
   '/onboarding/artisan',
-  '/create-project'
 ]
 
 // Liste des routes qui nécessitent un rôle spécifique

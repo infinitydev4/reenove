@@ -159,7 +159,7 @@ export default function FavorisPage() {
     <div className="h-full flex flex-col">
       <div className="flex justify-between items-center h-10 mb-3">
         <h1 className="text-lg font-bold flex items-center gap-2">
-          <Heart className="h-5 w-5 text-primary" />
+          <Heart className="h-5 w-5 text-[#FCDA89]" />
           Artisans favoris
         </h1>
       </div>
@@ -167,11 +167,11 @@ export default function FavorisPage() {
       {/* Filtres et recherche */}
       <div className="flex flex-col md:flex-row gap-3 mb-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/70" />
           <Input
             type="search"
             placeholder="Rechercher un artisan, une spécialité..."
-            className="pl-9"
+            className="pl-9 bg-white/5 border-white/10 text-white placeholder:text-white/50"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -180,13 +180,13 @@ export default function FavorisPage() {
           value={categoryFilter} 
           onValueChange={setCategoryFilter}
         >
-          <SelectTrigger className="w-full md:w-[200px]">
+          <SelectTrigger className="w-full md:w-[200px] bg-white/5 border-white/10 text-white">
             <SelectValue placeholder="Filtrer par spécialité" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les spécialités</SelectItem>
+          <SelectContent className="bg-[#0E261C] border-white/10 text-white">
+            <SelectItem value="all" className="focus:bg-white/10 focus:text-white">Toutes les spécialités</SelectItem>
             {allSpecialities.map(spec => (
-              <SelectItem key={spec} value={spec}>{spec}</SelectItem>
+              <SelectItem key={spec} value={spec} className="focus:bg-white/10 focus:text-white">{spec}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -196,12 +196,12 @@ export default function FavorisPage() {
       {filteredArtisans.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredArtisans.map((artisan) => (
-            <Card key={artisan.id} className="overflow-hidden">
+            <Card key={artisan.id} className="overflow-hidden bg-white/5 border-white/10 text-white">
               <CardContent className="p-4">
                 <div className="flex gap-3 mb-3">
                   <Avatar className="h-12 w-12">
                     <AvatarImage src={artisan.avatar} alt={artisan.name} />
-                    <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="bg-[#FCDA89]/20">{artisan.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
@@ -209,7 +209,7 @@ export default function FavorisPage() {
                         <h3 className="font-medium text-sm">{artisan.name}</h3>
                         <div className="flex flex-wrap gap-1 mt-0.5">
                           {artisan.specialites.map((spec, index) => (
-                            <Badge key={index} variant="outline" className="text-xs py-0">
+                            <Badge key={index} variant="outline" className="text-xs py-0 border-[#FCDA89]/30 bg-[#FCDA89]/10 text-[#FCDA89]">
                               {spec}
                             </Badge>
                           ))}
@@ -217,12 +217,12 @@ export default function FavorisPage() {
                       </div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-white hover:bg-white/10">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleRemoveFavorite(artisan)} className="text-red-500">
+                        <DropdownMenuContent align="end" className="bg-[#0E261C] border-white/10 text-white">
+                          <DropdownMenuItem onClick={() => handleRemoveFavorite(artisan)} className="text-red-400 hover:bg-red-900/30 hover:text-red-300 focus:bg-red-900/30 focus:text-red-300">
                             <Trash2 className="h-4 w-4 mr-2" />
                             Retirer
                           </DropdownMenuItem>
@@ -234,14 +234,14 @@ export default function FavorisPage() {
 
                 <div className="flex items-center gap-2 mb-2">
                   <div className="flex items-center">
-                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <Star className="h-4 w-4 fill-[#FCDA89] text-[#FCDA89]" />
                     <span className="ml-1 text-sm font-medium">{artisan.rating}</span>
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-white/70">
                     ({artisan.reviews} avis)
                   </span>
-                  <Separator orientation="vertical" className="h-3" />
-                  <div className="flex items-center text-xs text-muted-foreground">
+                  <Separator orientation="vertical" className="h-3 bg-white/20" />
+                  <div className="flex items-center text-xs text-white/70">
                     <MapPin className="h-3 w-3 mr-1" />
                     <span>{artisan.location}</span>
                     {artisan.distance && (
@@ -250,26 +250,26 @@ export default function FavorisPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-muted-foreground mb-3 line-clamp-2">
+                <p className="text-xs text-white/70 mb-3 line-clamp-2">
                   {artisan.description}
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <Badge variant={artisan.disponible ? "default" : "outline"} className="text-xs">
+                  <Badge variant={artisan.disponible ? "default" : "outline"} className={artisan.disponible ? "bg-[#FCDA89] text-[#0E261C]" : "text-white/70 border-white/20"}>
                     {artisan.disponible ? "Disponible" : "Indisponible"}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-white/70">
                     Ajouté {artisan.favorisDepuis}
                   </span>
                 </div>
 
                 <div className="flex gap-2 mt-3">
-                  <Button size="sm" className="flex-1" asChild>
+                  <Button size="sm" className="flex-1 bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90" asChild>
                     <Link href={`/client/artisans/${artisan.id}`}>
                       Voir profil
                     </Link>
                   </Button>
-                  <Button size="sm" variant="outline" className="flex-1" asChild>
+                  <Button size="sm" variant="outline" className="flex-1 border-white/10 bg-white/5 hover:bg-white/10 text-white" asChild>
                     <Link href={`/client/messages?artisan=${artisan.id}`}>
                       <MessageSquare className="h-4 w-4 mr-1" />
                       Message
@@ -282,16 +282,16 @@ export default function FavorisPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center flex-1 text-center p-8">
-          <div className="bg-muted rounded-full p-3 mb-3">
-            <Heart className="h-6 w-6 text-muted-foreground" />
+          <div className="bg-white/10 rounded-full p-3 mb-3">
+            <Heart className="h-6 w-6 text-[#FCDA89]" />
           </div>
           <h3 className="text-lg font-medium mb-2">Aucun favori trouvé</h3>
-          <p className="text-muted-foreground text-sm max-w-md mb-6">
+          <p className="text-white/70 text-sm max-w-md mb-6">
             {searchTerm || categoryFilter !== "all"
               ? "Aucun artisan ne correspond à vos critères de recherche. Essayez de modifier vos filtres."
               : "Vous n'avez pas encore ajouté d'artisans à vos favoris. Parcourez notre annuaire pour trouver des professionnels."}
           </p>
-          <Button asChild>
+          <Button asChild className="bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90">
             <Link href="/client/artisans">
               Découvrir des artisans
             </Link>
@@ -301,18 +301,18 @@ export default function FavorisPage() {
 
       {/* Dialog de confirmation de suppression */}
       <Dialog open={showRemoveDialog} onOpenChange={setShowRemoveDialog}>
-        <DialogContent>
+        <DialogContent className="bg-[#0E261C] border-white/10 text-white">
           <DialogHeader>
             <DialogTitle>Retirer des favoris</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-white/70">
               Êtes-vous sûr de vouloir retirer {artisanToRemove?.name} de vos favoris ?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setShowRemoveDialog(false)}>
+            <Button variant="outline" onClick={() => setShowRemoveDialog(false)} className="border-white/10 bg-white/5 hover:bg-white/10 text-white">
               Annuler
             </Button>
-            <Button variant="destructive" onClick={confirmRemoveFavorite}>
+            <Button variant="destructive" onClick={confirmRemoveFavorite} className="bg-red-500 hover:bg-red-600 text-white">
               Retirer
             </Button>
           </DialogFooter>

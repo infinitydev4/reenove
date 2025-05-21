@@ -21,7 +21,7 @@ export function ClientMobileBottomNav() {
   ]
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:hidden z-20 bg-white dark:bg-black/95 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 p-2 backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90">
+    <div className="fixed bottom-4 left-4 right-4 md:hidden z-20 bg-[#0E261C]/95 rounded-xl shadow-lg border border-white/10 p-2 backdrop-blur-sm text-white">
       <div className="flex items-center justify-around">
         {navigation.map((item) => (
           <Link
@@ -29,13 +29,13 @@ export function ClientMobileBottomNav() {
             href={item.href}
             className={cn(
               "flex flex-col items-center justify-center p-1.5 rounded-lg transition-colors",
-              pathname === item.href ? "text-primary" : "text-muted-foreground"
+              pathname === item.href ? "text-[#FCDA89]" : "text-white/80 hover:text-white"
             )}
           >
             <div className="relative">
               <item.icon className="h-5 w-5 mb-1" />
               {item.count && (
-                <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
+                <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#FCDA89] text-[10px] font-bold text-[#0E261C]">
                   {item.count}
                 </span>
               )}

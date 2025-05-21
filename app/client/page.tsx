@@ -58,7 +58,7 @@ export default function ClientDashboardPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FCDA89]"></div>
       </div>
     )
   }
@@ -142,30 +142,30 @@ export default function ClientDashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-bold md:text-2xl">Bonjour, {session?.user?.name?.split(' ')[0] || "Client"}</h1>
-        <p className="text-muted-foreground text-sm">Voici un aperçu de vos projets et activités</p>
+        <p className="text-white/70 text-sm">Voici un aperçu de vos projets et activités</p>
       </div>
 
       {/* Actions rapides */}
       <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-        <Button variant="outline" className="flex flex-col h-auto py-3 px-2" asChild>
+        <Button variant="outline" className="flex flex-col h-auto py-3 px-2 border-white/10 bg-white/5 hover:bg-white/10 text-white" asChild>
           <Link href="/client/projets/create">
             <FileClock className="h-5 w-5 mb-1" />
             <span className="text-xs">Projet</span>
           </Link>
         </Button>
-        <Button variant="outline" className="flex flex-col h-auto py-3 px-2" asChild>
+        <Button variant="outline" className="flex flex-col h-auto py-3 px-2 border-white/10 bg-white/5 hover:bg-white/10 text-white" asChild>
           <Link href="/client/artisans">
             <Wrench className="h-5 w-5 mb-1" />
             <span className="text-xs">Artisans</span>
           </Link>
         </Button>
-        <Button variant="outline" className="flex flex-col h-auto py-3 px-2" asChild>
+        <Button variant="outline" className="flex flex-col h-auto py-3 px-2 border-white/10 bg-white/5 hover:bg-white/10 text-white" asChild>
           <Link href="/client/messages">
             <MessageSquare className="h-5 w-5 mb-1" />
             <span className="text-xs">Messages</span>
           </Link>
         </Button>
-        <Button variant="outline" className="flex flex-col h-auto py-3 px-2 hidden md:flex" asChild>
+        <Button variant="outline" className="flex flex-col h-auto py-3 px-2 border-white/10 bg-white/5 hover:bg-white/10 text-white hidden md:flex" asChild>
           <Link href="/client/favoris">
             <Heart className="h-5 w-5 mb-1" />
             <span className="text-xs">Favoris</span>
@@ -175,43 +175,43 @@ export default function ClientDashboardPage() {
 
       {/* Tabs pour le contenu principal */}
       <Tabs defaultValue="projets" className="w-full">
-        <TabsList className="w-full grid grid-cols-3 h-10 mb-4">
-          <TabsTrigger value="projets">Projets</TabsTrigger>
-          <TabsTrigger value="artisans">Artisans</TabsTrigger>
-          <TabsTrigger value="agenda">Agenda</TabsTrigger>
+        <TabsList className="w-full grid grid-cols-3 h-10 mb-4 bg-white/10 text-white">
+          <TabsTrigger value="projets" className="data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">Projets</TabsTrigger>
+          <TabsTrigger value="artisans" className="data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">Artisans</TabsTrigger>
+          <TabsTrigger value="agenda" className="data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">Agenda</TabsTrigger>
         </TabsList>
         
         <TabsContent value="projets" className="mt-0 space-y-4">
           {projects.map((project) => (
-            <Card key={project.id} className="overflow-hidden">
-              <div className="h-1 bg-blue-500"></div>
+            <Card key={project.id} className="overflow-hidden bg-white/5 border-white/10 text-white">
+              <div className="h-1 bg-[#FCDA89]"></div>
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-medium text-sm">{project.title}</h3>
-                    <p className="text-muted-foreground text-xs flex items-center gap-1">
+                    <p className="text-white/70 text-xs flex items-center gap-1">
                       <Wrench className="h-3 w-3" /> {project.artisan}
                     </p>
                   </div>
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800 text-xs">
+                  <Badge variant="outline" className="bg-[#FCDA89]/10 text-[#FCDA89] border-[#FCDA89]/30 text-xs">
                     {project.status}
                   </Badge>
                 </div>
                 
                 <div className="mb-3">
                   <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-muted-foreground">Progression</span>
+                    <span className="text-white/70">Progression</span>
                     <span className="font-medium">{project.progress}%</span>
                   </div>
-                  <Progress value={project.progress} className="h-1.5" />
+                  <Progress value={project.progress} className="h-1.5 bg-white/10" indicatorClassName="bg-[#FCDA89]" />
                 </div>
                 
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center">
-                    <Clock className="h-3 w-3 mr-1 text-muted-foreground" />
+                    <Clock className="h-3 w-3 mr-1 text-white/70" />
                     <span>{project.lastUpdate}</span>
                   </div>
-                  <Button size="sm" variant="ghost" asChild className="h-7 px-2">
+                  <Button size="sm" variant="ghost" asChild className="h-7 px-2 text-[#FCDA89] hover:text-[#FCDA89]/80 hover:bg-[#FCDA89]/10">
                     <Link href={`/client/projets/${project.id}`}>
                       Détails <ChevronRight className="h-3 w-3 ml-1" />
                     </Link>
@@ -221,7 +221,7 @@ export default function ClientDashboardPage() {
             </Card>
           ))}
           
-          <Button className="w-full flex items-center gap-2" variant="outline" asChild>
+          <Button className="w-full flex items-center gap-2 bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90" asChild>
             <Link href="/client/projets">
               <Plus className="h-4 w-4" />
               Voir tous les projets
@@ -232,31 +232,31 @@ export default function ClientDashboardPage() {
         <TabsContent value="artisans" className="mt-0 space-y-4">
           <div className="grid gap-4 md:grid-cols-3">
             {artisans.map((artisan) => (
-              <Card key={artisan.id} className="overflow-hidden">
+              <Card key={artisan.id} className="overflow-hidden bg-white/5 border-white/10 text-white">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3 mb-3">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={artisan.image} alt={artisan.name} />
-                      <AvatarFallback>{artisan.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback className="bg-[#FCDA89]/20">{artisan.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
                       <h3 className="font-medium text-sm">{artisan.name}</h3>
-                      <p className="text-muted-foreground text-xs">{artisan.specialty}</p>
+                      <p className="text-white/70 text-xs">{artisan.specialty}</p>
                     </div>
                   </div>
                   
                   <div className="flex items-center gap-1 mb-3">
                     <div className="flex items-center">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <Star className="h-4 w-4 fill-[#FCDA89] text-[#FCDA89]" />
                       <span className="ml-1 text-sm font-medium">{artisan.rating}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-white/70">
                       ({artisan.reviews} avis)
                     </span>
                   </div>
                   
                   <div className="flex justify-end">
-                    <Button size="sm" asChild>
+                    <Button size="sm" className="bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90" asChild>
                       <Link href={`/client/artisans/${artisan.id}`}>
                         Voir profil
                       </Link>
@@ -267,7 +267,7 @@ export default function ClientDashboardPage() {
             ))}
           </div>
           
-          <Button className="w-full flex items-center gap-2" variant="outline" asChild>
+          <Button className="w-full flex items-center gap-2 border-[#FCDA89] text-[#FCDA89] hover:bg-[#FCDA89]/10" variant="outline" asChild>
             <Link href="/client/artisans">
               <Plus className="h-4 w-4" />
               Voir tous les artisans
@@ -277,31 +277,31 @@ export default function ClientDashboardPage() {
         
         <TabsContent value="agenda" className="mt-0 space-y-4">
           {events.map((event) => (
-            <Card key={event.id} className="overflow-hidden">
-              <div className="h-1 bg-purple-500"></div>
+            <Card key={event.id} className="overflow-hidden bg-white/5 border-white/10 text-white">
+              <div className="h-1 bg-[#FCDA89]"></div>
               <CardContent className="p-4">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-medium text-sm">{event.title}</h3>
-                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800 text-xs">
+                  <Badge variant="outline" className="bg-[#FCDA89]/10 text-[#FCDA89] border-[#FCDA89]/30 text-xs">
                     {event.type === "meeting" ? "Rendez-vous" : "Livraison"}
                   </Badge>
                 </div>
                 
                 <div className="space-y-1.5 mb-3">
                   <p className="text-xs flex items-center gap-1">
-                    <Calendar className="h-3 w-3 text-muted-foreground" />
+                    <Calendar className="h-3 w-3 text-white/70" />
                     <span>{event.date}, {event.time}</span>
                   </p>
                 </div>
                 
                 <div className="flex justify-end">
-                  <Button size="sm" variant="outline">Détails</Button>
+                  <Button size="sm" variant="outline" className="border-white/10 bg-white/5 hover:bg-white/10 text-white">Détails</Button>
                 </div>
               </CardContent>
             </Card>
           ))}
           
-          <Button className="w-full flex items-center gap-2" variant="outline" asChild>
+          <Button className="w-full flex items-center gap-2 border-[#FCDA89] text-[#FCDA89] hover:bg-[#FCDA89]/10" variant="outline" asChild>
             <Link href="/client/agenda">
               <Plus className="h-4 w-4" />
               Voir l&apos;agenda complet
@@ -311,47 +311,47 @@ export default function ClientDashboardPage() {
       </Tabs>
 
       {/* Résumé */}
-      <Card>
+      <Card className="bg-white/5 border-white/10 text-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Résumé</CardTitle>
         </CardHeader>
         <CardContent className="pb-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="border shadow-sm overflow-hidden">
-              <div className="h-1 bg-blue-500"></div>
+            <Card className="border-white/10 shadow-sm overflow-hidden bg-white/5">
+              <div className="h-1 bg-[#FCDA89]"></div>
               <CardContent className="p-4 flex flex-col items-center justify-center">
-                <span className="text-4xl font-bold text-blue-600 dark:text-blue-400">{projects.length}</span>
-                <span className="text-xs text-muted-foreground mt-2 text-center">Projets en cours</span>
+                <span className="text-4xl font-bold text-[#FCDA89]">{projects.length}</span>
+                <span className="text-xs text-white/70 mt-2 text-center">Projets en cours</span>
               </CardContent>
             </Card>
 
-            <Card className="border shadow-sm overflow-hidden">
-              <div className="h-1 bg-amber-500"></div>
+            <Card className="border-white/10 shadow-sm overflow-hidden bg-white/5">
+              <div className="h-1 bg-[#FCDA89]"></div>
               <CardContent className="p-4 flex flex-col items-center justify-center">
-                <span className="text-4xl font-bold text-amber-600 dark:text-amber-400">3</span>
-                <span className="text-xs text-muted-foreground mt-2 text-center">Messages non lus</span>
+                <span className="text-4xl font-bold text-[#FCDA89]">3</span>
+                <span className="text-xs text-white/70 mt-2 text-center">Messages non lus</span>
               </CardContent>
             </Card>
 
-            <Card className="border shadow-sm overflow-hidden">
-              <div className="h-1 bg-purple-500"></div>
+            <Card className="border-white/10 shadow-sm overflow-hidden bg-white/5">
+              <div className="h-1 bg-[#FCDA89]"></div>
               <CardContent className="p-4 flex flex-col items-center justify-center">
-                <span className="text-4xl font-bold text-purple-600 dark:text-purple-400">{events.length}</span>
-                <span className="text-xs text-muted-foreground mt-2 text-center">Événements à venir</span>
+                <span className="text-4xl font-bold text-[#FCDA89]">{events.length}</span>
+                <span className="text-xs text-white/70 mt-2 text-center">Événements à venir</span>
               </CardContent>
             </Card>
 
-            <Card className="border shadow-sm overflow-hidden">
-              <div className="h-1 bg-green-500"></div>
+            <Card className="border-white/10 shadow-sm overflow-hidden bg-white/5">
+              <div className="h-1 bg-[#FCDA89]"></div>
               <CardContent className="p-4 flex flex-col items-center justify-center">
-                <span className="text-4xl font-bold text-green-600 dark:text-green-400">{artisans.length}</span>
-                <span className="text-xs text-muted-foreground mt-2 text-center">Artisans favoris</span>
+                <span className="text-4xl font-bold text-[#FCDA89]">{artisans.length}</span>
+                <span className="text-xs text-white/70 mt-2 text-center">Artisans favoris</span>
               </CardContent>
             </Card>
           </div>
         </CardContent>
         <CardFooter>
-          <Button size="sm" variant="outline" className="w-full" asChild>
+          <Button size="sm" className="w-full bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90" asChild>
             <Link href="/client/projets/new">
               <Plus className="h-4 w-4 mr-2" />
               Créer un nouveau projet
@@ -361,7 +361,7 @@ export default function ClientDashboardPage() {
       </Card>
 
       {/* Activité récente */}
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden bg-white/5 border-white/10 text-white">
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center gap-2">
             <Clock className="h-4 w-4" />
@@ -369,33 +369,33 @@ export default function ClientDashboardPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="divide-y">
-            <div className="p-4 hover:bg-muted/50 transition-colors">
+          <div className="divide-y divide-white/10">
+            <div className="p-4 hover:bg-white/5 transition-colors">
               <div className="flex gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FCDA89]/20 text-[#FCDA89]">
                   <MessageSquare className="h-4 w-4" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm">Nouveau message de <span className="font-medium">Martin Dupont</span></p>
-                  <p className="text-xs text-muted-foreground">Il y a 2 heures</p>
+                  <p className="text-xs text-white/70">Il y a 2 heures</p>
                 </div>
               </div>
             </div>
-            <div className="p-4 hover:bg-muted/50 transition-colors">
+            <div className="p-4 hover:bg-white/5 transition-colors">
               <div className="flex gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FCDA89]/20 text-[#FCDA89]">
                   <FileClock className="h-4 w-4" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm">Devis reçu pour <span className="font-medium">Peinture salon</span></p>
-                  <p className="text-xs text-muted-foreground">Hier</p>
+                  <p className="text-xs text-white/70">Hier</p>
                 </div>
               </div>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="p-3 border-t bg-muted/20">
-          <Button className="w-full" size="sm">
+        <CardFooter className="p-3 border-t border-white/10 bg-white/5">
+          <Button className="w-full bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90" size="sm">
             Voir toutes les activités
           </Button>
         </CardFooter>

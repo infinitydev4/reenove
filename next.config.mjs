@@ -19,6 +19,15 @@ const nextConfig = {
         hostname: '*.s3.eu-west-3.amazonaws.com',
       },
     ],
+    // Permettre les URLs data:image
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    // Les formats sont limités à avif et webp uniquement
+    formats: ['image/avif', 'image/webp'],
+    domains: ['localhost'],
+    // Activer cette option pour autoriser les data URLs en développement
+    unoptimized: process.env.NODE_ENV === 'development',
   },
   eslint: {
     // Ignorez les avertissements ESLint en production

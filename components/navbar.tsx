@@ -1,265 +1,269 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
-import { useSession, signOut } from "next-auth/react"
-import { ArrowRightCircle, User2, Inbox, UserCircle, HomeIcon, Wrench, LogOut, Settings, LayoutDashboard, ShieldQuestion, PlusCircle, Sun, Moon, Users } from "lucide-react"
-import { useTheme } from "next-themes"
-
+import Image from "next/image"
+import { Menu, User, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { usePathname } from "next/navigation"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { useSession, signOut } from "next-auth/react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Role } from "@/lib/generated/prisma"
 
 export default function Navbar() {
   const pathname = usePathname()
-  const router = useRouter()
   const { data: session, status } = useSession()
-  const { theme, setTheme } = useTheme()
+  const isAuthenticated = status === "authenticated"
+  const userRole = session?.user?.role as Role | undefined || ""
 
-  const getInitials = (name: string) => {
-    if (!name) return "U";
-    const names = name.split(" ");
-    return names.map((n) => n[0]).join("");
-  };
+  const isActive = (path: string) => {
+    return pathname === path
+  }
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
+  const getUserDashboardLink = () => {
+    switch(userRole) {
+      case "USER":
+        return "/client";
+      case "ARTISAN":
+        return "/artisan";
+      case "AGENT":
+        return "/agent";
+      case "ADMIN":
+        return "/admin";
+      default:
+        return "/dashboard";
+    }
+  }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Image
-              src="/logo.png"
-              alt="Reenove Logo"
-              width={140}
-              height={40}
-              className="h-6 w-auto object-contain block dark:hidden"
-            />
+    <header className="w-full py-4 border-b border-white/10 bg-[#0E261C]/95 backdrop-blur-md sticky top-0 z-40">
+      <div className="container flex items-center justify-between">
+        <Link href="/" className="flex items-center">
             <Image
               src="/logow.png"
-              alt="Reenove Logo"
+            alt="Renoveo Logo"
               width={140}
               height={40}
-              className="h-6 w-auto object-contain hidden dark:block"
-            />
+            className="h-8 w-auto"
+          />
+        </Link>
+
+        <nav className="hidden md:flex items-center space-x-1">
+          <Link
+            href="/"
+            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+              isActive("/")
+                ? "text-[#FCDA89] font-medium"
+                : "text-white/80 hover:text-[#FCDA89]"
+            }`}
+          >
+            Accueil
           </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            {/* <Link
+          <Link
+            href="/categories"
+            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+              isActive("/categories")
+                ? "text-[#FCDA89] font-medium"
+                : "text-white/80 hover:text-[#FCDA89]"
+            }`}
+          >
+            Catégories
+          </Link>
+          <Link
               href="/artisans"
-              className={`transition-colors hover:text-foreground/80 ${
-                pathname?.startsWith("/artisans")
-                  ? "text-foreground"
-                  : "text-foreground/60"
+            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+              isActive("/artisans")
+                ? "text-[#FCDA89] font-medium"
+                : "text-white/80 hover:text-[#FCDA89]"
               }`}
             >
               Artisans
             </Link>
             <Link
-              href="/projets"
-              className={`transition-colors hover:text-foreground/80 ${
-                pathname?.startsWith("/projets")
-                  ? "text-foreground"
-                  : "text-foreground/60"
-              }`}
-            >
-              Projets
-            </Link> */}
-            {/* Liens supplémentaires si nécessaire */}
+            href="/how-it-works"
+            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+              isActive("/how-it-works")
+                ? "text-[#FCDA89] font-medium"
+                : "text-white/80 hover:text-[#FCDA89]"
+            }`}
+          >
+            Comment ça marche
+          </Link>
+          <Link
+            href="/contact"
+            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+              isActive("/contact")
+                ? "text-[#FCDA89] font-medium"
+                : "text-white/80 hover:text-[#FCDA89]"
+            }`}
+          >
+            Contact
+          </Link>
           </nav>
-        </div>
 
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="md:hidden">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/logo.png"
-                alt="Reenove Logo"
-                width={110}
-                height={30}
-                className="h-5 w-auto object-contain block dark:hidden"
-              />
-              <Image
-                src="/logow.png"
-                alt="Reenove Logo"
-                width={110}
-                height={30}
-                className="h-5 w-auto object-contain hidden dark:block"
-              />
-            </Link>
-          </div>
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            {/* Recherche ou autre contenu */}
-          </div>
-          <nav className="flex items-center">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              aria-label="Changer de thème" 
-              onClick={toggleTheme}
-              className="mr-2"
-            >
-              {theme === "dark" ? (
-                <Sun className="h-[1.2rem] w-[1.2rem] text-yellow-400" />
-              ) : (
-                <Moon className="h-[1.2rem] w-[1.2rem] text-slate-700" />
-              )}
-              <span className="sr-only">Changer de thème</span>
-            </Button>
-
-            <Link href="/create-project/category">
-              <Button variant="outline" className="mr-2">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Publier un projet</span>
-                <span className="sm:hidden">Publier</span>
-              </Button>
-            </Link>
-            
-            {status === "authenticated" ? (
+        <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2">
+            {isAuthenticated ? (
+              // Menu utilisateur connecté
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10 gap-2">
+                    <User className="h-4 w-4" />
+                    {session?.user?.name || "Compte"}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="hover:bg-white/10 focus:bg-white/10 cursor-pointer">
+                    <Link href={getUserDashboardLink()} className="flex w-full">
+                      {userRole === "USER" ? "Espace Client" :
+                       userRole === "ARTISAN" ? "Espace Artisan" : 
+                       userRole === "AGENT" ? "Espace Agent" : 
+                       userRole === "ADMIN" ? "Espace Admin" : 
+                       "Mon Tableau de bord"}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-white/10 focus:bg-white/10 cursor-pointer">
+                    <Link href="/profile" className="flex w-full">Mon Profil</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    className="hover:bg-white/10 focus:bg-white/10 text-red-400 hover:text-red-300 cursor-pointer"
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Déconnexion
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              // Boutons pour les utilisateurs non connectés
               <>
-                {session?.user?.role === Role.USER && (
-                  <Button 
-                    variant="ghost" 
-                    className="mr-2"
-                    onClick={() => router.push("/client")}
-                  >
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span className="hidden md:inline">Espace Client</span>
+                <Button variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10" asChild>
+                  <Link href="/auth?tab=login">Connexion</Link>
+                </Button>
+                <Button className="bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90" asChild>
+                  <Link href="/register/role">Inscription</Link>
                   </Button>
+              </>
                 )}
+          </div>
                 
-                {session?.user?.role === Role.ARTISAN && (
+          <Sheet>
+            <SheetTrigger asChild>
                   <Button 
-                    variant="ghost" 
-                    className="mr-2"
-                    onClick={() => router.push("/artisan")}
-                  >
-                    <Wrench className="mr-2 h-4 w-4" />
-                    <span className="hidden md:inline">Espace Artisan</span>
+                variant="outline"
+                size="icon"
+                className="md:hidden border-white/20 bg-white/5 hover:bg-white/10 text-white"
+              >
+                <Menu className="h-5 w-5 text-white" />
+                <span className="sr-only">Menu</span>
                   </Button>
-                )}
+            </SheetTrigger>
+            <SheetContent className="bg-[#0E261C] border-white/10" side="right">
+              <nav className="flex flex-col gap-4 mt-8">
+                <Link
+                  href="/"
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    isActive("/")
+                      ? "text-[#FCDA89] font-medium bg-white/5"
+                      : "text-white/80 hover:text-[#FCDA89] hover:bg-white/5"
+                  }`}
+                >
+                  Accueil
+                </Link>
+                <Link
+                  href="/categories"
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    isActive("/categories")
+                      ? "text-[#FCDA89] font-medium bg-white/5"
+                      : "text-white/80 hover:text-[#FCDA89] hover:bg-white/5"
+                  }`}
+                >
+                  Catégories
+                </Link>
+                <Link
+                  href="/artisans"
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    isActive("/artisans")
+                      ? "text-[#FCDA89] font-medium bg-white/5"
+                      : "text-white/80 hover:text-[#FCDA89] hover:bg-white/5"
+                  }`}
+                >
+                  Artisans
+                </Link>
+                <Link
+                  href="/how-it-works"
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    isActive("/how-it-works")
+                      ? "text-[#FCDA89] font-medium bg-white/5"
+                      : "text-white/80 hover:text-[#FCDA89] hover:bg-white/5"
+                  }`}
+                >
+                  Comment ça marche
+                </Link>
+                <Link
+                  href="/contact"
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    isActive("/contact")
+                      ? "text-[#FCDA89] font-medium bg-white/5"
+                      : "text-white/80 hover:text-[#FCDA89] hover:bg-white/5"
+                  }`}
+                >
+                  Contact
+                </Link>
+                <hr className="border-white/10 my-2" />
                 
-                {session?.user?.role === Role.AGENT && (
-                  <Button 
-                    variant="ghost" 
-                    className="mr-2"
-                    onClick={() => router.push("/agent")}
-                  >
-                    <Users className="mr-2 h-4 w-4" />
-                    <span className="hidden md:inline">Espace Agent</span>
-                  </Button>
-                )}
-                
-                {session?.user?.role === Role.ADMIN && (
-                  <Button 
-                    variant="ghost" 
-                    className="mr-2"
-                    onClick={() => router.push("/admin")}
-                  >
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span className="hidden md:inline">Administration</span>
-                  </Button>
-                )}
-                
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="relative h-8 w-8 rounded-full"
+                {isAuthenticated ? (
+                  // Menu utilisateur connecté (version mobile)
+                  <>
+                    <Link
+                      href={getUserDashboardLink()}
+                      className="px-3 py-2 text-sm rounded-lg text-white/80 hover:text-[#FCDA89] hover:bg-white/5 transition-colors"
                     >
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage
-                          src={session?.user?.image || ""}
-                          alt={session?.user?.name || ""}
-                        />
-                        <AvatarFallback>
-                          {getInitials(session?.user?.name || "")}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Mon compte</DropdownMenuLabel>
-                    <DropdownMenuItem
-                      onClick={() => router.push("/profile")}
+                      {userRole === "USER" ? "Espace Client" :
+                       userRole === "ARTISAN" ? "Espace Artisan" : 
+                       userRole === "AGENT" ? "Espace Agent" : 
+                       userRole === "ADMIN" ? "Espace Admin" : 
+                       "Mon Tableau de bord"}
+                    </Link>
+                    <Link
+                      href="/profile"
+                      className="px-3 py-2 text-sm rounded-lg text-white/80 hover:text-[#FCDA89] hover:bg-white/5 transition-colors"
                     >
-                      <UserCircle className="mr-2 h-4 w-4" />
-                      <span>Profil</span>
-                    </DropdownMenuItem>
-                    
-                    {session?.user?.role === Role.USER && (
-                      <DropdownMenuItem
-                        onClick={() => router.push("/client")}
-                      >
-                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                        <span>Tableau de bord</span>
-                      </DropdownMenuItem>
-                    )}
-                    
-                    {session?.user?.role === Role.ARTISAN && (
-                      <DropdownMenuItem
-                        onClick={() => router.push("/artisan")}
-                      >
-                        <Wrench className="mr-2 h-4 w-4" />
-                        <span>Tableau de bord</span>
-                      </DropdownMenuItem>
-                    )}
-                    
-                    {session?.user?.role === Role.AGENT && (
-                      <DropdownMenuItem
-                        onClick={() => router.push("/agent")}
-                      >
-                        <Users className="mr-2 h-4 w-4" />
-                        <span>Tableau de bord</span>
-                      </DropdownMenuItem>
-                    )}
-                    
-                    {session?.user?.role === Role.ADMIN && (
-                      <DropdownMenuItem
-                        onClick={() => router.push("/admin")}
-                      >
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Administration</span>
-                      </DropdownMenuItem>
-                    )}
-                    
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => signOut()}
+                      Mon Profil
+                    </Link>
+                    <button
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors text-left"
                     >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Déconnexion</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <LogOut className="h-4 w-4" />
+                      Déconnexion
+                    </button>
               </>
             ) : (
-              <>
-                <Link href="/auth?tab=login">
-                  <Button variant="ghost">
-                    <User2 className="h-4 w-4" />
-                  </Button>
+                  // Liens pour les utilisateurs non connectés (version mobile)
+                  <>
+                    <Link
+                      href="/auth?tab=login"
+                      className="px-3 py-2 text-sm rounded-lg text-white/80 hover:text-[#FCDA89] hover:bg-white/5 transition-colors"
+                    >
+                      Connexion
+                    </Link>
+                    <Link
+                      href="/register/role"
+                      className="px-3 py-2 text-sm rounded-lg text-[#FCDA89] font-medium bg-white/5 hover:bg-white/10 transition-colors"
+                    >
+                      Inscription
                 </Link>
-                {/* <Link href="/register/role">
-                  <Button>
-                    <ArrowRightCircle className="mr-2 h-4 w-4" />
-                    <span>Inscription</span>
-                  </Button>
-                </Link> */}
               </>
             )}
           </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

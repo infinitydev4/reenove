@@ -148,6 +148,16 @@ export const PropertyType: {
 export type PropertyType = (typeof PropertyType)[keyof typeof PropertyType]
 
 
+export const PropertyCondition: {
+  NEW: 'NEW',
+  GOOD: 'GOOD',
+  OLD: 'OLD',
+  DEMOLISH: 'DEMOLISH'
+};
+
+export type PropertyCondition = (typeof PropertyCondition)[keyof typeof PropertyCondition]
+
+
 export const AccessibilityLevel: {
   EASY: 'EASY',
   MODERATE: 'MODERATE',
@@ -212,6 +222,10 @@ export const ProjectVisibility: typeof $Enums.ProjectVisibility
 export type PropertyType = $Enums.PropertyType
 
 export const PropertyType: typeof $Enums.PropertyType
+
+export type PropertyCondition = $Enums.PropertyCondition
+
+export const PropertyCondition: typeof $Enums.PropertyCondition
 
 export type AccessibilityLevel = $Enums.AccessibilityLevel
 
@@ -11253,11 +11267,15 @@ export namespace Prisma {
   export type ProjectAvgAggregateOutputType = {
     budget: number | null
     budgetMax: number | null
+    surface: number | null
+    floor: number | null
   }
 
   export type ProjectSumAggregateOutputType = {
     budget: number | null
     budgetMax: number | null
+    surface: number | null
+    floor: number | null
   }
 
   export type ProjectMinAggregateOutputType = {
@@ -11278,6 +11296,10 @@ export namespace Prisma {
     flexibleDates: boolean | null
     preferredTime: $Enums.PreferredTime | null
     propertyType: $Enums.PropertyType | null
+    surface: number | null
+    floor: number | null
+    hasElevator: boolean | null
+    condition: $Enums.PropertyCondition | null
     status: $Enums.ProjectStatus | null
     visibility: $Enums.ProjectVisibility | null
     userId: string | null
@@ -11306,6 +11328,10 @@ export namespace Prisma {
     flexibleDates: boolean | null
     preferredTime: $Enums.PreferredTime | null
     propertyType: $Enums.PropertyType | null
+    surface: number | null
+    floor: number | null
+    hasElevator: boolean | null
+    condition: $Enums.PropertyCondition | null
     status: $Enums.ProjectStatus | null
     visibility: $Enums.ProjectVisibility | null
     userId: string | null
@@ -11334,6 +11360,10 @@ export namespace Prisma {
     flexibleDates: number
     preferredTime: number
     propertyType: number
+    surface: number
+    floor: number
+    hasElevator: number
+    condition: number
     status: number
     visibility: number
     userId: number
@@ -11349,11 +11379,15 @@ export namespace Prisma {
   export type ProjectAvgAggregateInputType = {
     budget?: true
     budgetMax?: true
+    surface?: true
+    floor?: true
   }
 
   export type ProjectSumAggregateInputType = {
     budget?: true
     budgetMax?: true
+    surface?: true
+    floor?: true
   }
 
   export type ProjectMinAggregateInputType = {
@@ -11374,6 +11408,10 @@ export namespace Prisma {
     flexibleDates?: true
     preferredTime?: true
     propertyType?: true
+    surface?: true
+    floor?: true
+    hasElevator?: true
+    condition?: true
     status?: true
     visibility?: true
     userId?: true
@@ -11402,6 +11440,10 @@ export namespace Prisma {
     flexibleDates?: true
     preferredTime?: true
     propertyType?: true
+    surface?: true
+    floor?: true
+    hasElevator?: true
+    condition?: true
     status?: true
     visibility?: true
     userId?: true
@@ -11430,6 +11472,10 @@ export namespace Prisma {
     flexibleDates?: true
     preferredTime?: true
     propertyType?: true
+    surface?: true
+    floor?: true
+    hasElevator?: true
+    condition?: true
     status?: true
     visibility?: true
     userId?: true
@@ -11545,6 +11591,10 @@ export namespace Prisma {
     flexibleDates: boolean | null
     preferredTime: $Enums.PreferredTime | null
     propertyType: $Enums.PropertyType | null
+    surface: number | null
+    floor: number | null
+    hasElevator: boolean | null
+    condition: $Enums.PropertyCondition | null
     status: $Enums.ProjectStatus
     visibility: $Enums.ProjectVisibility
     userId: string
@@ -11592,6 +11642,10 @@ export namespace Prisma {
     flexibleDates?: boolean
     preferredTime?: boolean
     propertyType?: boolean
+    surface?: boolean
+    floor?: boolean
+    hasElevator?: boolean
+    condition?: boolean
     status?: boolean
     visibility?: boolean
     userId?: boolean
@@ -11629,6 +11683,10 @@ export namespace Prisma {
     flexibleDates?: boolean
     preferredTime?: boolean
     propertyType?: boolean
+    surface?: boolean
+    floor?: boolean
+    hasElevator?: boolean
+    condition?: boolean
     status?: boolean
     visibility?: boolean
     userId?: boolean
@@ -11660,6 +11718,10 @@ export namespace Prisma {
     flexibleDates?: boolean
     preferredTime?: boolean
     propertyType?: boolean
+    surface?: boolean
+    floor?: boolean
+    hasElevator?: boolean
+    condition?: boolean
     status?: boolean
     visibility?: boolean
     userId?: boolean
@@ -11691,6 +11753,10 @@ export namespace Prisma {
     flexibleDates?: boolean
     preferredTime?: boolean
     propertyType?: boolean
+    surface?: boolean
+    floor?: boolean
+    hasElevator?: boolean
+    condition?: boolean
     status?: boolean
     visibility?: boolean
     userId?: boolean
@@ -11701,7 +11767,7 @@ export namespace Prisma {
     completedAt?: boolean
   }
 
-  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "budget" | "budgetType" | "budgetMax" | "location" | "postalCode" | "city" | "region" | "accessibility" | "startDate" | "endDate" | "urgencyLevel" | "flexibleDates" | "preferredTime" | "propertyType" | "status" | "visibility" | "userId" | "categoryId" | "serviceId" | "createdAt" | "updatedAt" | "completedAt", ExtArgs["result"]["project"]>
+  export type ProjectOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "budget" | "budgetType" | "budgetMax" | "location" | "postalCode" | "city" | "region" | "accessibility" | "startDate" | "endDate" | "urgencyLevel" | "flexibleDates" | "preferredTime" | "propertyType" | "surface" | "floor" | "hasElevator" | "condition" | "status" | "visibility" | "userId" | "categoryId" | "serviceId" | "createdAt" | "updatedAt" | "completedAt", ExtArgs["result"]["project"]>
   export type ProjectInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     category?: boolean | CategoryDefaultArgs<ExtArgs>
@@ -11754,6 +11820,10 @@ export namespace Prisma {
       flexibleDates: boolean | null
       preferredTime: $Enums.PreferredTime | null
       propertyType: $Enums.PropertyType | null
+      surface: number | null
+      floor: number | null
+      hasElevator: boolean | null
+      condition: $Enums.PropertyCondition | null
       status: $Enums.ProjectStatus
       visibility: $Enums.ProjectVisibility
       userId: string
@@ -12210,6 +12280,10 @@ export namespace Prisma {
     readonly flexibleDates: FieldRef<"Project", 'Boolean'>
     readonly preferredTime: FieldRef<"Project", 'PreferredTime'>
     readonly propertyType: FieldRef<"Project", 'PropertyType'>
+    readonly surface: FieldRef<"Project", 'Float'>
+    readonly floor: FieldRef<"Project", 'Int'>
+    readonly hasElevator: FieldRef<"Project", 'Boolean'>
+    readonly condition: FieldRef<"Project", 'PropertyCondition'>
     readonly status: FieldRef<"Project", 'ProjectStatus'>
     readonly visibility: FieldRef<"Project", 'ProjectVisibility'>
     readonly userId: FieldRef<"Project", 'String'>
@@ -23976,6 +24050,10 @@ export namespace Prisma {
     flexibleDates: 'flexibleDates',
     preferredTime: 'preferredTime',
     propertyType: 'propertyType',
+    surface: 'surface',
+    floor: 'floor',
+    hasElevator: 'hasElevator',
+    condition: 'condition',
     status: 'status',
     visibility: 'visibility',
     userId: 'userId',
@@ -24328,6 +24406,20 @@ export namespace Prisma {
    * Reference to a field of type 'PropertyType[]'
    */
   export type ListEnumPropertyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PropertyType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PropertyCondition'
+   */
+  export type EnumPropertyConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PropertyCondition'>
+    
+
+
+  /**
+   * Reference to a field of type 'PropertyCondition[]'
+   */
+  export type ListEnumPropertyConditionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PropertyCondition[]'>
     
 
 
@@ -24999,6 +25091,10 @@ export namespace Prisma {
     flexibleDates?: BoolNullableFilter<"Project"> | boolean | null
     preferredTime?: EnumPreferredTimeNullableFilter<"Project"> | $Enums.PreferredTime | null
     propertyType?: EnumPropertyTypeNullableFilter<"Project"> | $Enums.PropertyType | null
+    surface?: FloatNullableFilter<"Project"> | number | null
+    floor?: IntNullableFilter<"Project"> | number | null
+    hasElevator?: BoolNullableFilter<"Project"> | boolean | null
+    condition?: EnumPropertyConditionNullableFilter<"Project"> | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFilter<"Project"> | $Enums.ProjectVisibility
     userId?: StringFilter<"Project"> | string
@@ -25035,6 +25131,10 @@ export namespace Prisma {
     flexibleDates?: SortOrderInput | SortOrder
     preferredTime?: SortOrderInput | SortOrder
     propertyType?: SortOrderInput | SortOrder
+    surface?: SortOrderInput | SortOrder
+    floor?: SortOrderInput | SortOrder
+    hasElevator?: SortOrderInput | SortOrder
+    condition?: SortOrderInput | SortOrder
     status?: SortOrder
     visibility?: SortOrder
     userId?: SortOrder
@@ -25074,6 +25174,10 @@ export namespace Prisma {
     flexibleDates?: BoolNullableFilter<"Project"> | boolean | null
     preferredTime?: EnumPreferredTimeNullableFilter<"Project"> | $Enums.PreferredTime | null
     propertyType?: EnumPropertyTypeNullableFilter<"Project"> | $Enums.PropertyType | null
+    surface?: FloatNullableFilter<"Project"> | number | null
+    floor?: IntNullableFilter<"Project"> | number | null
+    hasElevator?: BoolNullableFilter<"Project"> | boolean | null
+    condition?: EnumPropertyConditionNullableFilter<"Project"> | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFilter<"Project"> | $Enums.ProjectVisibility
     userId?: StringFilter<"Project"> | string
@@ -25110,6 +25214,10 @@ export namespace Prisma {
     flexibleDates?: SortOrderInput | SortOrder
     preferredTime?: SortOrderInput | SortOrder
     propertyType?: SortOrderInput | SortOrder
+    surface?: SortOrderInput | SortOrder
+    floor?: SortOrderInput | SortOrder
+    hasElevator?: SortOrderInput | SortOrder
+    condition?: SortOrderInput | SortOrder
     status?: SortOrder
     visibility?: SortOrder
     userId?: SortOrder
@@ -25146,6 +25254,10 @@ export namespace Prisma {
     flexibleDates?: BoolNullableWithAggregatesFilter<"Project"> | boolean | null
     preferredTime?: EnumPreferredTimeNullableWithAggregatesFilter<"Project"> | $Enums.PreferredTime | null
     propertyType?: EnumPropertyTypeNullableWithAggregatesFilter<"Project"> | $Enums.PropertyType | null
+    surface?: FloatNullableWithAggregatesFilter<"Project"> | number | null
+    floor?: IntNullableWithAggregatesFilter<"Project"> | number | null
+    hasElevator?: BoolNullableWithAggregatesFilter<"Project"> | boolean | null
+    condition?: EnumPropertyConditionNullableWithAggregatesFilter<"Project"> | $Enums.PropertyCondition | null
     status?: EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityWithAggregatesFilter<"Project"> | $Enums.ProjectVisibility
     userId?: StringWithAggregatesFilter<"Project"> | string
@@ -26549,6 +26661,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -26582,6 +26698,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -26615,6 +26735,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26648,6 +26772,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -26681,6 +26809,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -26709,6 +26841,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -26734,6 +26870,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -28212,6 +28352,13 @@ export namespace Prisma {
     not?: NestedEnumPropertyTypeNullableFilter<$PrismaModel> | $Enums.PropertyType | null
   }
 
+  export type EnumPropertyConditionNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.PropertyCondition | EnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PropertyCondition[] | ListEnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PropertyCondition[] | ListEnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPropertyConditionNullableFilter<$PrismaModel> | $Enums.PropertyCondition | null
+  }
+
   export type EnumProjectStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
@@ -28274,6 +28421,10 @@ export namespace Prisma {
     flexibleDates?: SortOrder
     preferredTime?: SortOrder
     propertyType?: SortOrder
+    surface?: SortOrder
+    floor?: SortOrder
+    hasElevator?: SortOrder
+    condition?: SortOrder
     status?: SortOrder
     visibility?: SortOrder
     userId?: SortOrder
@@ -28287,6 +28438,8 @@ export namespace Prisma {
   export type ProjectAvgOrderByAggregateInput = {
     budget?: SortOrder
     budgetMax?: SortOrder
+    surface?: SortOrder
+    floor?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
@@ -28307,6 +28460,10 @@ export namespace Prisma {
     flexibleDates?: SortOrder
     preferredTime?: SortOrder
     propertyType?: SortOrder
+    surface?: SortOrder
+    floor?: SortOrder
+    hasElevator?: SortOrder
+    condition?: SortOrder
     status?: SortOrder
     visibility?: SortOrder
     userId?: SortOrder
@@ -28335,6 +28492,10 @@ export namespace Prisma {
     flexibleDates?: SortOrder
     preferredTime?: SortOrder
     propertyType?: SortOrder
+    surface?: SortOrder
+    floor?: SortOrder
+    hasElevator?: SortOrder
+    condition?: SortOrder
     status?: SortOrder
     visibility?: SortOrder
     userId?: SortOrder
@@ -28348,6 +28509,8 @@ export namespace Prisma {
   export type ProjectSumOrderByAggregateInput = {
     budget?: SortOrder
     budgetMax?: SortOrder
+    surface?: SortOrder
+    floor?: SortOrder
   }
 
   export type EnumAccessibilityLevelNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -28396,6 +28559,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumPropertyTypeNullableFilter<$PrismaModel>
     _max?: NestedEnumPropertyTypeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumPropertyConditionNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PropertyCondition | EnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PropertyCondition[] | ListEnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PropertyCondition[] | ListEnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPropertyConditionNullableWithAggregatesFilter<$PrismaModel> | $Enums.PropertyCondition | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumPropertyConditionNullableFilter<$PrismaModel>
+    _max?: NestedEnumPropertyConditionNullableFilter<$PrismaModel>
   }
 
   export type EnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -29765,6 +29938,10 @@ export namespace Prisma {
     set?: $Enums.PropertyType | null
   }
 
+  export type NullableEnumPropertyConditionFieldUpdateOperationsInput = {
+    set?: $Enums.PropertyCondition | null
+  }
+
   export type EnumProjectStatusFieldUpdateOperationsInput = {
     set?: $Enums.ProjectStatus
   }
@@ -30456,6 +30633,13 @@ export namespace Prisma {
     not?: NestedEnumPropertyTypeNullableFilter<$PrismaModel> | $Enums.PropertyType | null
   }
 
+  export type NestedEnumPropertyConditionNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.PropertyCondition | EnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PropertyCondition[] | ListEnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PropertyCondition[] | ListEnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPropertyConditionNullableFilter<$PrismaModel> | $Enums.PropertyCondition | null
+  }
+
   export type NestedEnumProjectStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ProjectStatus | EnumProjectStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ProjectStatus[] | ListEnumProjectStatusFieldRefInput<$PrismaModel>
@@ -30516,6 +30700,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumPropertyTypeNullableFilter<$PrismaModel>
     _max?: NestedEnumPropertyTypeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPropertyConditionNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PropertyCondition | EnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PropertyCondition[] | ListEnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PropertyCondition[] | ListEnumPropertyConditionFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPropertyConditionNullableWithAggregatesFilter<$PrismaModel> | $Enums.PropertyCondition | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumPropertyConditionNullableFilter<$PrismaModel>
+    _max?: NestedEnumPropertyConditionNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -30655,6 +30849,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -30687,6 +30885,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     categoryId: string
@@ -31053,6 +31255,10 @@ export namespace Prisma {
     flexibleDates?: BoolNullableFilter<"Project"> | boolean | null
     preferredTime?: EnumPreferredTimeNullableFilter<"Project"> | $Enums.PreferredTime | null
     propertyType?: EnumPropertyTypeNullableFilter<"Project"> | $Enums.PropertyType | null
+    surface?: FloatNullableFilter<"Project"> | number | null
+    floor?: IntNullableFilter<"Project"> | number | null
+    hasElevator?: BoolNullableFilter<"Project"> | boolean | null
+    condition?: EnumPropertyConditionNullableFilter<"Project"> | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFilter<"Project"> | $Enums.ProjectVisibility
     userId?: StringFilter<"Project"> | string
@@ -31912,6 +32118,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -31944,6 +32154,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -32065,6 +32279,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -32097,6 +32315,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -32767,6 +32989,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -32799,6 +33025,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -32847,6 +33077,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32879,6 +33113,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -32911,6 +33149,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -32943,6 +33185,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -32991,6 +33237,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33023,6 +33273,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -33055,6 +33309,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -33087,6 +33345,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -33135,6 +33397,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33167,6 +33433,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -33199,6 +33469,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -33231,6 +33505,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -33419,6 +33697,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33451,6 +33733,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -33721,6 +34007,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     createdAt?: Date | string
@@ -33753,6 +34043,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -33858,6 +34152,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33890,6 +34188,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -34365,6 +34667,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     categoryId: string
@@ -34521,6 +34827,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34553,6 +34863,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     categoryId?: StringFieldUpdateOperationsInput | string
@@ -34585,6 +34899,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     categoryId?: StringFieldUpdateOperationsInput | string
@@ -34863,6 +35181,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -34930,6 +35252,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -34962,6 +35288,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -34994,6 +35324,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -35021,6 +35355,10 @@ export namespace Prisma {
     flexibleDates?: boolean | null
     preferredTime?: $Enums.PreferredTime | null
     propertyType?: $Enums.PropertyType | null
+    surface?: number | null
+    floor?: number | null
+    hasElevator?: boolean | null
+    condition?: $Enums.PropertyCondition | null
     status?: $Enums.ProjectStatus
     visibility?: $Enums.ProjectVisibility
     userId: string
@@ -35055,6 +35393,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35087,6 +35429,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string
@@ -35119,6 +35465,10 @@ export namespace Prisma {
     flexibleDates?: NullableBoolFieldUpdateOperationsInput | boolean | null
     preferredTime?: NullableEnumPreferredTimeFieldUpdateOperationsInput | $Enums.PreferredTime | null
     propertyType?: NullableEnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType | null
+    surface?: NullableFloatFieldUpdateOperationsInput | number | null
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    condition?: NullableEnumPropertyConditionFieldUpdateOperationsInput | $Enums.PropertyCondition | null
     status?: EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
     visibility?: EnumProjectVisibilityFieldUpdateOperationsInput | $Enums.ProjectVisibility
     userId?: StringFieldUpdateOperationsInput | string

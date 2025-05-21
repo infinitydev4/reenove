@@ -1,8 +1,8 @@
-import Link from "next/link"
 import Image from "next/image"
+import Link from "next/link"
 import { MapPin, Star } from "lucide-react"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface ArtisanCardProps {
   name: string
@@ -11,45 +11,54 @@ interface ArtisanCardProps {
   reviews: number
   image: string
   location: string
+  className?: string
 }
 
-export default function ArtisanCard({ name, profession, rating, reviews, image, location }: ArtisanCardProps) {
+export default function ArtisanCard({
+  name,
+  profession,
+  rating,
+  reviews,
+  image,
+  location,
+  className
+}: ArtisanCardProps) {
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-lg">
-      <div className="aspect-square relative">
+    <div className={cn(
+      "relative group bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden transition-all hover:shadow-xl hover:shadow-[#FCDA89]/5",
+      className
+    )}>
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0E261C] via-transparent to-transparent opacity-70"></div>
+      
+      <div className="relative aspect-[3/4] overflow-hidden">
         <Image
-          src={image || "/placeholder.svg"}
+          src={image}
           alt={name}
-          className="object-cover"
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
-      <CardContent className="p-4">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-bold text-lg">{name}</h3>
-            <p className="text-gray-500">{profession}</p>
-          </div>
-          <div className="flex items-center gap-1 bg-yellow-100 px-2 py-1 rounded-full">
-            <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
-            <span className="text-sm text-yellow-500 font-medium">{rating}</span>
+      
+      <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-[#0E261C] to-transparent">
+        <div className="flex items-center text-white/80 text-sm mb-2">
+          <MapPin className="h-4 w-4 mr-1 text-[#FCDA89]" />
+          <span>{location}</span>
+          <div className="ml-auto flex items-center">
+            <Star className="h-4 w-4 mr-1 text-[#FCDA89] fill-[#FCDA89]" />
+            <span>{rating}</span>
+            <span className="ml-1 text-white/60">({reviews})</span>
           </div>
         </div>
-        <div className="flex items-center mt-2 text-sm text-gray-500">
-          <MapPin className="h-3.5 w-3.5 mr-1" />
-          {location}
-        </div>
-        <p className="text-sm text-gray-500 mt-1">{reviews} avis</p>
-      </CardContent>
-      <CardFooter className="p-4 pt-0 flex gap-2">
-        <Button variant="outline" className="w-full" asChild>
-          <Link href={`/artisans/${name.toLowerCase().replace(/\s+/g, "-")}`}>Profil</Link>
+        
+        <h3 className="text-xl font-bold text-white mb-1">{name}</h3>
+        <p className="text-[#FCDA89] font-medium mb-4">{profession}</p>
+        
+        <Button variant="gold" size="sm" className="w-full rounded-lg" asChild>
+          <Link href={`/artisans/${name.toLowerCase().replace(/\s+/g, "-")}`}>
+            Voir le profil
+          </Link>
         </Button>
-        <Button className="w-full" asChild>
-          <Link href={`/contact/${name.toLowerCase().replace(/\s+/g, "-")}`}>Contacter</Link>
-        </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   )
 }
