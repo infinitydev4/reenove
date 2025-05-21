@@ -63,7 +63,7 @@ export default function FaqSection() {
   ]
 
   return (
-    <section className="w-full py-20 bg-[#0E261C]">
+    <section id="faq" className="w-full py-20 bg-[#0E261C]">
       <div className="container px-4 md:px-6 mx-auto">
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center gap-2 px-4 py-1 mb-4 rounded-full bg-[#FCDA89]/20 border border-[#FCDA89]/30">

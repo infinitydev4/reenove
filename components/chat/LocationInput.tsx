@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, MapPin } from "lucide-react"
+import { CheckCircle2 } from "lucide-react"
 import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
 
 interface LocationInputProps {
@@ -32,25 +32,10 @@ export default function LocationInput({
 }: LocationInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [addressSelected, setAddressSelected] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
 
-  // Détecter si l'appareil est mobile
+  // Style global pour forcer l'affichage de l'autocomplétion au-dessus du champ et du libellé
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || /Mobi|Android/i.test(navigator.userAgent))
-    }
-    
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    
-    return () => {
-      window.removeEventListener('resize', checkMobile)
-    }
-  }, [])
-
-  // Style global pour forcer l'affichage de l'autocomplétion
-  useEffect(() => {
-    // Injecter un style global pour positionner la liste de suggestions
+    // Injecter un style global pour positionner la liste de suggestions au-dessus
     const styleElement = document.createElement('style')
     styleElement.textContent = `
       .pac-container {
@@ -65,7 +50,7 @@ export default function LocationInput({
     return () => {
       document.head.removeChild(styleElement)
     }
-  }, [isMobile])
+  }, [])
 
   // Initialiser l'autocomplétion Google Maps
   useEffect(() => {
@@ -73,21 +58,11 @@ export default function LocationInput({
       return
     }
 
-    const autocompleteOptions = {
+    const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
       componentRestrictions: { country: "fr" },
       types: ["address"],
       fields: ["address_components", "formatted_address", "geometry"]
-    }
-
-    const autocomplete = new google.maps.places.Autocomplete(inputRef.current, autocompleteOptions)
-    
-    // Optimisations pour mobile
-    if (isMobile) {
-      // Certaines optimisations pour mobile
-      autocomplete.setOptions({
-        strictBounds: false
-      })
-    }
+    })
 
     // Écouter les événements de changement de place
     const listener = autocomplete.addListener("place_changed", () => {
@@ -113,11 +88,6 @@ export default function LocationInput({
         })
       }
       
-      // Masquer le clavier sur mobile après la sélection
-      if (isMobile && inputRef.current) {
-        inputRef.current.blur()
-      }
-      
       // Mettre à jour les états
       onLocationUpdate(newAddress, newCity, newPostalCode)
       setAddressSelected(true)
@@ -127,7 +97,7 @@ export default function LocationInput({
     return () => {
       google.maps.event.removeListener(listener)
     }
-  }, [address, city, postalCode, onLocationUpdate, isMobile])
+  }, [address, city, postalCode, onLocationUpdate])
 
   const isConfirmButtonDisabled = !showMap || !addressSelected
 
@@ -143,15 +113,8 @@ export default function LocationInput({
               value={address}
               onChange={(e) => onAddressChange(e.target.value)}
               placeholder="Saisissez votre adresse"
-              className="bg-muted/30 border-muted w-full pl-10"
-              autoComplete="street-address"
-              type="text"
-              inputMode="text"
+              className="bg-muted/30 border-muted w-full"
             />
-            
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none">
-              <MapPin className="h-4 w-4" />
-            </div>
             
             {addressSelected && (
               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-green-500">
@@ -172,7 +135,6 @@ export default function LocationInput({
                   value={city}
                   onChange={(e) => onCityChange(e.target.value)}
                   className="bg-muted/30 border-muted"
-                  autoComplete="address-level2"
                 />
               </div>
               
@@ -188,8 +150,6 @@ export default function LocationInput({
                     onPostalCodeChange(value)
                   }}
                   className="bg-muted/30 border-muted"
-                  autoComplete="postal-code"
-                  inputMode="numeric"
                 />
               </div>
             </div>

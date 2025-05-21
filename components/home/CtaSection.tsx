@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button"
 export default function CtaSection() {
   return (
     <section 
-      className="w-full py-20 bg-[#0E261C] relative overflow-hidden" 
       id="publier-projet"
+      className="w-full py-20 bg-[#0E261C] relative overflow-hidden" 
       aria-labelledby="cta-heading"
     >
       {/* Background patterns */}

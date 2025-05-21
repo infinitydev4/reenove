@@ -5,7 +5,7 @@ import ArtisanCard from "@/components/artisan-card"
 
 export default function ArtisansSection() {
   return (
-    <section className="w-full py-20 bg-[#0E261C]/90">
+    <section id="artisans" className="w-full py-20 bg-[#0E261C]/90">
       <div className="container px-4 md:px-6 mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-white mb-3">Artisans à la une</h2>

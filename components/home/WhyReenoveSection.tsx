@@ -3,7 +3,7 @@ import { Bot, Shield, Clock, Star } from "lucide-react"
 
 export default function WhyReenoveSection() {
   return (
-    <section className="w-full py-20 bg-[#0E261C] relative overflow-hidden">
+    <section id="why-reenove" className="w-full py-20 bg-[#0E261C] relative overflow-hidden">
       <div className="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-r from-[#FCDA89]/5 to-transparent opacity-50"></div>
       <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-gradient-to-t from-[#FCDA89]/5 to-transparent opacity-30"></div>
       

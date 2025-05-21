@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 
 export default function ServicesSection() {
   return (
-    <section className="w-full py-20 bg-[#0E261C]">
+    <section id="services" className="w-full py-20 bg-[#0E261C]">
       <div className="container px-4 md:px-6 mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-white mb-3">Nos Services Premium</h2>

@@ -25,7 +25,7 @@ export default function HeroSection() {
   }, [])
 
   return (
-    <section className="relative w-full h-[90vh] overflow-hidden">
+    <section id="hero" className="relative w-full h-[90vh] overflow-hidden">
       {/* Image de fond assombrie sur les côtés */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -59,7 +59,7 @@ export default function HeroSection() {
               </Link>
             </Button>
             <Button variant="outline" className="border-white/20 bg-white/10 hover:bg-white/20 text-white px-6 py-6 text-lg rounded-xl" asChild>
-              <Link href="/artisans">
+              <Link href="#artisans">
                 Voir les artisans
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>

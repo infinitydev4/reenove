@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home, Search, PlusCircle, MessageSquare, User } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { Home, Search, PlusCircle, MessageSquare, Info } from "lucide-react"
 
 export default function BottomNavbar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const isHomePage = pathname === "/"
   
   // Pour éviter les erreurs d'hydratation, on n'affiche rien côté serveur
   useEffect(() => {
@@ -20,6 +22,23 @@ export default function BottomNavbar() {
   const isActive = (path: string) => {
     return pathname === path
   }
+
+  // Fonction qui gère le scroll vers les sections
+  const scrollToSection = (sectionId: string) => {
+    // Si nous ne sommes pas sur la page d'accueil, naviguer d'abord vers la page d'accueil
+    if (!isHomePage) {
+      router.push(`/#${sectionId}`);
+      return;
+    }
+
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  };
 
   return (
     <div className="fixed bottom-0 left-0 z-40 w-full h-16 bg-[#0E261C] border-t border-white/10 md:hidden">
@@ -39,25 +58,21 @@ export default function BottomNavbar() {
             Accueil
           </span>
         </Link>
-        
-        <Link
-          href="/search"
+        <button
+          onClick={() => scrollToSection("services")}
           className="flex flex-col items-center justify-center"
         >
           <div
-            className={`inline-flex items-center justify-center w-10 h-10 rounded-lg ${
-              isActive("/search") ? "bg-white/10 text-[#FCDA89]" : "text-white/70 hover:text-white"
-            }`}
+            className={`inline-flex items-center justify-center w-10 h-10 rounded-lg text-white/70 hover:text-white`}
           >
-            <Search className="w-5 h-5" />
+            <MessageSquare className="w-5 h-5" />
           </div>
-          <span className={`text-xs mt-1 ${isActive("/search") ? "text-[#FCDA89]" : "text-white/70"}`}>
-            Recherche
+          <span className="text-xs mt-1 text-white/70">
+            Services
           </span>
-        </Link>
-        
+        </button>
         <Link
-          href="/create-project"
+          href="/create-project-ai"
           className="flex flex-col items-center justify-center"
         >
           <div className="inline-flex items-center justify-center w-12 h-12 bg-[#FCDA89] rounded-full -mt-5 border-4 border-[#0E261C]">
@@ -67,38 +82,32 @@ export default function BottomNavbar() {
             Projet
           </span>
         </Link>
-        
-        <Link
-          href="/messages"
+        <button
+          onClick={() => scrollToSection("categories")}
           className="flex flex-col items-center justify-center"
         >
           <div
-            className={`inline-flex items-center justify-center w-10 h-10 rounded-lg ${
-              isActive("/messages") ? "bg-white/10 text-[#FCDA89]" : "text-white/70 hover:text-white"
-            }`}
+            className={`inline-flex items-center justify-center w-10 h-10 rounded-lg text-white/70 hover:text-white`}
           >
-            <MessageSquare className="w-5 h-5" />
+            <Search className="w-5 h-5" />
           </div>
-          <span className={`text-xs mt-1 ${isActive("/messages") ? "text-[#FCDA89]" : "text-white/70"}`}>
-            Messages
+          <span className="text-xs mt-1 text-white/70">
+            Catégories
           </span>
-        </Link>
-        
-          <Link
-          href="/profile"
+        </button>
+        <button
+          onClick={() => scrollToSection("why-reenove")}
           className="flex flex-col items-center justify-center"
         >
           <div
-            className={`inline-flex items-center justify-center w-10 h-10 rounded-lg ${
-              isActive("/profile") ? "bg-white/10 text-[#FCDA89]" : "text-white/70 hover:text-white"
-            }`}
+            className={`inline-flex items-center justify-center w-10 h-10 rounded-lg text-white/70 hover:text-white`}
           >
-            <User className="w-5 h-5" />
-            </div>
-          <span className={`text-xs mt-1 ${isActive("/profile") ? "text-[#FCDA89]" : "text-white/70"}`}>
-            Profil
+            <Info className="w-5 h-5" />
+          </div>
+          <span className="text-xs mt-1 text-white/70">
+            À propos
           </span>
-          </Link>
+        </button>
       </div>
     </div>
   )
