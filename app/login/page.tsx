@@ -174,7 +174,7 @@ export default function LoginPage() {
               
               <Button 
                 variant="outline" 
-                className="w-full border-white/20 text-white hover:bg-white/10 rounded-xl flex items-center justify-center"
+                className="w-full border-white/20 text-[#0E261C] hover:bg-white/10 hover:text-white rounded-xl flex items-center justify-center"
                 asChild
               >
                 <Link href="/register/role">
