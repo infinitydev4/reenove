@@ -72,10 +72,10 @@ export function CookieBanner() {
 
   if (!showBanner && hasConsented()) {
     return (
-      <div className="fixed bottom-8 right-8 z-50">
+      <div className="fixed bottom-24 right-2 z-50">
         <button 
           onClick={() => setShowSettings(true)} 
-          className="bg-[#0E261C] text-white p-3 rounded-full shadow-lg hover:bg-[#0E261C]/90 transition-colors"
+          className="bg-[#FCDA89] text-white p-3 rounded-full shadow-lg hover:bg-[#FCDA89]/10 transition-colors"
           aria-label="Paramètres des cookies"
         >
           <Settings className="h-5 w-5" />

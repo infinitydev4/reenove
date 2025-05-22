@@ -12,6 +12,7 @@ import WhyReenoveSection from "@/components/home/WhyReenoveSection"
 import HowItWorksSection from "@/components/home/HowItWorksSection"
 import FaqSection from "@/components/home/FaqSection"
 import CtaSection from "@/components/home/CtaSection"
+import { CookieBanner } from "@/components/CookieBanner"
 
 export const metadata: Metadata = {
   title: "Reenove | Trouvez l'artisan idéal pour vos projets de rénovation",
@@ -48,6 +49,7 @@ export default function Home() {
       <CtaSection />
       
       <Footer />
+      <CookieBanner />
       <BottomNavbar />
     </div>
   )

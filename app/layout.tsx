@@ -71,7 +71,6 @@ export default function RootLayout({
             <main className="flex-1 flex flex-col relative h-full w-full">
               {children}
             </main>
-            <CookieBanner />
           </AuthProvider>
           </ThemeProvider>
       </body>

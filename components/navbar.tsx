@@ -142,7 +142,7 @@ export default function Navbar() {
           >
             Contact
           </Link>
-        </nav>
+          </nav>
 
         <div className="flex items-center gap-2">
           <div className="hidden md:flex items-center gap-2">
