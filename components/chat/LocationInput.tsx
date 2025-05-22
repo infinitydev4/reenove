@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, Info } from "lucide-react"
 import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
 
 interface LocationInputProps {
@@ -32,6 +32,15 @@ export default function LocationInput({
 }: LocationInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [addressSelected, setAddressSelected] = useState(false)
+  const [manualEntry, setManualEntry] = useState(false)
+
+  // Vérifier si les champs sont valides
+  const isAddressValid = address.trim().length > 0
+  const isCityValid = city.trim().length > 0
+  const isPostalCodeValid = postalCode.trim().length === 5 && /^\d{5}$/.test(postalCode)
+  
+  // Activer le bouton si les champs sont valides
+  const isFormValid = isAddressValid && isCityValid && isPostalCodeValid
 
   // Style global pour forcer l'affichage de l'autocomplétion au-dessus du champ et du libellé
   useEffect(() => {
@@ -54,7 +63,7 @@ export default function LocationInput({
 
   // Initialiser l'autocomplétion Google Maps
   useEffect(() => {
-    if (!window.google || !window.google.maps || !window.google.maps.places || !inputRef.current) {
+    if (!window.google || !window.google.maps || !window.google.maps.places || !inputRef.current || manualEntry) {
       return
     }
 
@@ -97,9 +106,39 @@ export default function LocationInput({
     return () => {
       google.maps.event.removeListener(listener)
     }
-  }, [address, city, postalCode, onLocationUpdate])
+  }, [address, city, postalCode, onLocationUpdate, manualEntry])
 
-  const isConfirmButtonDisabled = !showMap || !addressSelected
+  // Afficher les champs supplémentaires lorsque l'utilisateur commence à taper manuellement
+  useEffect(() => {
+    if (address.trim().length > 0 && !addressSelected && !manualEntry) {
+      setManualEntry(true)
+    }
+  }, [address, addressSelected, manualEntry])
+
+  // Mettre à jour l'adresse, la ville et le code postal manuellement
+  const handleManualAddressUpdate = (newAddress: string) => {
+    onAddressChange(newAddress)
+    onLocationUpdate(newAddress, city, postalCode)
+  }
+
+  const handleManualCityUpdate = (newCity: string) => {
+    onCityChange(newCity)
+    onLocationUpdate(address, newCity, postalCode)
+  }
+
+  const handleManualPostalCodeUpdate = (newPostalCode: string) => {
+    const value = newPostalCode.replace(/\D/g, '')
+    onPostalCodeChange(value)
+    onLocationUpdate(address, city, value)
+    
+    // Mettre à jour le showMap si tous les champs sont valides
+    if (address.trim().length > 0 && city.trim().length > 0 && value.length === 5) {
+      setAddressSelected(true)
+    }
+  }
+
+  // Bouton activé si les champs sont valides (via API ou saisie manuelle)
+  const isConfirmButtonDisabled = !(isFormValid && (showMap || manualEntry))
 
   return (
     <div className="p-3 border-t">
@@ -111,7 +150,7 @@ export default function LocationInput({
               ref={inputRef}
               id="address"
               value={address}
-              onChange={(e) => onAddressChange(e.target.value)}
+              onChange={(e) => handleManualAddressUpdate(e.target.value)}
               placeholder="Saisissez votre adresse"
               className="bg-muted/30 border-muted w-full"
             />
@@ -124,7 +163,7 @@ export default function LocationInput({
           </div>
         </div>
         
-        {addressSelected && (
+        {(addressSelected || manualEntry || address.trim().length > 0) && (
           <>
             <div className="grid grid-cols-2 gap-3 animate-fadeIn">
               <div>
@@ -133,7 +172,7 @@ export default function LocationInput({
                   id="city"
                   placeholder="Ville"
                   value={city}
-                  onChange={(e) => onCityChange(e.target.value)}
+                  onChange={(e) => handleManualCityUpdate(e.target.value)}
                   className="bg-muted/30 border-muted"
                 />
               </div>
@@ -145,14 +184,18 @@ export default function LocationInput({
                   placeholder="Code postal"
                   maxLength={5}
                   value={postalCode}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '')
-                    onPostalCodeChange(value)
-                  }}
+                  onChange={(e) => handleManualPostalCodeUpdate(e.target.value)}
                   className="bg-muted/30 border-muted"
                 />
               </div>
             </div>
+            
+            {manualEntry && !showMap && (
+              <div className="bg-[#0E261C] border border-[#FCDA89]/20 rounded-md p-2 text-xs text-white/80 flex items-start gap-2">
+                <Info className="h-4 w-4 text-white mt-0.5 flex-shrink-0" />
+                <span>Remplissez tous les champs pour continuer. Le code postal doit contenir 5 chiffres.</span>
+              </div>
+            )}
             
             {showMap && (
               <div className="mt-2 animate-fadeIn">

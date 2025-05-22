@@ -41,7 +41,15 @@ const nextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://*.googleapis.com https://*.gstatic.com; connect-src 'self' https://maps.googleapis.com https://*.googleapis.com; img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://*.google.com https://*.s3.amazonaws.com https://*.s3.eu-north-1.amazonaws.com https://renoveo.s3.eu-north-1.amazonaws.com https://*.s3.eu-west-3.amazonaws.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com"
+            value: `
+              default-src 'self';
+              script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com;
+              style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com;
+              img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://renoveo.s3.eu-north-1.amazonaws.com https://*.s3.amazonaws.com https://*.s3.eu-west-3.amazonaws.com;
+              font-src 'self' https://fonts.gstatic.com;
+              frame-src 'self' https://*.google.com https://maps.googleapis.com;
+              connect-src 'self' https://*.googleapis.com;
+            `.replace(/\s+/g, ' ').trim()
           }
         ]
       }

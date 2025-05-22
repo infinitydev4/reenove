@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
+import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
 
 import { Message, ProjectState } from "./ChatContainer"
 import { ProjectDetails } from "./ProjectDetailsForm"
@@ -94,11 +95,8 @@ export default function ChatMessages({
         const address = message.location?.address || "";
         const city = message.location?.city || "";
         const postalCode = message.location?.postalCode || "";
-        const encodedAddress = encodeURIComponent(`${address}, ${postalCode} ${city}`);
-        const mapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${encodedAddress}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7C${encodedAddress}&key=YOUR_API_KEY`;
-        
-        // URL de secours qui fonctionne sans clé API
-        const fallbackMapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=-0.1,51.5,-0.09,51.51&layer=mapnik&marker=${encodedAddress}`;
+        const fullAddress = `${address}, ${postalCode} ${city}`;
+        const encodedAddress = encodeURIComponent(fullAddress);
         
         return (
           <div className="flex items-start gap-2.5 self-end">
@@ -109,13 +107,14 @@ export default function ChatMessages({
               </div>
               <p className="mb-3">{message.content}</p>
               
-              {/* Affichage de la carte */}
+              {/* Carte Google Maps avec marqueur à l'adresse saisie */}
               <div className="w-full h-40 relative rounded-md overflow-hidden border border-white/10 mt-2">
-                <iframe 
-                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(`${address}, ${postalCode} ${city}`)}&layer=mapnik&marker=true`}
-                  className="w-full h-full border-0"
-                  loading="lazy"
-                  style={{ filter: "grayscale(0.5) contrast(1.2) brightness(0.8)" }}
+                <GoogleMapComponent
+                  address={address}
+                  city={city}
+                  postalCode={postalCode}
+                  mapHeight="100%"
+                  className="w-full h-full"
                 />
               </div>
               
