@@ -769,7 +769,7 @@ export default function AdminArtisansPage() {
                             <div className="flex items-center">
                               <Link 
                                 href={`/admin/artisans/${artisan.id}`}
-                                className="font-medium hover:underline"
+                                className="font-medium hover:underline text-[#FCDA89]"
                               >
                                 {artisan.name}
                               </Link>
@@ -793,23 +793,23 @@ export default function AdminArtisansPage() {
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         <div className="space-y-1">
-                          <div className="flex items-center text-sm">
-                            <Mail className="mr-2 h-3 w-3 text-muted-foreground" />
+                          <div className="flex items-center text-sm text-white">
+                            <Mail className="mr-2 h-3 w-3 text-[#FCDA89]" />
                             <span>{artisan.email}</span>
                           </div>
-                          <div className="flex items-center text-sm">
-                            <Phone className="mr-2 h-3 w-3 text-muted-foreground" />
+                          <div className="flex items-center text-sm text-white">
+                            <Phone className="mr-2 h-3 w-3 text-[#FCDA89]" />
                             <span>{artisan.phone}</span>
                           </div>
-                          <div className="flex items-center text-sm">
-                            <MapPin className="mr-2 h-3 w-3 text-muted-foreground" />
+                          <div className="flex items-center text-sm text-white">
+                            <MapPin className="mr-2 h-3 w-3 text-[#FCDA89]" />
                             <span className="truncate max-w-[200px]">{artisan.address}</span>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         <div className="space-y-2">
-                          <Badge variant="outline" className="border-purple-500 text-purple-500">
+                          <Badge variant="outline" className="border-[#FCDA89] text-[#FCDA89]">
                             {artisan.speciality}
                           </Badge>
                           <div>
@@ -819,30 +819,30 @@ export default function AdminArtisansPage() {
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <div className="space-y-1">
-                          <div className="text-sm">
+                          <div className="text-sm text-white">
                             <span className="font-medium">{artisan.projectsCompleted}</span> projets complétés
                           </div>
-                          <div className="text-sm">
+                          <div className="text-sm text-white">
                             <span className="font-medium">{artisan.currentProjects}</span> projets en cours
                           </div>
-                          <div className="text-sm font-medium">
+                          <div className="text-sm font-medium text-white">
                             Gains totaux: {artisan.totalEarnings}
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <div className="space-y-2">
-                          <div className="text-sm flex items-center">
-                            <CalendarDays className="mr-2 h-3 w-3 text-muted-foreground" />
+                          <div className="text-sm flex items-center text-white">
+                            <CalendarDays className="mr-2 h-3 w-3 text-[#FCDA89]" />
                             <span>Depuis: {artisan.startDate}</span>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 text-white">
                             {renderRating(artisan.rating)}
                           </div>
                           <div className="w-full">
                             <Progress 
                               value={Math.min(artisan.projectsCompleted * 2, 100)} 
-                              className="h-2" 
+                              className="h-2 bg-[#FCDA89]" 
                             />
                           </div>
                         </div>
@@ -851,10 +851,10 @@ export default function AdminArtisansPage() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
+                              <MoreHorizontal className="h-4 w-4 text-[#FCDA89]" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="end" className="z-99">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>

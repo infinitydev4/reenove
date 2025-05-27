@@ -22,6 +22,7 @@ import { iconCategories, recommendedCategoryIcons, getIconByName } from "@/lib/d
 
 export interface IconPickerProps {
   value?: string
+  className?: string
   onChange?: (value: string) => void
 }
 
@@ -39,7 +40,7 @@ export function IconPicker({ value, onChange }: IconPickerProps) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between text-white bg-[#0E261C] border-[#FCDA89]/20"
         >
           {value ? (
             <div className="flex items-center gap-2">

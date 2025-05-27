@@ -387,7 +387,7 @@ export default function ProjetsPage() {
           <Button 
             variant="outline" 
             size="sm"
-            className="h-6 text-xs"
+            className="h-6 text-xs bg-[#FCDA89] text-[#0E261C]"
             onClick={handleResetFilters}
           >
             Réinitialiser tous

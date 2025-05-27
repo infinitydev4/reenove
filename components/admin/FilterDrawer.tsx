@@ -61,10 +61,10 @@ export function FilterDrawer({
           side === "bottom"
             ? "h-[85vh] rounded-t-xl"
             : "md:max-w-sm h-full"
-        } overflow-auto ${className}`}
+        } overflow-auto bg-[#0E261C] border-[#FCDA89]/20 ${className}`}
       >
         <SheetHeader className="mb-4">
-          <SheetTitle>{title}</SheetTitle>
+          <SheetTitle className="mb-4 text-[#FCDA89]">{title}</SheetTitle>
           <SheetDescription>
             {description}
           </SheetDescription>
@@ -112,9 +112,9 @@ export function FilterDrawer({
           <Button 
             variant="outline"
             onClick={onResetFilters}
-            className=""
+            className="bg-[#FCDA89]"
           >
-            Réinitialiser tous les filtres
+            Réinitialiser tous filtres
           </Button>
         </SheetFooter>
       </SheetContent>

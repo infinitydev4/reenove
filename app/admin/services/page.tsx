@@ -347,12 +347,12 @@ export default function AdminServicesPage() {
                 Ajouter un service
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="bg-[#0E261C] border-[#FCDA89]/20">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-white">
                   {editingService ? 'Modifier un service' : 'Ajouter un service'}
                 </DialogTitle>
-                <DialogDescription>
+                <DialogDescription className="text-white/70">
                   {editingService 
                     ? 'Modifiez les informations du service'
                     : 'Ajoutez un nouveau service à votre catalogue'}
@@ -361,52 +361,53 @@ export default function AdminServicesPage() {
               
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nom du service</Label>
+                  <Label htmlFor="name" className="text-white">Nom du service</Label>
                   <Input 
                     id="name" 
                     placeholder="Ex: Installation de plomberie" 
+                    className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
                     {...form.register('name')}
                   />
                   {form.formState.errors.name && (
-                    <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+                    <p className="text-sm text-red-400">{form.formState.errors.name.message}</p>
                   )}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="categoryId">Catégorie</Label>
+                  <Label htmlFor="categoryId" className="text-white">Catégorie</Label>
                   <Select 
                     onValueChange={(value) => form.setValue('categoryId', value)}
                     defaultValue={form.getValues('categoryId')}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-white/5 border-[#FCDA89]/20 text-white">
                       <SelectValue placeholder="Sélectionner une catégorie" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Toutes les catégories</SelectItem>
+                    <SelectContent className="bg-[#0E261C] border-[#FCDA89]/20">
+                      <SelectItem value="all" className="text-white hover:bg-white/10">Toutes les catégories</SelectItem>
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
+                        <SelectItem key={category.id} value={category.id} className="text-white hover:bg-white/10">
                           {category.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   {form.formState.errors.categoryId && (
-                    <p className="text-sm text-red-500">{form.formState.errors.categoryId.message}</p>
+                    <p className="text-sm text-red-400">{form.formState.errors.categoryId.message}</p>
                   )}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description" className="text-white">Description</Label>
                   <Textarea
                     id="description"
                     placeholder="Description du service"
-                    className="resize-none h-20"
+                    className="resize-none h-20 bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
                     {...form.register('description')}
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="icon">Icône</Label>
+                  <Label htmlFor="icon" className="text-white">Icône</Label>
                   <IconPicker
                     value={form.getValues('icon') || ''}
                     onChange={(value) => form.setValue('icon', value)}
@@ -414,10 +415,10 @@ export default function AdminServicesPage() {
                 </div>
                 
                 <DialogFooter className="pt-4">
-                  <Button variant="outline" type="button" onClick={handleCancelEdit}>
+                  <Button variant="outline" type="button" onClick={handleCancelEdit} className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                     Annuler
                   </Button>
-                  <Button type="submit" disabled={submitting}>
+                  <Button type="submit" disabled={submitting} className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
                     {submitting ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -439,7 +440,7 @@ export default function AdminServicesPage() {
 
       {/* Notification de succès */}
       {success && (
-        <div className="p-3 bg-green-50 text-green-700 border border-green-200 rounded-md text-sm flex items-center">
+        <div className="p-3 bg-green-500/20 text-green-400 border border-green-500/30 rounded-md text-sm flex items-center">
           <Check className="h-4 w-4 mr-2 flex-shrink-0" />
           <span>{success}</span>
         </div>
@@ -447,7 +448,7 @@ export default function AdminServicesPage() {
       
       {/* Notification d'erreur */}
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 border border-red-200 rounded-md text-sm flex items-center">
+        <div className="p-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-md text-sm flex items-center">
           <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
           <span>{error}</span>
         </div>
@@ -489,7 +490,7 @@ export default function AdminServicesPage() {
         <CardContent>
           {loading ? (
             <div className="flex justify-center items-center h-40">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Loader2 className="h-8 w-8 animate-spin text-[#FCDA89]" />
             </div>
           ) : services.length > 0 ? (
             <>
@@ -526,14 +527,14 @@ export default function AdminServicesPage() {
                             variant="ghost" 
                             size="icon" 
                             onClick={() => handleEditService(service)}
-                            className="h-8 w-8"
+                            className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10"
                           >
                             <PencilLine className="h-4 w-4" />
                           </Button>
                           <Button 
                             variant="ghost" 
                             size="icon"
-                            className="h-8 w-8 text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                            className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-500/20"
                             onClick={() => handleDeleteService(service.id)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -551,6 +552,7 @@ export default function AdminServicesPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"
                     onClick={handlePrevPage}
                     disabled={currentPage === 1}
                   >
@@ -562,11 +564,12 @@ export default function AdminServicesPage() {
                       <Button
                         variant={currentPage === 1 ? "default" : "outline"}
                         size="sm"
+                        className={currentPage === 1 ? "bg-[#FCDA89] text-[#0E261C]" : "bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"}
                         onClick={() => handlePageChange(1)}
                       >
                         1
                       </Button>
-                      {startPage > 2 && <span className="mx-1">...</span>}
+                      {startPage > 2 && <span className="mx-1 text-white/70">...</span>}
                     </>
                   )}
                   
@@ -575,6 +578,7 @@ export default function AdminServicesPage() {
                       key={page}
                       variant={currentPage === page ? "default" : "outline"}
                       size="sm"
+                      className={currentPage === page ? "bg-[#FCDA89] text-[#0E261C]" : "bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"}
                       onClick={() => handlePageChange(page)}
                     >
                       {page}
@@ -583,10 +587,11 @@ export default function AdminServicesPage() {
                   
                   {endPage < totalPages && (
                     <>
-                      {endPage < totalPages - 1 && <span className="mx-1">...</span>}
+                      {endPage < totalPages - 1 && <span className="mx-1 text-white/70">...</span>}
                       <Button
                         variant={currentPage === totalPages ? "default" : "outline"}
                         size="sm"
+                        className={currentPage === totalPages ? "bg-[#FCDA89] text-[#0E261C]" : "bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"}
                         onClick={() => handlePageChange(totalPages)}
                       >
                         {totalPages}
@@ -597,6 +602,7 @@ export default function AdminServicesPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"
                     onClick={handleNextPage}
                     disabled={currentPage === totalPages}
                   >
@@ -605,12 +611,12 @@ export default function AdminServicesPage() {
                 </div>
               )}
               
-              <div className="mt-4 text-sm text-muted-foreground text-center">
+              <div className="mt-4 text-sm text-white/70 text-center">
                 Affichage de {(currentPage - 1) * itemsPerPage + 1} à {Math.min(currentPage * itemsPerPage, totalServices)} sur {totalServices} services
               </div>
             </>
           ) : (
-            <div className="text-center py-10 text-muted-foreground">
+            <div className="text-center py-10 text-white/70">
               <p>Aucun service trouvé</p>
               {selectedCategory && (
                 <p className="text-sm mt-2">Essayez de sélectionner une autre catégorie ou créez un nouveau service</p>
