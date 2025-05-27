@@ -55,15 +55,15 @@ export default function HeroSection() {
             <Button className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-bold px-6 py-6 text-lg rounded-xl flex items-center gap-2" asChild>
               <Link href="/create-project-ai">
                 <Bot className="h-5 w-5" />
-                Créer avec l'IA
+                Lancez votre projet avec l'IA 
               </Link>
             </Button>
-            <Button variant="outline" className="border-white/20 bg-white/10 hover:bg-white/20 text-white px-6 py-6 text-lg rounded-xl" asChild>
+            {/* <Button variant="outline" className="border-white/20 bg-white/10 hover:bg-white/20 text-white px-6 py-6 text-lg rounded-xl" asChild>
               <Link href="#artisans">
-                Voir les artisans
+              Rejoignez notre réseau d'artisans
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
