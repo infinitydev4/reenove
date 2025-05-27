@@ -164,15 +164,15 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
   const getRoleBadge = (role: Role) => {
     switch (role) {
       case Role.ADMIN:
-        return <Badge className="bg-red-500">Administrateur</Badge>
+        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Administrateur</Badge>
       case Role.AGENT:
-        return <Badge className="bg-orange-500">Agent</Badge>
+        return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">Agent</Badge>
       case Role.ARTISAN:
-        return <Badge className="bg-blue-500">Artisan</Badge>
+        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Artisan</Badge>
       case Role.USER:
-        return <Badge variant="outline">Client</Badge>
+        return <Badge variant="outline" className="bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30">Client</Badge>
       default:
-        return <Badge variant="outline">Inconnu</Badge>
+        return <Badge variant="outline" className="bg-gray-500/20 text-gray-400 border-gray-500/30">Inconnu</Badge>
     }
   }
 
@@ -180,20 +180,23 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-green-500">Actif</Badge>
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Actif</Badge>
       case "inactive":
-        return <Badge variant="outline">Inactif</Badge>
+        return <Badge variant="outline" className="bg-gray-500/20 text-gray-400 border-gray-500/30">Inactif</Badge>
       case "blocked":
-        return <Badge variant="destructive">Bloqué</Badge>
+        return <Badge variant="destructive" className="bg-red-500/20 text-red-400 border-red-500/30">Bloqué</Badge>
+      case null:
+      case undefined:
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Actif</Badge>
       default:
-        return <Badge variant="outline">Inconnu</Badge>
+        return <Badge variant="outline" className="bg-gray-500/20 text-gray-400 border-gray-500/30">Inconnu</Badge>
     }
   }
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#FCDA89]" />
       </div>
     )
   }
@@ -202,22 +205,22 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
     return (
       <div className="space-y-6">
         <div className="flex items-center">
-          <Button variant="ghost" size="sm" asChild className="mr-2">
+          <Button variant="ghost" size="sm" asChild className="mr-2 text-[#FCDA89] hover:bg-[#FCDA89]/10">
             <Link href="/admin/users">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Retour
             </Link>
           </Button>
         </div>
-        <Card>
+        <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>Utilisateur non trouvé</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Utilisateur non trouvé</CardTitle>
+            <CardDescription className="text-white/70">
               L&apos;utilisateur que vous recherchez n&apos;existe pas ou a été supprimé.
             </CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button asChild>
+            <Button asChild className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
               <Link href="/admin/users">Retour à la liste des utilisateurs</Link>
             </Button>
           </CardFooter>
@@ -230,20 +233,20 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <Button variant="ghost" size="sm" asChild className="mr-2">
+          <Button variant="ghost" size="sm" asChild className="mr-2 text-[#FCDA89] hover:bg-[#FCDA89]/10">
             <Link href="/admin/users">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Retour
             </Link>
           </Button>
-          <h1 className="text-2xl font-bold tracking-tight">Profil utilisateur</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Profil utilisateur</h1>
         </div>
         <div className="flex gap-2">
           <Button 
             variant="outline" 
             onClick={handleDelete}
             disabled={isDeleting || user.role === Role.ADMIN}
-            className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+            className="text-red-400 border-red-500/20 hover:bg-red-500/20 hover:text-red-300"
           >
             {isDeleting ? (
               <>
@@ -257,7 +260,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
               </>
             )}
           </Button>
-          <Button onClick={handleSave} disabled={isSaving}>
+          <Button className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold" onClick={handleSave} disabled={isSaving}>
             {isSaving ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -274,10 +277,10 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
+        <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>Informations de l&apos;utilisateur</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Informations de l&apos;utilisateur</CardTitle>
+            <CardDescription className="text-white/70">
               Détails du compte utilisateur et paramètres.
             </CardDescription>
           </CardHeader>
@@ -285,15 +288,15 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
             <div className="flex flex-col items-center sm:flex-row sm:items-start gap-4">
               <Avatar className="h-24 w-24">
                 <AvatarImage src={user.image || undefined} alt={user.name || ""} />
-                <AvatarFallback className="text-2xl">{user.name?.charAt(0) || "U"}</AvatarFallback>
+                <AvatarFallback className="text-2xl bg-[#FCDA89] text-[#0E261C] font-semibold">{user.name?.charAt(0) || "U"}</AvatarFallback>
               </Avatar>
               <div className="space-y-1 text-center sm:text-left">
-                <h3 className="text-xl font-medium">{user.name || "Utilisateur sans nom"}</h3>
+                <h3 className="text-xl font-medium text-white">{user.name || "Utilisateur sans nom"}</h3>
                 <div className="flex flex-wrap justify-center sm:justify-start gap-2">
                   {getRoleBadge(user.role)}
                   {getStatusBadge(user.status)}
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white/70">
                   ID: {user.id}
                 </p>
               </div>
@@ -303,35 +306,37 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
 
             <div className="space-y-4">
               <div className="grid gap-2">
-                <Label htmlFor="name">Nom</Label>
+                <Label htmlFor="name" className="text-white">Nom</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => handleChange("name", e.target.value)}
                   placeholder="Nom de l'utilisateur"
+                  className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-white">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
                   placeholder="Email de l'utilisateur"
+                  className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="role">Rôle</Label>
-                <Select
-                  value={formData.role}
-                  onValueChange={(value) => handleChange("role", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un rôle" />
-                  </SelectTrigger>
+                <Label htmlFor="role" className="text-white">Rôle</Label>
+                              <Select
+                value={formData.role}
+                onValueChange={(value) => handleChange("role", value)}
+              >
+                <SelectTrigger className="bg-white/5 border-[#FCDA89]/20 text-white">
+                  <SelectValue placeholder="Sélectionner un rôle" />
+                </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Rôles</SelectLabel>
@@ -345,14 +350,14 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="status">Statut</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => handleChange("status", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un statut" />
-                  </SelectTrigger>
+                <Label htmlFor="status" className="text-white">Statut</Label>
+                              <Select
+                value={formData.status}
+                onValueChange={(value) => handleChange("status", value)}
+              >
+                <SelectTrigger className="bg-white/5 border-[#FCDA89]/20 text-white">
+                  <SelectValue placeholder="Sélectionner un statut" />
+                </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Statuts</SelectLabel>
@@ -367,44 +372,44 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>Activité et détails du compte</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Activité et détails du compte</CardTitle>
+            <CardDescription className="text-white/70">
               Informations sur l&apos;historique du compte.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-3">
               <div className="flex items-center">
-                <CalendarClock className="h-5 w-5 mr-2 text-muted-foreground" />
+                <CalendarClock className="h-5 w-5 mr-2 text-white/70" />
                 <div>
-                  <p className="text-sm font-medium">Date de création</p>
-                  <p className="text-sm text-muted-foreground">{formatDate(user.createdAt)}</p>
+                  <p className="text-sm font-medium text-white">Date de création</p>
+                  <p className="text-sm text-white/70">{formatDate(user.createdAt)}</p>
                 </div>
               </div>
               
               <div className="flex items-center">
-                <CalendarClock className="h-5 w-5 mr-2 text-muted-foreground" />
+                <CalendarClock className="h-5 w-5 mr-2 text-white/70" />
                 <div>
-                  <p className="text-sm font-medium">Dernière mise à jour</p>
-                  <p className="text-sm text-muted-foreground">{formatDate(user.updatedAt)}</p>
+                  <p className="text-sm font-medium text-white">Dernière mise à jour</p>
+                  <p className="text-sm text-white/70">{formatDate(user.updatedAt)}</p>
                 </div>
               </div>
               
               <div className="flex items-center">
-                <Mail className="h-5 w-5 mr-2 text-muted-foreground" />
+                <Mail className="h-5 w-5 mr-2 text-white/70" />
                 <div>
-                  <p className="text-sm font-medium">Email</p>
-                  <p className="text-sm text-muted-foreground">{user.email || "Non défini"}</p>
+                  <p className="text-sm font-medium text-white">Email</p>
+                  <p className="text-sm text-white/70">{user.email || "Non défini"}</p>
                 </div>
               </div>
               
               <div className="flex items-center">
-                <UserRound className="h-5 w-5 mr-2 text-muted-foreground" />
+                <UserRound className="h-5 w-5 mr-2 text-white/70" />
                 <div>
-                  <p className="text-sm font-medium">Type de compte</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm font-medium text-white">Type de compte</p>
+                  <p className="text-sm text-white/70">
                     {user.role === Role.ADMIN ? "Administrateur" : 
                      user.role === Role.AGENT ? "Agent" : 
                      user.role === Role.ARTISAN ? "Artisan" : "Client"}
@@ -413,13 +418,13 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
               </div>
               
               <div className="flex items-center">
-                <ShieldAlert className="h-5 w-5 mr-2 text-muted-foreground" />
+                <ShieldAlert className="h-5 w-5 mr-2 text-white/70" />
                 <div>
-                  <p className="text-sm font-medium">Statut</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm font-medium text-white">Statut</p>
+                  <p className="text-sm text-white/70">
                     {user.status === "active" ? "Actif" : 
                      user.status === "inactive" ? "Inactif" : 
-                     user.status === "blocked" ? "Bloqué" : "Inconnu"}
+                     user.status === "blocked" ? "Bloqué" : "Actif"}
                   </p>
                 </div>
               </div>
@@ -428,15 +433,15 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
             <Separator />
 
             <div className="space-y-3">
-              <h3 className="text-sm font-medium">Actions disponibles</h3>
+              <h3 className="text-sm font-medium text-white">Actions disponibles</h3>
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" asChild>
+                <Button variant="outline" size="sm" asChild className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                   <Link href={`/admin/users/${user.id}/projects`}>
                     Voir les projets
                   </Link>
                 </Button>
                 {user.role === Role.ARTISAN && (
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                     <Link href={`/admin/artisans/${user.id}`}>
                       Profil artisan
                     </Link>
@@ -445,7 +450,7 @@ export default function UserDetailPage({ params }: { params: { id: string } }) {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                  className="text-red-400 border-red-500/20 hover:bg-red-500/20 hover:text-red-300"
                   disabled={user.status === "blocked"}
                   onClick={() => handleChange("status", "blocked")}
                 >

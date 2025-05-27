@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
 
 import {
   ArtisanHeader,
@@ -330,11 +331,25 @@ export default function ArtisanDetailPage() {
   }
 
   if (isLoading) {
-    return <ArtisanLoadingState />
+    return (
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FCDA89]"></div>
+      </div>
+    )
   }
 
   if (error) {
-    return <ArtisanErrorState message={error} onRetry={() => window.location.reload()} />
+    return (
+      <div className="space-y-6">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-2">Erreur</h1>
+          <p className="text-white/70 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()} className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
+            Réessayer
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   // Page de détails de l'artisan avec les nouveaux composants

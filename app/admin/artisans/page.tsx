@@ -315,12 +315,12 @@ export default function AdminArtisansPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Artisans</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-white">Artisans</h1>
+          <p className="text-white/70">
             Gérez tous les artisans partenaires de la plateforme.
           </p>
         </div>
-        <Button>
+        <Button className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
           <Hammer className="mr-2 h-4 w-4" />
           Ajouter un artisan
         </Button>
@@ -328,47 +328,47 @@ export default function AdminArtisansPage() {
 
       {/* Vue d'ensemble des artisans - Optimisée pour mobile */}
       <div className="grid grid-cols-3 gap-2 md:gap-4">
-        <Card className="border shadow-sm overflow-hidden">
+        <Card className="bg-white/5 border-[#FCDA89]/20 shadow-lg overflow-hidden backdrop-blur-sm">
           <div className="h-1 bg-blue-500"></div>
           <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
             {isLoading ? (
               <Skeleton className="h-9 w-12 my-2" />
             ) : (
               <>
-                <span className="text-2xl md:text-4xl font-bold text-blue-600 dark:text-blue-400">{totalArtisans}</span>
-                <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">Artisans</span>
-                <span className="text-[10px] md:text-xs text-green-500 mt-0.5 md:mt-1">{activeArtisans} actifs</span>
+                <span className="text-2xl md:text-4xl font-bold text-blue-400">{totalArtisans}</span>
+                <span className="text-[10px] md:text-xs text-white/70 mt-1 md:mt-2 text-center">Artisans</span>
+                <span className="text-[10px] md:text-xs text-green-400 mt-0.5 md:mt-1">{activeArtisans} actifs</span>
               </>
             )}
           </CardContent>
         </Card>
         
-        <Card className="border shadow-sm overflow-hidden">
+        <Card className="bg-white/5 border-[#FCDA89]/20 shadow-lg overflow-hidden backdrop-blur-sm">
           <div className="h-1 bg-amber-500"></div>
           <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
             {isLoading ? (
               <Skeleton className="h-9 w-12 my-2" />
             ) : (
               <>
-                <span className="text-2xl md:text-4xl font-bold text-amber-600 dark:text-amber-400">{totalCurrentProjects}</span>
-                <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">Projets</span>
-                <span className="text-[10px] md:text-xs text-green-500 mt-0.5 md:mt-1">{totalCompletedProjects} terminés</span>
+                <span className="text-2xl md:text-4xl font-bold text-amber-400">{totalCurrentProjects}</span>
+                <span className="text-[10px] md:text-xs text-white/70 mt-1 md:mt-2 text-center">Projets</span>
+                <span className="text-[10px] md:text-xs text-green-400 mt-0.5 md:mt-1">{totalCompletedProjects} terminés</span>
               </>
             )}
           </CardContent>
         </Card>
         
-        <Card className="border shadow-sm overflow-hidden">
+        <Card className="bg-white/5 border-[#FCDA89]/20 shadow-lg overflow-hidden backdrop-blur-sm">
           <div className="h-1 bg-green-500"></div>
           <CardContent className="p-2 md:p-4 flex flex-col items-center justify-center">
             {isLoading ? (
               <Skeleton className="h-9 w-12 my-2" />
             ) : (
               <>
-                <span className="text-2xl md:text-4xl font-bold text-green-600 dark:text-green-400">{totalEarnings.toLocaleString()}€</span>
-                <span className="text-[10px] md:text-xs text-muted-foreground mt-1 md:mt-2 text-center">CA</span>
-                <div className="flex items-center text-[10px] md:text-xs text-amber-500 mt-0.5 md:mt-1">
-                  <Star className="h-3 w-3 mr-1 fill-amber-500" />
+                <span className="text-2xl md:text-4xl font-bold text-green-400">{totalEarnings.toLocaleString()}€</span>
+                <span className="text-[10px] md:text-xs text-white/70 mt-1 md:mt-2 text-center">CA</span>
+                <div className="flex items-center text-[10px] md:text-xs text-amber-400 mt-0.5 md:mt-1">
+                  <Star className="h-3 w-3 mr-1 fill-amber-400" />
                   <span>{averageRating}/5</span>
                 </div>
               </>
@@ -380,11 +380,11 @@ export default function AdminArtisansPage() {
       {/* Barre de recherche avec bouton pour ouvrir le drawer de filtres */}
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/50" />
           <Input
             type="search"
             placeholder="Rechercher par nom, email, téléphone..."
-            className="w-full pl-9"
+            className="w-full pl-9 bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -407,9 +407,9 @@ export default function AdminArtisansPage() {
           side="right"
           className="hidden md:block"
           trigger={
-            <Button variant="outline" size="icon" className="h-9 w-9 hidden md:flex">
-              <Filter className="h-4 w-4" />
-            </Button>
+                      <Button variant="outline" size="icon" className="h-9 w-9 hidden md:flex bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+            <Filter className="h-4 w-4" />
+          </Button>
           }
           filterGroups={filterGroups}
           selectedFilters={selectedFilters}
@@ -424,9 +424,9 @@ export default function AdminArtisansPage() {
           side="bottom"
           isMobile={true}
           trigger={
-            <Button variant="outline" size="icon" className="h-9 w-9 md:hidden">
-              <Filter className="h-4 w-4" />
-            </Button>
+                      <Button variant="outline" size="icon" className="h-9 w-9 md:hidden bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+            <Filter className="h-4 w-4" />
+          </Button>
           }
           filterGroups={filterGroups}
           selectedFilters={selectedFilters}
@@ -447,7 +447,7 @@ export default function AdminArtisansPage() {
           </Button>
         )}
         
-        <Button variant="outline" size="icon" className="h-9 w-9">
+        <Button variant="outline" size="icon" className="h-9 w-9 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
           <Download className="h-4 w-4" />
         </Button>
       </div>
@@ -455,7 +455,7 @@ export default function AdminArtisansPage() {
       {/* Affichage des filtres actifs */}
       {(selectedStatus || selectedSpeciality || selectedAvailability || selectedVerification) && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-muted-foreground">Filtres actifs:</span>
+          <span className="text-xs text-white/70">Filtres actifs:</span>
           {selectedStatus && (
             <Badge variant="secondary" className="h-6 gap-1">
               Statut: {selectedStatus === "actif" ? "Actif" : "Inactif"}
@@ -515,15 +515,15 @@ export default function AdminArtisansPage() {
         </div>
       )}
 
-      <Card>
+      <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
         <CardHeader className="pb-3">
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div className="relative w-full md:max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/50" />
               <Input
                 type="search"
                 placeholder="Rechercher par nom, email, téléphone..."
-                className="w-full pl-9"
+                className="w-full pl-9 bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />

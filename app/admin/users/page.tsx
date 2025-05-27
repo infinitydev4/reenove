@@ -167,28 +167,31 @@ export default function AdminUsersPage() {
   const getRoleBadge = (role: Role) => {
     switch (role) {
       case Role.ADMIN:
-        return <Badge className="bg-red-500">Admin</Badge>
+        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Admin</Badge>
       case Role.AGENT:
-        return <Badge className="bg-orange-500">Agent</Badge>
+        return <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">Agent</Badge>
       case Role.ARTISAN:
-        return <Badge className="bg-blue-500">Artisan</Badge>
+        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Artisan</Badge>
       case Role.USER:
-        return <Badge variant="outline">Client</Badge>
+        return <Badge variant="outline" className="bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30">Client</Badge>
       default:
-        return <Badge variant="outline">Inconnu</Badge>
+        return <Badge variant="outline" className="bg-gray-500/20 text-gray-400 border-gray-500/30">Inconnu</Badge>
     }
   }
 
   const getStatusBadge = (status: string | null) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-green-500">Actif</Badge>
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Actif</Badge>
       case "inactive":
-        return <Badge variant="outline">Inactif</Badge>
+        return <Badge variant="outline" className="bg-gray-500/20 text-gray-400 border-gray-500/30">Inactif</Badge>
       case "blocked":
-        return <Badge variant="destructive">Bloqué</Badge>
+        return <Badge variant="destructive" className="bg-red-500/20 text-red-400 border-red-500/30">Bloqué</Badge>
+      case null:
+      case undefined:
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Actif</Badge>
       default:
-        return <Badge variant="outline">Inconnu</Badge>
+        return <Badge variant="outline" className="bg-gray-500/20 text-gray-400 border-gray-500/30">Inconnu</Badge>
     }
   }
 
@@ -196,13 +199,13 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Utilisateurs</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-white">Utilisateurs</h1>
+          <p className="text-white/70">
             Gérez les utilisateurs de la plateforme.
           </p>
         </div>
         <div className="mt-4 md:mt-0">
-          <Button asChild>
+          <Button className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold" asChild>
             <Link href="/admin/users/add">
               <PlusCircle className="mr-2 h-4 w-4" />
               Ajouter un utilisateur
@@ -211,15 +214,15 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      <Card>
+      <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
         <CardHeader className="pb-3">
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
             <div className="relative w-full md:max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/50" />
               <Input
                 type="search"
                 placeholder="Rechercher par nom ou email..."
-                className="w-full pl-9"
+                className="w-full pl-9 bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -228,11 +231,11 @@ export default function AdminUsersPage() {
             <div className="flex gap-2 flex-wrap">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Filter className="mr-2 h-4 w-4" />
-                    Rôle
-                    {selectedRole && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
-                  </Button>
+                                <Button variant="outline" size="sm" className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+                <Filter className="mr-2 h-4 w-4" />
+                Rôle
+                {selectedRole && <Badge className="ml-2 bg-[#FCDA89]/20 text-[#FCDA89]">1</Badge>}
+              </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuLabel>Filtrer par rôle</DropdownMenuLabel>
@@ -270,11 +273,11 @@ export default function AdminUsersPage() {
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <SlidersHorizontal className="mr-2 h-4 w-4" />
-                    Statut
-                    {selectedStatus && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
-                  </Button>
+                                <Button variant="outline" size="sm" className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+                <SlidersHorizontal className="mr-2 h-4 w-4" />
+                Statut
+                {selectedStatus && <Badge className="ml-2 bg-[#FCDA89]/20 text-[#FCDA89]">1</Badge>}
+              </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuLabel>Filtrer par statut</DropdownMenuLabel>
@@ -313,6 +316,7 @@ export default function AdminUsersPage() {
               <Button 
                 variant="outline" 
                 size="sm"
+                className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"
                 onClick={() => {
                   setSearchQuery("")
                   setSelectedRole(null)
@@ -325,6 +329,7 @@ export default function AdminUsersPage() {
               <Button 
                 variant="outline" 
                 size="sm"
+                className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"
                 disabled={isLoading || users.length === 0}
                 onClick={() => {
                   toast("Cette fonctionnalité sera disponible prochainement.")
@@ -340,47 +345,47 @@ export default function AdminUsersPage() {
           <div className="rounded-md border">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Utilisateur</TableHead>
-                  <TableHead>Rôle</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead>Inscription</TableHead>
-                  <TableHead className="hidden md:table-cell">Dernière activité</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                <TableRow className="border-white/10">
+                  <TableHead className="text-white/70">Utilisateur</TableHead>
+                  <TableHead className="text-white/70">Rôle</TableHead>
+                  <TableHead className="text-white/70">Statut</TableHead>
+                  <TableHead className="text-white/70">Inscription</TableHead>
+                  <TableHead className="hidden md:table-cell text-white/70">Dernière activité</TableHead>
+                  <TableHead className="text-right text-white/70">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow>
+                  <TableRow className="border-white/10">
                     <TableCell colSpan={6} className="text-center py-8">
                       <div className="flex justify-center items-center">
-                        <Loader2 className="h-6 w-6 animate-spin text-primary mr-2" />
-                        <span>Chargement des utilisateurs...</span>
+                        <Loader2 className="h-6 w-6 animate-spin text-[#FCDA89] mr-2" />
+                        <span className="text-white">Chargement des utilisateurs...</span>
                       </div>
                     </TableCell>
                   </TableRow>
                 ) : users.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableRow className="border-white/10">
+                    <TableCell colSpan={6} className="text-center py-8 text-white/70">
                       Aucun utilisateur ne correspond aux critères de recherche
                     </TableCell>
                   </TableRow>
                 ) : (
                   users.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user.id} className="border-white/10 hover:bg-white/5">
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
                             <AvatarImage src={user.image || undefined} alt={user.name || ""} />
-                            <AvatarFallback>{user.name?.charAt(0) || "U"}</AvatarFallback>
+                            <AvatarFallback className="bg-[#FCDA89] text-[#0E261C] font-semibold">{user.name?.charAt(0) || "U"}</AvatarFallback>
                           </Avatar>
                           <div className="flex flex-col">
-                            <div className="font-medium">{user.name || "Utilisateur sans nom"}</div>
-                            <div className="text-xs text-muted-foreground flex items-center gap-1">
+                            <div className="font-medium text-white">{user.name || "Utilisateur sans nom"}</div>
+                            <div className="text-xs text-white/70 flex items-center gap-1">
                               {user.email || "Email non défini"}
                               {user.email && (
                                 <button 
-                                  className="hover:text-primary transition-colors"
+                                  className="hover:text-[#FCDA89] transition-colors"
                                   onClick={() => handleCopyEmail(user.email || "")}
                                 >
                                   <Copy className="h-3 w-3" />
@@ -392,12 +397,12 @@ export default function AdminUsersPage() {
                       </TableCell>
                       <TableCell>{getRoleBadge(user.role)}</TableCell>
                       <TableCell>{getStatusBadge(user.status)}</TableCell>
-                      <TableCell>{formatDate(user.createdAt)}</TableCell>
-                      <TableCell className="hidden md:table-cell">{formatRelativeDate(user.updatedAt)}</TableCell>
+                      <TableCell className="text-white">{formatDate(user.createdAt)}</TableCell>
+                      <TableCell className="hidden md:table-cell text-white">{formatRelativeDate(user.updatedAt)}</TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -443,6 +448,7 @@ export default function AdminUsersPage() {
               <Button
                 variant="outline"
                 size="sm"
+                className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"
                 disabled={pagination.page <= 1 || isLoading}
                 onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
               >
@@ -451,13 +457,14 @@ export default function AdminUsersPage() {
               <Button
                 variant="outline"
                 size="sm"
+                className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"
                 disabled={pagination.page >= pagination.pages || isLoading}
                 onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
               >
                 Suivant
               </Button>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white/70">
               {isLoading 
                 ? "Chargement..." 
                 : `Page ${pagination.page}/${pagination.pages || 1} • ${pagination.total} utilisateur${pagination.total > 1 ? "s" : ""}`}

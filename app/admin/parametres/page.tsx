@@ -38,24 +38,24 @@ export default function AdminParametresPage() {
     <div className="h-full flex flex-col">
       {/* En-tête avec titre */}
       <div className="flex justify-between items-center h-10 mb-4">
-        <h1 className="text-lg font-bold flex items-center gap-2">
-          <Settings className="h-5 w-5 text-primary" />
+        <h1 className="text-lg font-bold flex items-center gap-2 text-white">
+          <Settings className="h-5 w-5 text-[#FCDA89]" />
           Paramètres administrateur
         </h1>
       </div>
 
       <Tabs defaultValue="profile" className="flex-1 flex flex-col">
         <div className="mb-6 w-full overflow-x-auto">
-          <TabsList className="w-full max-w-md h-10 grid grid-cols-3">
-            <TabsTrigger value="profile" className="flex items-center gap-1.5">
+          <TabsList className="w-full max-w-md h-10 grid grid-cols-3 bg-white/5 border-[#FCDA89]/20">
+            <TabsTrigger value="profile" className="flex items-center gap-1.5 data-[state=active]:bg-[#FCDA89]/20 data-[state=active]:text-[#FCDA89] text-white/70">
               <User className="h-3.5 w-3.5 md:mr-1.5" />
               <span className="hidden md:inline">Profil</span>
             </TabsTrigger>
-            <TabsTrigger value="system" className="flex items-center gap-1.5">
+            <TabsTrigger value="system" className="flex items-center gap-1.5 data-[state=active]:bg-[#FCDA89]/20 data-[state=active]:text-[#FCDA89] text-white/70">
               <Server className="h-3.5 w-3.5 md:mr-1.5" />
               <span className="hidden md:inline">Système</span>
             </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-1.5">
+            <TabsTrigger value="security" className="flex items-center gap-1.5 data-[state=active]:bg-[#FCDA89]/20 data-[state=active]:text-[#FCDA89] text-white/70">
               <Shield className="h-3.5 w-3.5 md:mr-1.5" />
               <span className="hidden md:inline">Sécurité</span>
             </TabsTrigger>
@@ -67,25 +67,25 @@ export default function AdminParametresPage() {
           <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-4">
             {/* Carte Avatar (flottante à gauche) */}
             <div className="md:w-72 lg:w-80 md:order-1 order-1 flex-shrink-0">
-              <Card className="border shadow-sm sticky top-0">
+              <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm shadow-sm sticky top-0">
                 <CardContent className="p-6 flex flex-col items-center">
                   <div className="relative mb-4">
-                    <Avatar className="h-28 w-28 border-2 border-primary/20">
+                    <Avatar className="h-28 w-28 border-2 border-[#FCDA89]/20">
                       <AvatarImage src={adminProfile.avatar} alt={adminProfile.name} />
-                      <AvatarFallback className="text-2xl bg-primary/10">{adminProfile.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback className="text-2xl bg-[#FCDA89]/20 text-[#FCDA89]">{adminProfile.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     {isEditing && (
-                      <Button size="icon" variant="secondary" className="absolute -right-2 -bottom-2 h-8 w-8 rounded-full">
+                      <Button size="icon" variant="secondary" className="absolute -right-2 -bottom-2 h-8 w-8 rounded-full bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                         <Pencil className="h-4 w-4" />
                       </Button>
                     )}
                   </div>
-                  <h3 className="font-medium text-center text-base">{adminProfile.name}</h3>
-                  <p className="text-muted-foreground text-sm text-center mt-1">{adminProfile.role}</p>
-                  <Badge variant="outline" className="mt-2">Dernière connexion: {adminProfile.lastLogin}</Badge>
+                  <h3 className="font-medium text-center text-base text-white">{adminProfile.name}</h3>
+                  <p className="text-white/70 text-sm text-center mt-1">{adminProfile.role}</p>
+                  <Badge variant="outline" className="mt-2 bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30">Dernière connexion: {adminProfile.lastLogin}</Badge>
                   
                   {!isEditing && (
-                    <Button variant="outline" size="sm" className="w-full mt-6" onClick={() => setIsEditing(true)}>
+                    <Button variant="outline" size="sm" className="w-full mt-6 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10" onClick={() => setIsEditing(true)}>
                       <Pencil className="h-3.5 w-3.5 mr-1.5" />
                       Modifier le profil
                     </Button>
@@ -93,31 +93,31 @@ export default function AdminParametresPage() {
                 </CardContent>
               </Card>
               
-              <Card className="border shadow-sm mt-4">
+              <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm shadow-sm mt-4">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Accès aux modules</CardTitle>
+                  <CardTitle className="text-base text-white">Accès aux modules</CardTitle>
                 </CardHeader>
                 <CardContent className="px-4 py-2">
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span className="text-sm">Dashboard</span>
+                      <span className="text-sm text-white">Dashboard</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span className="text-sm">Utilisateurs</span>
+                      <span className="text-sm text-white">Utilisateurs</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span className="text-sm">Projets</span>
+                      <span className="text-sm text-white">Projets</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span className="text-sm">Finances</span>
+                      <span className="text-sm text-white">Finances</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span className="text-sm">Paramètres système</span>
+                      <span className="text-sm text-white">Paramètres système</span>
                     </div>
                   </div>
                 </CardContent>
@@ -126,18 +126,18 @@ export default function AdminParametresPage() {
             
             {/* Carte Informations personnelles (à droite) */}
             <div className="md:flex-1 order-2 md:order-2 flex flex-col">
-              <Card className="border shadow-sm h-full">
+              <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm shadow-sm h-full">
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
-                    <CardTitle className="text-base">Informations administrateur</CardTitle>
+                    <CardTitle className="text-base text-white">Informations administrateur</CardTitle>
                     {!isEditing && (
-                      <Button variant="outline" size="sm" className="h-8" onClick={() => setIsEditing(true)}>
+                      <Button variant="outline" size="sm" className="h-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10" onClick={() => setIsEditing(true)}>
                         <Pencil className="h-3.5 w-3.5 mr-1.5" />
                         Modifier
                       </Button>
                     )}
                   </div>
-                  <CardDescription>
+                  <CardDescription className="text-white/70">
                     Vos informations personnelles et accès administrateur
                   </CardDescription>
                 </CardHeader>
@@ -146,37 +146,37 @@ export default function AdminParametresPage() {
                     <div className="space-y-5">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="name" className="text-sm font-medium">Nom complet</Label>
+                          <Label htmlFor="name" className="text-sm font-medium text-white">Nom complet</Label>
                           <Input 
                             id="name" 
                             defaultValue={adminProfile.name} 
                             readOnly={!isEditing} 
-                            className={!isEditing ? "bg-muted/50" : ""}
+                            className={!isEditing ? "bg-white/5 border-[#FCDA89]/20 text-white" : "bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="email" className="text-sm font-medium">Email</Label>
+                          <Label htmlFor="email" className="text-sm font-medium text-white">Email</Label>
                           <Input 
                             id="email" 
                             type="email" 
                             defaultValue={adminProfile.email} 
                             readOnly={!isEditing}
-                            className={!isEditing ? "bg-muted/50" : ""}
+                            className={!isEditing ? "bg-white/5 border-[#FCDA89]/20 text-white" : "bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="phone" className="text-sm font-medium">Téléphone</Label>
+                          <Label htmlFor="phone" className="text-sm font-medium text-white">Téléphone</Label>
                           <Input 
                             id="phone" 
                             defaultValue={adminProfile.phone} 
                             readOnly={!isEditing}
-                            className={!isEditing ? "bg-muted/50" : ""}
+                            className={!isEditing ? "bg-white/5 border-[#FCDA89]/20 text-white" : "bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"}
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="role" className="text-sm font-medium">Rôle</Label>
+                          <Label htmlFor="role" className="text-sm font-medium text-white">Rôle</Label>
                           <Select disabled={!isEditing} defaultValue="super-admin">
-                            <SelectTrigger id="role" className={!isEditing ? "bg-muted/50" : ""}>
+                            <SelectTrigger id="role" className={!isEditing ? "bg-white/5 border-[#FCDA89]/20 text-white" : "bg-white/5 border-[#FCDA89]/20 text-white"}>
                               <SelectValue placeholder="Sélectionner un rôle" />
                             </SelectTrigger>
                             <SelectContent>
@@ -190,29 +190,29 @@ export default function AdminParametresPage() {
                       
                       <Separator className="my-4" />
                       
-                      <h3 className="font-medium text-sm text-muted-foreground">Paramètres de notification</h3>
+                      <h3 className="font-medium text-sm text-white/70">Paramètres de notification</h3>
                       
                       <div className="space-y-3">
                         <div className="flex items-center justify-between py-1">
                           <div>
-                            <p className="text-sm font-medium">Alertes système</p>
-                            <p className="text-xs text-muted-foreground">Recevoir les alertes critiques du système</p>
+                            <p className="text-sm font-medium text-white">Alertes système</p>
+                            <p className="text-xs text-white/70">Recevoir les alertes critiques du système</p>
                           </div>
                           <Switch defaultChecked />
                         </div>
                         
                         <div className="flex items-center justify-between py-1">
                           <div>
-                            <p className="text-sm font-medium">Notifications de modération</p>
-                            <p className="text-xs text-muted-foreground">Recevoir les demandes de modération</p>
+                            <p className="text-sm font-medium text-white">Notifications de modération</p>
+                            <p className="text-xs text-white/70">Recevoir les demandes de modération</p>
                           </div>
                           <Switch defaultChecked />
                         </div>
                         
                         <div className="flex items-center justify-between py-1">
                           <div>
-                            <p className="text-sm font-medium">Rapports hebdomadaires</p>
-                            <p className="text-xs text-muted-foreground">Recevoir un résumé des activités chaque semaine</p>
+                            <p className="text-sm font-medium text-white">Rapports hebdomadaires</p>
+                            <p className="text-xs text-white/70">Recevoir un résumé des activités chaque semaine</p>
                           </div>
                           <Switch defaultChecked />
                         </div>
@@ -221,10 +221,10 @@ export default function AdminParametresPage() {
                     
                     {isEditing && (
                       <div className="flex justify-end gap-2 mt-6">
-                        <Button variant="outline" size="sm" type="button" onClick={() => setIsEditing(false)}>
+                        <Button variant="outline" size="sm" type="button" onClick={() => setIsEditing(false)} className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                           Annuler
                         </Button>
-                        <Button type="submit" size="sm">
+                        <Button type="submit" size="sm" className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
                           <Save className="h-3.5 w-3.5 mr-1.5" />
                           Enregistrer
                         </Button>
@@ -239,26 +239,26 @@ export default function AdminParametresPage() {
 
         {/* Onglet Système */}
         <TabsContent value="system" className="space-y-4 flex-1">
-          <Card>
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Paramètres système</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-base text-white">Paramètres système</CardTitle>
+              <CardDescription className="text-white/70">
                 Configuration générale de la plateforme
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {systemSettings.map((setting) => (
-                <div key={setting.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                <div key={setting.id} className="flex items-center justify-between py-2 border-b border-white/10 last:border-0">
                   <div>
-                    <p className="font-medium text-sm">{setting.label}</p>
-                    <p className="text-xs text-muted-foreground">{setting.description}</p>
+                    <p className="font-medium text-sm text-white">{setting.label}</p>
+                    <p className="text-xs text-white/70">{setting.description}</p>
                   </div>
                   <Switch id={setting.id} defaultChecked={setting.enabled} />
                 </div>
               ))}
             </CardContent>
             <CardFooter className="pt-2 flex justify-end">
-              <Button size="sm">
+              <Button size="sm" className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
                 <Save className="h-3.5 w-3.5 mr-1.5" />
                 Enregistrer les paramètres
               </Button>
@@ -266,41 +266,41 @@ export default function AdminParametresPage() {
           </Card>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card>
+            <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Gestion des emails</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-base text-white">Gestion des emails</CardTitle>
+                <CardDescription className="text-white/70">
                   Configuration des templates d&apos;emails
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 border rounded-md">
+                  <div className="flex justify-between items-center p-3 border border-white/10 rounded-md">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary/10 rounded">
-                        <Bell className="h-4 w-4 text-primary" />
+                      <div className="p-2 bg-[#FCDA89]/20 rounded">
+                        <Bell className="h-4 w-4 text-[#FCDA89]" />
                       </div>
                       <div>
-                        <p className="font-medium text-sm">Email de bienvenue</p>
-                        <p className="text-xs text-muted-foreground">Envoyé lors de l&apos;inscription</p>
+                        <p className="font-medium text-sm text-white">Email de bienvenue</p>
+                        <p className="text-xs text-white/70">Envoyé lors de l&apos;inscription</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="h-8">
+                    <Button variant="outline" size="sm" className="h-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                       Modifier
                     </Button>
                   </div>
                   
-                  <div className="flex justify-between items-center p-3 border rounded-md">
+                  <div className="flex justify-between items-center p-3 border border-white/10 rounded-md">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary/10 rounded">
-                        <Bell className="h-4 w-4 text-primary" />
+                      <div className="p-2 bg-[#FCDA89]/20 rounded">
+                        <Bell className="h-4 w-4 text-[#FCDA89]" />
                       </div>
                       <div>
-                        <p className="font-medium text-sm">Validation de projet</p>
-                        <p className="text-xs text-muted-foreground">Envoyé lorsqu&apos;un projet est validé</p>
+                        <p className="font-medium text-sm text-white">Validation de projet</p>
+                        <p className="text-xs text-white/70">Envoyé lorsqu&apos;un projet est validé</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" className="h-8">
+                    <Button variant="outline" size="sm" className="h-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                       Modifier
                     </Button>
                   </div>
@@ -308,48 +308,48 @@ export default function AdminParametresPage() {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Sauvegarde et données</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-base text-white">Sauvegarde et données</CardTitle>
+                <CardDescription className="text-white/70">
                   Gestion des données de la plateforme
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="p-3 border rounded-md">
+                  <div className="p-3 border border-white/10 rounded-md">
                     <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded">
-                          <Database className="h-4 w-4 text-primary" />
+                        <div className="p-2 bg-[#FCDA89]/20 rounded">
+                          <Database className="h-4 w-4 text-[#FCDA89]" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">Sauvegarde automatique</p>
-                          <p className="text-xs text-muted-foreground">Quotidienne à 03:00</p>
+                          <p className="font-medium text-sm text-white">Sauvegarde automatique</p>
+                          <p className="text-xs text-white/70">Quotidienne à 03:00</p>
                         </div>
                       </div>
-                      <Badge className="bg-green-100 text-green-800">Actif</Badge>
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Actif</Badge>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="text-xs h-7">Configurer</Button>
-                      <Button variant="outline" size="sm" className="text-xs h-7">Exécuter maintenant</Button>
+                      <Button variant="outline" size="sm" className="text-xs h-7 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">Configurer</Button>
+                      <Button variant="outline" size="sm" className="text-xs h-7 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">Exécuter maintenant</Button>
                     </div>
                   </div>
                   
-                  <div className="p-3 border rounded-md">
+                  <div className="p-3 border border-white/10 rounded-md">
                     <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded">
-                          <Cloud className="h-4 w-4 text-primary" />
+                        <div className="p-2 bg-[#FCDA89]/20 rounded">
+                          <Cloud className="h-4 w-4 text-[#FCDA89]" />
                         </div>
                         <div>
-                          <p className="font-medium text-sm">Espace de stockage</p>
-                          <p className="text-xs text-muted-foreground">65% utilisé (650 Go / 1 To)</p>
+                          <p className="font-medium text-sm text-white">Espace de stockage</p>
+                          <p className="text-xs text-white/70">65% utilisé (650 Go / 1 To)</p>
                         </div>
                       </div>
                     </div>
-                    <div className="w-full h-2 bg-gray-200 rounded-full mt-1">
-                      <div className="h-full bg-primary rounded-full" style={{ width: "65%" }}></div>
+                    <div className="w-full h-2 bg-white/20 rounded-full mt-1">
+                      <div className="h-full bg-[#FCDA89] rounded-full" style={{ width: "65%" }}></div>
                     </div>
                   </div>
                 </div>
@@ -360,126 +360,126 @@ export default function AdminParametresPage() {
 
         {/* Onglet Sécurité */}
         <TabsContent value="security" className="space-y-4 flex-1">
-          <Card>
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Sécurité du compte</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-base text-white">Sécurité du compte</CardTitle>
+              <CardDescription className="text-white/70">
                 Gérez les accès et la sécurité de votre compte administrateur
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <div className="flex justify-between items-center border-b pb-4">
+              <div className="flex justify-between items-center border-b border-white/10 pb-4">
                 <div className="space-y-0.5">
-                  <Label className="font-medium">Mot de passe</Label>
-                  <p className="text-xs text-muted-foreground">Dernière modification il y a 1 mois</p>
+                  <Label className="font-medium text-white">Mot de passe</Label>
+                  <p className="text-xs text-white/70">Dernière modification il y a 1 mois</p>
                 </div>
-                <Button variant="outline" size="sm" className="h-8">
+                <Button variant="outline" size="sm" className="h-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                   Modifier
                 </Button>
               </div>
               
-              <div className="flex justify-between items-center border-b pb-4">
+              <div className="flex justify-between items-center border-b border-white/10 pb-4">
                 <div className="space-y-0.5">
-                  <Label className="font-medium">Authentification à deux facteurs</Label>
-                  <p className="text-xs text-muted-foreground">Activée pour une sécurité renforcée</p>
+                  <Label className="font-medium text-white">Authentification à deux facteurs</Label>
+                  <p className="text-xs text-white/70">Activée pour une sécurité renforcée</p>
                 </div>
-                <Badge className="bg-green-100 text-green-800">Activé</Badge>
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Activé</Badge>
               </div>
               
-              <div className="flex justify-between items-center pb-4 border-b">
+              <div className="flex justify-between items-center pb-4 border-b border-white/10">
                 <div className="space-y-0.5">
-                  <Label className="font-medium">Dernières connexions</Label>
-                  <p className="text-xs text-muted-foreground">Suivi des connexions récentes</p>
+                  <Label className="font-medium text-white">Dernières connexions</Label>
+                  <p className="text-xs text-white/70">Suivi des connexions récentes</p>
                 </div>
-                <Button variant="outline" size="sm" className="h-8">
+                <Button variant="outline" size="sm" className="h-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                   Voir l&apos;historique
                 </Button>
               </div>
               
               <div className="flex justify-between items-center pb-2">
                 <div className="space-y-0.5">
-                  <Label className="font-medium">Journaux d&apos;audit</Label>
-                  <p className="text-xs text-muted-foreground">Historique des actions d&apos;administration</p>
+                  <Label className="font-medium text-white">Journaux d&apos;audit</Label>
+                  <p className="text-xs text-white/70">Historique des actions d&apos;administration</p>
                 </div>
-                <Button variant="outline" size="sm" className="h-8">
+                <Button variant="outline" size="sm" className="h-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                   Consulter
                 </Button>
               </div>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base">Gestion des accès administrateurs</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-base text-white">Gestion des accès administrateurs</CardTitle>
+              <CardDescription className="text-white/70">
                 Gérez les comptes administrateurs et leurs permissions
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 border rounded-md">
+                <div className="flex justify-between items-center p-3 border border-white/10 rounded-md">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>MP</AvatarFallback>
+                      <AvatarFallback className="bg-[#FCDA89]/20 text-[#FCDA89]">MP</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-sm">Marie Poulain</p>
-                      <p className="text-xs text-muted-foreground">Administrateur</p>
+                      <p className="font-medium text-sm text-white">Marie Poulain</p>
+                      <p className="text-xs text-white/70">Administrateur</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="h-8">
+                  <Button variant="outline" size="sm" className="h-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                     <UserCog className="h-3.5 w-3.5 mr-1.5" />
                     Gérer
                   </Button>
                 </div>
                 
-                <div className="flex justify-between items-center p-3 border rounded-md">
+                <div className="flex justify-between items-center p-3 border border-white/10 rounded-md">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>JD</AvatarFallback>
+                      <AvatarFallback className="bg-[#FCDA89]/20 text-[#FCDA89]">JD</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium text-sm">Jean Dupont</p>
-                      <p className="text-xs text-muted-foreground">Modérateur</p>
+                      <p className="font-medium text-sm text-white">Jean Dupont</p>
+                      <p className="text-xs text-white/70">Modérateur</p>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm" className="h-8">
+                  <Button variant="outline" size="sm" className="h-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                     <UserCog className="h-3.5 w-3.5 mr-1.5" />
                     Gérer
                   </Button>
                 </div>
               </div>
               
-              <Button className="w-full mt-4" size="sm">
+              <Button className="w-full mt-4 bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold" size="sm">
                 <Key className="h-3.5 w-3.5 mr-1.5" />
                 Ajouter un administrateur
               </Button>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-base flex items-center gap-2">
+              <CardTitle className="text-base flex items-center gap-2 text-white">
                 <AlertTriangle className="h-4 w-4 text-red-500" />
                 Actions sensibles
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-white/70">
                 Actions critiques nécessitant une attention particulière
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="rounded-lg border border-red-200 p-4 bg-red-50 dark:bg-red-950/10">
-                <h3 className="font-medium text-red-600 dark:text-red-400 mb-2">Réinitialiser la plateforme</h3>
-                <p className="text-sm text-red-600/80 dark:text-red-400/80 mb-4">
+              <div className="rounded-lg border border-red-500/20 p-4 bg-red-500/10">
+                <h3 className="font-medium text-red-400 mb-2">Réinitialiser la plateforme</h3>
+                <p className="text-sm text-red-400/80 mb-4">
                   Cette action réinitialisera toutes les données de la plateforme. Cette action est irréversible.
                 </p>
-                <Button variant="outline" size="sm" className="text-red-500 border-red-200 hover:bg-red-100 hover:text-red-600">
+                <Button variant="outline" size="sm" className="text-red-400 border-red-500/20 hover:bg-red-500/20 hover:text-red-300">
                   Réinitialiser la plateforme
                 </Button>
               </div>
               
               <div className="flex justify-end">
-                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/10">
                   <LogOut className="h-3.5 w-3.5 mr-1.5" />
                   Déconnexion
                 </Button>

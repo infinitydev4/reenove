@@ -104,38 +104,39 @@ export default function AddUserPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center">
-        <Button variant="ghost" size="sm" asChild className="mr-2">
-          <Link href="/admin/users">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour
-          </Link>
-        </Button>
-        <h1 className="text-2xl font-bold tracking-tight">Ajouter un utilisateur</h1>
-      </div>
+              <div className="flex items-center">
+          <Button variant="ghost" size="sm" asChild className="mr-2 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+            <Link href="/admin/users">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Ajouter un utilisateur</h1>
+        </div>
 
       <form onSubmit={handleSubmit}>
-        <Card>
+        <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle>Informations utilisateur</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Informations utilisateur</CardTitle>
+            <CardDescription className="text-white/70">
               Créez un nouvel utilisateur en renseignant les informations suivantes.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Nom complet</Label>
+              <Label htmlFor="name" className="text-white">Nom complet</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
                 placeholder="John Doe"
                 disabled={isLoading}
+                className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-white">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -143,11 +144,12 @@ export default function AddUserPage() {
                 onChange={(e) => handleChange("email", e.target.value)}
                 placeholder="john.doe@example.com"
                 disabled={isLoading}
+                className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password" className="text-white">Mot de passe</Label>
               <Input
                 id="password"
                 type="password"
@@ -155,20 +157,21 @@ export default function AddUserPage() {
                 onChange={(e) => handleChange("password", e.target.value)}
                 placeholder="••••••••"
                 disabled={isLoading}
+                className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
               />
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-white/70">
                 Le mot de passe doit comporter au moins 8 caractères.
               </p>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="role">Rôle</Label>
+              <Label htmlFor="role" className="text-white">Rôle</Label>
               <Select
                 value={formData.role}
                 onValueChange={(value) => handleChange("role", value)}
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/5 border-[#FCDA89]/20 text-white">
                   <SelectValue placeholder="Sélectionner un rôle" />
                 </SelectTrigger>
                 <SelectContent>
@@ -184,13 +187,13 @@ export default function AddUserPage() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="status">Statut</Label>
+              <Label htmlFor="status" className="text-white">Statut</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) => handleChange("status", value)}
                 disabled={isLoading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/5 border-[#FCDA89]/20 text-white">
                   <SelectValue placeholder="Sélectionner un statut" />
                 </SelectTrigger>
                 <SelectContent>
@@ -209,10 +212,11 @@ export default function AddUserPage() {
               variant="outline" 
               onClick={() => router.push("/admin/users")}
               disabled={isLoading}
+              className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10"
             >
               Annuler
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

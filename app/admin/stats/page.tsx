@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   BarChart3,
   TrendingUp,
@@ -52,22 +52,22 @@ const StatCard = ({ title, value, icon, trend, trendValue, description, color }:
   const TrendIcon = trend === "up" ? ArrowUp : ArrowDown
   
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
       <div className={`h-1 ${color}`}></div>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          <Icon className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium text-white">{title}</CardTitle>
+          <Icon className="h-4 w-4 text-white/70" />
         </div>
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-bold text-white">{value}</div>
         <div className="flex items-center mt-1">
           <span className={`text-xs font-medium flex items-center ${trendColor}`}>
             <TrendIcon className="h-3 w-3 mr-1" />
             {trendValue}
           </span>
-          <span className="text-xs text-muted-foreground ml-2">{description}</span>
+          <span className="text-xs text-white/70 ml-2">{description}</span>
         </div>
       </CardContent>
     </Card>
@@ -89,7 +89,7 @@ const SimpleBarChart = ({ data, height = 200 }: SimpleBarChartProps) => {
                 className={`w-full max-w-[30px] mx-auto rounded-t-sm ${item.color}`} 
                 style={{ height: `${barHeight}%` }}
               ></div>
-              <div className="text-xs text-muted-foreground mt-2 text-center">{item.label}</div>
+              <div className="text-xs text-white/70 mt-2 text-center">{item.label}</div>
             </div>
           )
         })}
@@ -114,7 +114,7 @@ const SimpleTrendLine = ({ data, height = 80 }: SimpleTrendLineProps) => {
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          className="text-primary"
+          className="text-[#FCDA89]"
         />
         {data.map((value, index) => {
           const x = (index / (data.length - 1)) * 100
@@ -125,7 +125,7 @@ const SimpleTrendLine = ({ data, height = 80 }: SimpleTrendLineProps) => {
               cx={x}
               cy={y}
               r="2"
-              className="fill-primary"
+              className="fill-[#FCDA89]"
             />
           )
         })}
@@ -137,66 +137,96 @@ const SimpleTrendLine = ({ data, height = 80 }: SimpleTrendLineProps) => {
 export default function StatisticsPage() {
   const [period, setPeriod] = useState<PeriodType>("month")
   const [tab, setTab] = useState<TabType>("apercu")
-  
-  // Données fictives pour démonstration
-  const kpiData: StatCardProps[] = [
+  const [statsData, setStatsData] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // Charger les statistiques depuis l'API
+  useEffect(() => {
+    const fetchStats = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/admin/statistics')
+        if (!response.ok) {
+          throw new Error('Erreur lors du chargement des statistiques')
+        }
+        const data = await response.json()
+        setStatsData(data)
+      } catch (error) {
+        console.error('Erreur lors du chargement des statistiques:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchStats()
+  }, [])
+
+  // Données KPI depuis l'API ou par défaut
+  const kpiData: StatCardProps[] = statsData?.kpi ? statsData.kpi.map((item: any) => ({
+    ...item,
+    icon: item.icon === "Users" ? Users :
+          item.icon === "Wrench" ? Wrench :
+          item.icon === "FileText" ? FileText :
+          item.icon === "TrendingUp" ? TrendingUp :
+          DollarSign
+  })) : [
     { 
       title: "Utilisateurs", 
-      value: "587", 
+      value: "0", 
       icon: Users, 
       trend: "up", 
-      trendValue: "12%", 
+      trendValue: "0%", 
       description: "vs mois précédent",
       color: "bg-blue-500"
     },
     { 
       title: "Artisans", 
-      value: "146", 
+      value: "0", 
       icon: Wrench, 
       trend: "up", 
-      trendValue: "8%", 
+      trendValue: "0%", 
       description: "vs mois précédent",
       color: "bg-purple-500"
     },
     { 
       title: "Projets", 
-      value: "329", 
+      value: "0", 
       icon: FileText, 
       trend: "up", 
-      trendValue: "20%", 
+      trendValue: "0%", 
       description: "vs mois précédent",
       color: "bg-amber-500"
     },
     { 
-      title: "Chiffre d'affaires", 
-      value: "24 850 €", 
-      icon: DollarSign, 
+      title: "Taux conversion", 
+      value: "24.8%", 
+      icon: TrendingUp, 
       trend: "up", 
-      trendValue: "15%", 
+      trendValue: "+2.5%", 
       description: "vs mois précédent",
       color: "bg-green-500"
     }
   ]
   
-  const projectsData: ChartDataItem[] = [
-    { label: "Lun", value: 12, color: "bg-blue-500" },
-    { label: "Mar", value: 18, color: "bg-blue-500" },
-    { label: "Mer", value: 15, color: "bg-blue-500" },
-    { label: "Jeu", value: 22, color: "bg-blue-500" },
-    { label: "Ven", value: 28, color: "bg-blue-500" },
-    { label: "Sam", value: 14, color: "bg-blue-500" },
-    { label: "Dim", value: 8, color: "bg-blue-500" }
+  const projectsData: ChartDataItem[] = statsData?.projectsLast7Days || [
+    { label: "Lun", value: 0, color: "bg-blue-500" },
+    { label: "Mar", value: 0, color: "bg-blue-500" },
+    { label: "Mer", value: 0, color: "bg-blue-500" },
+    { label: "Jeu", value: 0, color: "bg-blue-500" },
+    { label: "Ven", value: 0, color: "bg-blue-500" },
+    { label: "Sam", value: 0, color: "bg-blue-500" },
+    { label: "Dim", value: 0, color: "bg-blue-500" }
   ]
   
   const usersData: number[] = [10, 15, 12, 18, 24, 30, 28]
   
-  const projectStatusData: ChartDataItem[] = [
-    { label: "Publiés", value: 95, color: "bg-blue-500" },
-    { label: "En attente", value: 45, color: "bg-yellow-500" },
-    { label: "Attribués", value: 75, color: "bg-purple-500" },
-    { label: "En cours", value: 60, color: "bg-amber-500" },
-    { label: "Terminés", value: 40, color: "bg-green-500" },
-    { label: "Annulés", value: 15, color: "bg-red-500" }
+  const projectStatusData: ChartDataItem[] = statsData?.projectsByStatus || [
+    { label: "Publiés", value: 0, color: "bg-blue-500" },
+    { label: "En attente", value: 0, color: "bg-yellow-500" },
+    { label: "Attribués", value: 0, color: "bg-purple-500" },
+    { label: "En cours", value: 0, color: "bg-amber-500" },
+    { label: "Terminés", value: 0, color: "bg-green-500" },
+    { label: "Annulés", value: 0, color: "bg-red-500" }
   ]
   
   const topCategories: CategoryItem[] = [
@@ -242,21 +272,21 @@ export default function StatisticsPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Statistiques</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-white">Statistiques</h1>
+          <p className="text-white/70">
             Analyse des performances de la plateforme
           </p>
         </div>
         <div className="flex items-center gap-2 mt-4 md:mt-0">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
             <CalendarIcon className="mr-2 h-4 w-4" />
             Export
           </Button>
-          <Button variant="outline" size="icon" className="h-8 w-8">
+          <Button variant="outline" size="icon" className="h-8 w-8 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
             <Filter className="h-4 w-4" />
           </Button>
           <Select value={period} onValueChange={(value: PeriodType) => setPeriod(value)}>
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-[150px] bg-white/5 border-[#FCDA89]/20 text-white">
               <SelectValue placeholder="Période" />
             </SelectTrigger>
             <SelectContent>
@@ -276,12 +306,12 @@ export default function StatisticsPage() {
         onValueChange={(value) => setTab(value as TabType)} 
         className="space-y-4"
       >
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-5">
-          <TabsTrigger value="apercu">Aperçu</TabsTrigger>
-          <TabsTrigger value="projets">Projets</TabsTrigger>
-          <TabsTrigger value="utilisateurs">Utilisateurs</TabsTrigger>
-          <TabsTrigger value="artisans">Artisans</TabsTrigger>
-          <TabsTrigger value="finances" className="hidden lg:inline-flex">Finances</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:grid-cols-5 bg-white/5 border-[#FCDA89]/20">
+          <TabsTrigger value="apercu" className="data-[state=active]:bg-[#FCDA89]/20 data-[state=active]:text-[#FCDA89] text-white/70">Aperçu</TabsTrigger>
+          <TabsTrigger value="projets" className="data-[state=active]:bg-[#FCDA89]/20 data-[state=active]:text-[#FCDA89] text-white/70">Projets</TabsTrigger>
+          <TabsTrigger value="utilisateurs" className="data-[state=active]:bg-[#FCDA89]/20 data-[state=active]:text-[#FCDA89] text-white/70">Utilisateurs</TabsTrigger>
+          <TabsTrigger value="artisans" className="data-[state=active]:bg-[#FCDA89]/20 data-[state=active]:text-[#FCDA89] text-white/70">Artisans</TabsTrigger>
+          <TabsTrigger value="finances" className="hidden lg:inline-flex data-[state=active]:bg-[#FCDA89]/20 data-[state=active]:text-[#FCDA89] text-white/70">Finances</TabsTrigger>
         </TabsList>
         
         <TabsContent value="apercu" className="space-y-4">
@@ -294,38 +324,38 @@ export default function StatisticsPage() {
           
           {/* Charts & Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card className="lg:col-span-2">
+            <Card className="lg:col-span-2 bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Projets par jour</CardTitle>
-                <CardDescription>Nombre de nouveaux projets</CardDescription>
+                <CardTitle className="text-base text-white">Projets par jour</CardTitle>
+                <CardDescription className="text-white/70">Nombre de nouveaux projets</CardDescription>
               </CardHeader>
               <CardContent>
                 <SimpleBarChart data={projectsData} height={200} />
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Statut des projets</CardTitle>
-                <CardDescription>Distribution par statut</CardDescription>
+                <CardTitle className="text-base text-white">Statut des projets</CardTitle>
+                <CardDescription className="text-white/70">Distribution par statut</CardDescription>
               </CardHeader>
               <CardContent>
                 <SimpleBarChart data={projectStatusData} height={200} />
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Top catégories</CardTitle>
-                <CardDescription>Les plus demandées</CardDescription>
+                <CardTitle className="text-base text-white">Top catégories</CardTitle>
+                <CardDescription className="text-white/70">Les plus demandées</CardDescription>
               </CardHeader>
               <CardContent className="pb-0">
                 <div className="space-y-4">
                   {topCategories.map((category, index) => (
                     <div key={index} className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <span className="text-sm">{category.name}</span>
-                        <span className="text-sm text-muted-foreground">{category.count}</span>
+                        <span className="text-sm text-white">{category.name}</span>
+                        <span className="text-sm text-white/70">{category.count}</span>
                       </div>
                       <Progress value={category.percentage} className="h-1.5" />
                     </div>
@@ -334,15 +364,15 @@ export default function StatisticsPage() {
               </CardContent>
             </Card>
             
-            <Card>
+            <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Nouveaux utilisateurs</CardTitle>
-                <CardDescription>Tendance sur 7 jours</CardDescription>
+                <CardTitle className="text-base text-white">Nouveaux utilisateurs</CardTitle>
+                <CardDescription className="text-white/70">Tendance sur 7 jours</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="h-[200px] flex flex-col justify-center">
                   <SimpleTrendLine data={usersData} height={100} />
-                  <div className="flex justify-between text-xs text-muted-foreground mt-4">
+                  <div className="flex justify-between text-xs text-white/70 mt-4">
                     <span>Lun</span>
                     <span>Mar</span>
                     <span>Mer</span>
@@ -355,86 +385,53 @@ export default function StatisticsPage() {
               </CardContent>
             </Card>
             
-            <Card className="lg:col-span-2">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Activité récente</CardTitle>
-                <CardDescription>Dernières actions sur la plateforme</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentActivity.map((activity) => (
-                    <div key={activity.id} className="flex items-start gap-4">
-                      <div className={`rounded-full p-2 shrink-0 ${
-                        activity.type === "new_user" ? "bg-blue-100 text-blue-600" :
-                        activity.type === "new_project" ? "bg-purple-100 text-purple-600" :
-                        activity.type === "project_assigned" ? "bg-amber-100 text-amber-600" :
-                        "bg-green-100 text-green-600"
-                      }`}>
-                        {activity.type === "new_user" ? <Users className="h-4 w-4" /> :
-                         activity.type === "new_project" ? <FileText className="h-4 w-4" /> :
-                         activity.type === "project_assigned" ? <Wrench className="h-4 w-4" /> :
-                         <CheckCircle className="h-4 w-4" />}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium">{activity.title}</div>
-                        <div className="text-sm text-muted-foreground">{activity.description}</div>
-                        <div className="text-xs text-muted-foreground mt-1">{activity.time}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-              <CardFooter className="pt-0">
-                <Button variant="outline" size="sm" className="w-full">Voir toutes les activités</Button>
-              </CardFooter>
-            </Card>
           </div>
         </TabsContent>
         
         <TabsContent value="projets" className="space-y-4">
-          <Card>
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>Statistiques des projets</CardTitle>
-              <CardDescription>Analyse détaillée de tous les projets</CardDescription>
+              <CardTitle className="text-white">Statistiques des projets</CardTitle>
+              <CardDescription className="text-white/70">Analyse détaillée de tous les projets</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Contenu détaillé des statistiques de projets à venir</p>
+              <p className="text-white/70">Contenu détaillé des statistiques de projets à venir</p>
             </CardContent>
           </Card>
         </TabsContent>
         
         <TabsContent value="utilisateurs" className="space-y-4">
-          <Card>
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>Statistiques des utilisateurs</CardTitle>
-              <CardDescription>Analyse détaillée des utilisateurs</CardDescription>
+              <CardTitle className="text-white">Statistiques des utilisateurs</CardTitle>
+              <CardDescription className="text-white/70">Analyse détaillée des utilisateurs</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Contenu détaillé des statistiques d&apos;utilisateurs à venir</p>
+              <p className="text-white/70">Contenu détaillé des statistiques d&apos;utilisateurs à venir</p>
             </CardContent>
           </Card>
         </TabsContent>
         
         <TabsContent value="artisans" className="space-y-4">
-          <Card>
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>Statistiques des artisans</CardTitle>
-              <CardDescription>Analyse détaillée des artisans</CardDescription>
+              <CardTitle className="text-white">Statistiques des artisans</CardTitle>
+              <CardDescription className="text-white/70">Analyse détaillée des artisans</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Contenu détaillé des statistiques d&apos;artisans à venir</p>
+              <p className="text-white/70">Contenu détaillé des statistiques d&apos;artisans à venir</p>
             </CardContent>
           </Card>
         </TabsContent>
         
         <TabsContent value="finances" className="space-y-4">
-          <Card>
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle>Statistiques financières</CardTitle>
-              <CardDescription>Analyse détaillée des finances</CardDescription>
+              <CardTitle className="text-white">Statistiques financières</CardTitle>
+              <CardDescription className="text-white/70">Analyse détaillée des finances</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Contenu détaillé des statistiques financières à venir</p>
+              <p className="text-white/70">Contenu détaillé des statistiques financières à venir</p>
             </CardContent>
           </Card>
         </TabsContent>

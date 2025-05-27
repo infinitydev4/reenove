@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { 
   Check, 
@@ -44,144 +44,95 @@ import {
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 
-// Données fictives pour la démo
-const mockClients = [
-  {
-    id: "C-2024-001",
-    name: "Martin Dupont",
-    email: "martin.dupont@exemple.fr",
-    phone: "06 12 34 56 78",
-    address: "15 rue des Fleurs, 69000 Lyon",
-    status: "actif",
-    type: "particulier",
-    totalProjects: 3,
-    currentProjects: 1,
-    totalSpent: "14500€",
-    lastContact: "il y a 2 jours",
-    registeredDate: "15 janvier 2023",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "C-2024-002",
-    name: "Julie Lambert",
-    email: "julie.lambert@exemple.fr",
-    phone: "07 23 45 67 89",
-    address: "8 avenue Victor Hugo, 75016 Paris",
-    status: "actif",
-    type: "particulier",
-    totalProjects: 2,
-    currentProjects: 0,
-    totalSpent: "3800€",
-    lastContact: "il y a 2 semaines",
-    registeredDate: "3 mars 2023",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "C-2024-003",
-    name: "Immobilier Saint-Michel",
-    email: "contact@immobilier-sm.fr",
-    phone: "01 23 45 67 89",
-    address: "23 rue de la Paix, 13000 Marseille",
-    status: "actif",
-    type: "professionnel",
-    totalProjects: 7,
-    currentProjects: 2,
-    totalSpent: "45200€",
-    lastContact: "hier",
-    registeredDate: "10 décembre 2022",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "C-2024-004",
-    name: "Sophie Mercier",
-    email: "sophie.mercier@exemple.fr",
-    phone: "06 98 76 54 32",
-    address: "42 rue du Port, 33000 Bordeaux",
-    status: "inactif",
-    type: "particulier",
-    totalProjects: 1,
-    currentProjects: 0,
-    totalSpent: "2200€",
-    lastContact: "il y a 4 mois",
-    registeredDate: "5 juin 2023",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "C-2024-005",
-    name: "Jean Lefevre",
-    email: "jean.lefevre@exemple.fr",
-    phone: "07 65 43 21 09",
-    address: "17 rue des Lilas, 59000 Lille",
-    status: "actif",
-    type: "particulier",
-    totalProjects: 2,
-    currentProjects: 1,
-    totalSpent: "5400€",
-    lastContact: "il y a 1 semaine",
-    registeredDate: "20 avril 2023",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "C-2024-006",
-    name: "Appartements Modernes",
-    email: "contact@appart-mod.fr",
-    phone: "04 56 78 90 12",
-    address: "5 rue des Capucines, 31000 Toulouse",
-    status: "actif",
-    type: "professionnel",
-    totalProjects: 12,
-    currentProjects: 3,
-    totalSpent: "89600€",
-    lastContact: "aujourd'hui",
-    registeredDate: "15 novembre 2022",
-    avatar: "/placeholder.svg",
-  },
-  {
-    id: "C-2024-007",
-    name: "Philippe Girard",
-    email: "philippe.girard@exemple.fr",
-    phone: "06 45 67 89 01",
-    address: "28 boulevard des Océans, 44000 Nantes",
-    status: "inactif",
-    type: "particulier",
-    totalProjects: 1,
-    currentProjects: 0,
-    totalSpent: "3100€",
-    lastContact: "il y a 6 mois",
-    registeredDate: "2 février 2023",
-    avatar: "/placeholder.svg",
-  },
-]
+import { toast } from "sonner"
+
+interface Client {
+  id: string;
+  name: string | null;
+  email: string | null;
+  image: string | null;
+  role: string;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  postalCode: string | null;
+  createdAt: string;
+  updatedAt: string;
+  _count: {
+    projects: number;
+  };
+}
 
 export default function AdminClientsPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
   const [selectedType, setSelectedType] = useState<string | null>(null)
-  const [clients, setClients] = useState(mockClients)
+  const [clients, setClients] = useState<Client[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Charger les clients depuis l'API
+  useEffect(() => {
+    const fetchClients = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/admin/users')
+        if (!response.ok) {
+          throw new Error('Erreur lors du chargement des clients')
+        }
+        const data = await response.json()
+        setClients(data.users || [])
+      } catch (error) {
+        console.error('Erreur lors du chargement des clients:', error)
+        toast.error('Impossible de charger les clients')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchClients()
+  }, [])
 
   // Filtrer les clients selon les critères
-  const filteredClients = clients.filter(client => {
+  const filteredClients = clients.filter((client: Client) => {
     // Filtre de recherche
     const matchesSearch = 
-      client.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      client.email.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      client.phone.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      searchQuery === "" ||
+      (client.name && client.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
+      (client.email && client.email.toLowerCase().includes(searchQuery.toLowerCase())) || 
+      (client.phone && client.phone.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (client.address && client.address.toLowerCase().includes(searchQuery.toLowerCase())) ||
       client.id.toLowerCase().includes(searchQuery.toLowerCase())
     
-    // Filtre par statut
-    const matchesStatus = selectedStatus ? client.status === selectedStatus : true
+    // Filtre par statut - pour l'instant on considère tous les clients comme actifs
+    const matchesStatus = selectedStatus ? true : true
     
-    // Filtre par type
-    const matchesType = selectedType ? client.type === selectedType : true
+    // Filtre par type - pour l'instant on considère tous les utilisateurs comme particuliers
+    const matchesType = selectedType ? true : true
     
     return matchesSearch && matchesStatus && matchesType
   })
   
-  const handleDeleteClient = (clientId: string) => {
-    // Dans une vraie application, une confirmation serait demandée
-    // et une requête API serait effectuée pour supprimer le client
-    setClients(clients.filter(client => client.id !== clientId))
+  const handleDeleteClient = async (clientId: string) => {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer ce client ? Cette action est irréversible.")) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/users/${clientId}`, {
+        method: "DELETE",
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || "Erreur lors de la suppression du client")
+      }
+
+      toast.success("Le client a été supprimé avec succès")
+      setClients(clients.filter(client => client.id !== clientId))
+    } catch (error) {
+      console.error("Erreur:", error)
+      toast.error(error instanceof Error ? error.message : "Une erreur est survenue lors de la suppression")
+    }
   }
 
   const getStatusBadge = (status: string) => {
@@ -233,7 +184,7 @@ export default function AdminClientsPage() {
           <CardContent>
             <div className="text-2xl font-bold">{clients.length}</div>
             <p className="text-xs text-muted-foreground">
-              {clients.filter(c => c.status === "actif").length} clients actifs
+              {clients.length} clients actifs
             </p>
           </CardContent>
         </Card>
@@ -241,16 +192,16 @@ export default function AdminClientsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Projets en cours
+              Projets créés
             </CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {clients.reduce((sum, c) => sum + c.currentProjects, 0)}
+              {clients.reduce((sum, c) => sum + c._count.projects, 0)}
             </div>
             <p className="text-xs text-muted-foreground">
-              Sur {clients.reduce((sum, c) => sum + c.totalProjects, 0)} projets au total
+              Total des projets créés
             </p>
           </CardContent>
         </Card>
@@ -258,22 +209,16 @@ export default function AdminClientsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Valeur totale générée
+              Moyenne projets/client
             </CardTitle>
             <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {clients.reduce((sum, c) => {
-                const value = parseInt(c.totalSpent.replace("€", "").replace(" ", ""))
-                return sum + value
-              }, 0).toLocaleString()}€
+              {clients.length > 0 ? (clients.reduce((sum, c) => sum + c._count.projects, 0) / clients.length).toFixed(1) : "0"}
             </div>
             <p className="text-xs text-muted-foreground">
-              {(clients.reduce((sum, c) => {
-                const value = parseInt(c.totalSpent.replace("€", "").replace(" ", ""))
-                return sum + value
-              }, 0) / clients.length).toLocaleString()}€ en moyenne par client
+              Projets par client en moyenne
             </p>
           </CardContent>
         </Card>
@@ -405,21 +350,21 @@ export default function AdminClientsPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
-                            <AvatarImage src={client.avatar} alt={client.name} />
-                            <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={client.image || undefined} alt={client.name || ""} />
+                            <AvatarFallback>{client.name?.charAt(0) || "U"}</AvatarFallback>
                           </Avatar>
                           <div>
                             <Link 
                               href={`/admin/clients/${client.id}`}
                               className="font-medium hover:underline"
                             >
-                              {client.name}
+                              {client.name || "Utilisateur sans nom"}
                             </Link>
                             <div className="flex items-center gap-1 text-xs text-muted-foreground">
                               <span>{client.id}</span>
                               <span>•</span>
                               <span className="flex items-center gap-1">
-                                {getStatusBadge(client.status)}
+                                {getStatusBadge("active")}
                               </span>
                             </div>
                           </div>
@@ -429,37 +374,39 @@ export default function AdminClientsPage() {
                         <div className="space-y-1">
                           <div className="flex items-center text-sm">
                             <Mail className="mr-2 h-3 w-3 text-muted-foreground" />
-                            <span>{client.email}</span>
+                            <span>{client.email || "Non défini"}</span>
                           </div>
                           <div className="flex items-center text-sm">
                             <Phone className="mr-2 h-3 w-3 text-muted-foreground" />
-                            <span>{client.phone}</span>
+                            <span>{client.phone || "Non défini"}</span>
                           </div>
                           <div className="flex items-center text-sm">
                             <MapPin className="mr-2 h-3 w-3 text-muted-foreground" />
-                            <span className="truncate max-w-[200px]">{client.address}</span>
+                            <span className="truncate max-w-[200px]">
+                              {client.address ? `${client.address}, ${client.postalCode} ${client.city}` : "Non définie"}
+                            </span>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        {getTypeBadge(client.type)}
+                        {getTypeBadge("particulier")}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <div className="space-y-1">
-                          <div className="text-sm">Total: {client.totalProjects}</div>
-                          <div className="text-sm">En cours: {client.currentProjects}</div>
-                          <div className="text-sm font-medium">Dépensé: {client.totalSpent}</div>
+                          <div className="text-sm">Projets: {client._count.projects}</div>
+                          <div className="text-sm">En cours: 0</div>
+                          <div className="text-sm font-medium">Rôle: {client.role}</div>
                         </div>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <div className="space-y-1">
                           <div className="text-sm flex items-center">
                             <CalendarDays className="mr-2 h-3 w-3 text-muted-foreground" />
-                            <span>Inscrit le: {client.registeredDate}</span>
+                            <span>Inscrit le: {new Date(client.createdAt).toLocaleDateString('fr-FR')}</span>
                           </div>
                           <div className="text-sm flex items-center">
                             <MessageSquare className="mr-2 h-3 w-3 text-muted-foreground" />
-                            <span>Dernier contact: {client.lastContact}</span>
+                            <span>Dernière activité: {new Date(client.updatedAt).toLocaleDateString('fr-FR')}</span>
                           </div>
                         </div>
                       </TableCell>

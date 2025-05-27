@@ -32,19 +32,19 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
   // Protection basique
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[#0E261C]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FCDA89]"></div>
       </div>
     )
   }
   
   if (status === "unauthenticated") {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Alert variant="destructive" className="max-w-md">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Accès refusé</AlertTitle>
-          <AlertDescription>
+      <div className="flex items-center justify-center min-h-screen bg-[#0E261C]">
+        <Alert variant="destructive" className="max-w-md bg-red-900/20 border-red-500/50">
+          <AlertTriangle className="h-4 w-4 text-red-400" />
+          <AlertTitle className="text-red-400">Accès refusé</AlertTitle>
+          <AlertDescription className="text-red-300">
             Vous devez être connecté en tant qu&apos;administrateur pour accéder à cette page.
           </AlertDescription>
         </Alert>
@@ -54,7 +54,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
 
   return (
     <NotificationProvider>
-      <div className="h-screen overflow-hidden bg-gray-50 dark:bg-black/95 flex flex-col">
+      <div className="h-screen overflow-hidden bg-[#0E261C] flex flex-col">
         {/* Header flottant */}
         <AdminHeader toggleSidebar={() => setSidebarOpen(true)} />
 

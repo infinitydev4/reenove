@@ -326,15 +326,15 @@ export default function AdminServicesPage() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Gestion des services</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl font-bold tracking-tight text-white">Gestion des services</h1>
+          <p className="text-white/70">
             Créez et gérez les services proposés aux artisans et clients.
           </p>
         </div>
         <div className="flex items-center space-x-2 mt-4 md:mt-0">
           <Dialog open={formOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => {
+              <Button className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold" onClick={() => {
                 setEditingService(null);
                 form.reset({
                   name: '',
@@ -453,11 +453,11 @@ export default function AdminServicesPage() {
         </div>
       )}
 
-      <Card>
+      <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
           <div>
-            <CardTitle>Liste des services</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Liste des services</CardTitle>
+            <CardDescription className="text-white/70">
               {selectedCategory 
                 ? `Services de la catégorie: ${categories.find(c => c.id === selectedCategory)?.name || selectedCategory}`
                 : 'Tous les services disponibles'}
@@ -468,7 +468,7 @@ export default function AdminServicesPage() {
               value={selectedCategory} 
               onValueChange={setSelectedCategory}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[200px] bg-white/5 border-[#FCDA89]/20 text-white">
                 <SelectValue placeholder="Filtrer par catégorie" />
               </SelectTrigger>
               <SelectContent>
@@ -480,7 +480,7 @@ export default function AdminServicesPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Button variant="outline" onClick={() => fetchServices(selectedCategory)}>
+            <Button variant="outline" className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10" onClick={() => fetchServices(selectedCategory)}>
               <Filter className="h-4 w-4 mr-2" />
               Filtrer
             </Button>
@@ -494,29 +494,29 @@ export default function AdminServicesPage() {
           ) : services.length > 0 ? (
             <>
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nom</TableHead>
-                    <TableHead>Catégorie</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Statut</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
+                              <TableHeader>
+                <TableRow className="border-white/10">
+                  <TableHead className="text-white/70">Nom</TableHead>
+                  <TableHead className="text-white/70">Catégorie</TableHead>
+                  <TableHead className="text-white/70">Description</TableHead>
+                  <TableHead className="text-white/70">Statut</TableHead>
+                  <TableHead className="text-right text-white/70">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
                 <TableBody>
                   {services.map((service) => (
-                    <TableRow key={service.id}>
-                      <TableCell className="font-medium">{service.name}</TableCell>
+                    <TableRow key={service.id} className="border-white/10 hover:bg-white/5">
+                      <TableCell className="font-medium text-white">{service.name}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">
+                        <Badge variant="outline" className="bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30">
                           {service.category.name}
                         </Badge>
                       </TableCell>
-                      <TableCell className="max-w-[300px] truncate">
-                        {service.description || <span className="text-gray-400 italic">Aucune description</span>}
+                      <TableCell className="max-w-[300px] truncate text-white">
+                        {service.description || <span className="text-white/50 italic">Aucune description</span>}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={service.isActive ? "default" : "secondary"}>
+                        <Badge variant={service.isActive ? "default" : "secondary"} className={service.isActive ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-gray-500/20 text-gray-400 border-gray-500/30"}>
                           {service.isActive ? 'Actif' : 'Inactif'}
                         </Badge>
                       </TableCell>
