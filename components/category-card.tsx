@@ -19,7 +19,7 @@ export default function CategoryCard({
 
   return (
     <Link
-      href={`/category/${title.toLowerCase()}`}
+      href={`/create-project-ai`}
       className={cn(
         "group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 hover:shadow-lg transition-all duration-300 flex flex-col items-center text-center",
         className
