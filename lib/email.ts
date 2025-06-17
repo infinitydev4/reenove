@@ -60,41 +60,49 @@ const welcomeEmailTemplate = (user: User) => `
                     🌟 Ce qui vous attend
                 </h3>
                 
-                <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
-                    <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 12px; padding: 20px; flex: 1; min-width: 250px;">
-                        <div style="color: #FCDA89; font-size: 24px; margin-bottom: 10px;">🔧</div>
-                        <h4 style="color: #FCDA89; margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Artisans Vérifiés</h4>
-                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; font-size: 14px; line-height: 1.5;">
-                            Tous nos artisans sont rigoureusement sélectionnés et vérifiés
-                        </p>
-                    </div>
-                    
-                    <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 12px; padding: 20px; flex: 1; min-width: 250px;">
-                        <div style="color: #FCDA89; font-size: 24px; margin-bottom: 10px;">⚡</div>
-                        <h4 style="color: #FCDA89; margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Intervention Rapide</h4>
-                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; font-size: 14px; line-height: 1.5;">
-                            Intervention garantie sous 24-48h pour vos projets
-                        </p>
-                    </div>
-                </div>
-
-                <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                    <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 12px; padding: 20px; flex: 1; min-width: 250px;">
-                        <div style="color: #FCDA89; font-size: 24px; margin-bottom: 10px;">🛡️</div>
-                        <h4 style="color: #FCDA89; margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Garantie Qualité</h4>
-                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; font-size: 14px; line-height: 1.5;">
-                            Tous les travaux sont garantis et assurés
-                        </p>
-                    </div>
-                    
-                    <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 12px; padding: 20px; flex: 1; min-width: 250px;">
-                        <div style="color: #FCDA89; font-size: 24px; margin-bottom: 10px;">💰</div>
-                        <h4 style="color: #FCDA89; margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Prix Négociés</h4>
-                        <p style="color: rgba(255, 255, 255, 0.8); margin: 0; font-size: 14px; line-height: 1.5;">
-                            Obtenez les meilleurs prix grâce à notre réseau
-                        </p>
-                    </div>
-                </div>
+                <!-- Responsive container pour mobile -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                    <tr>
+                        <td style="width: 50%; padding: 0 7.5px 15px 0; vertical-align: top;">
+                            <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 12px; padding: 15px; width: 100%; box-sizing: border-box;">
+                                <div style="color: #FCDA89; font-size: 24px; margin-bottom: 10px; text-align: center;">🔧</div>
+                                <h4 style="color: #FCDA89; margin: 0 0 8px 0; font-size: 14px; font-weight: 600; text-align: center;">Artisans Vérifiés</h4>
+                                <p style="color: rgba(255, 255, 255, 0.8); margin: 0; font-size: 12px; line-height: 1.4; text-align: center;">
+                                    Tous nos artisans sont rigoureusement sélectionnés et vérifiés
+                                </p>
+                            </div>
+                        </td>
+                        <td style="width: 50%; padding: 0 0 15px 7.5px; vertical-align: top;">
+                            <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 12px; padding: 15px; width: 100%; box-sizing: border-box;">
+                                <div style="color: #FCDA89; font-size: 24px; margin-bottom: 10px; text-align: center;">⚡</div>
+                                <h4 style="color: #FCDA89; margin: 0 0 8px 0; font-size: 14px; font-weight: 600; text-align: center;">Intervention Rapide</h4>
+                                <p style="color: rgba(255, 255, 255, 0.8); margin: 0; font-size: 12px; line-height: 1.4; text-align: center;">
+                                    Intervention garantie sous 24-48h pour vos projets
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 50%; padding: 0 7.5px 0 0; vertical-align: top;">
+                            <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 12px; padding: 15px; width: 100%; box-sizing: border-box;">
+                                <div style="color: #FCDA89; font-size: 24px; margin-bottom: 10px; text-align: center;">🛡️</div>
+                                <h4 style="color: #FCDA89; margin: 0 0 8px 0; font-size: 14px; font-weight: 600; text-align: center;">Garantie Qualité</h4>
+                                <p style="color: rgba(255, 255, 255, 0.8); margin: 0; font-size: 12px; line-height: 1.4; text-align: center;">
+                                    Tous les travaux sont garantis et assurés
+                                </p>
+                            </div>
+                        </td>
+                        <td style="width: 50%; padding: 0 0 0 7.5px; vertical-align: top;">
+                            <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 12px; padding: 15px; width: 100%; box-sizing: border-box;">
+                                <div style="color: #FCDA89; font-size: 24px; margin-bottom: 10px; text-align: center;">💰</div>
+                                <h4 style="color: #FCDA89; margin: 0 0 8px 0; font-size: 14px; font-weight: 600; text-align: center;">Prix Négociés</h4>
+                                <p style="color: rgba(255, 255, 255, 0.8); margin: 0; font-size: 12px; line-height: 1.4; text-align: center;">
+                                    Obtenez les meilleurs prix grâce à notre réseau
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
 
             <!-- Call to action -->
