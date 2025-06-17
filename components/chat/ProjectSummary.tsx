@@ -181,6 +181,31 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
       // Tenter de sauvegarder le projet même si la connexion a échoué
       try {
         await onSaveProject()
+        
+        // Envoyer l'email de demande de devis après la sauvegarde du projet
+        try {
+          await fetch("/api/projects/quote-request-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              projectData: {
+                title: projectState.title,
+                description: projectState.details,
+                service: projectState.service?.name || "",
+                category: projectState.category?.name || "",
+                location: projectState.location?.address || "",
+                city: projectState.location?.city || "",
+                postalCode: projectState.location?.postalCode || "",
+                                 estimatedPrice: projectState.estimatedPrice
+              }
+            })
+          })
+        } catch (emailError) {
+          // Log l'erreur email mais ne pas faire échouer le processus
+          console.error("Erreur lors de l'envoi de l'email de demande de devis:", emailError)
+        }
       } catch (saveError) {
         console.error("Erreur lors de la sauvegarde du projet:", saveError)
         setFormError("Votre compte a été créé mais le projet n'a pas pu être sauvegardé. Veuillez vous connecter pour réessayer.")

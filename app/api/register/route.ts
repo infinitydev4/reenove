@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcrypt"
 import { Role } from "@/lib/generated/prisma"
+import { sendWelcomeEmail } from "@/lib/email"
 
 // Interface pour les données d'inscription
 interface UserRegistrationData {
@@ -123,6 +124,19 @@ export async function POST(request: NextRequest) {
 
     // Ne pas retourner le mot de passe hashé
     const { password: _, ...userWithoutPassword } = newUser
+
+    // Envoyer l'email de bienvenue (en arrière-plan pour ne pas bloquer la réponse)
+    try {
+      await sendWelcomeEmail({
+        name: name,
+        email: email,
+        firstName: firstName,
+        lastName: lastName
+      })
+    } catch (emailError) {
+      // Log l'erreur mais ne pas faire échouer l'inscription
+      console.error("Erreur lors de l'envoi de l'email de bienvenue:", emailError)
+    }
 
     return NextResponse.json(
       { 
