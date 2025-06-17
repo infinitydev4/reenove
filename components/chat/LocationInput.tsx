@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState, useCallback } from "react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -31,8 +31,11 @@ export default function LocationInput({
   onSubmit
 }: LocationInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
   const [addressSelected, setAddressSelected] = useState(false)
   const [manualEntry, setManualEntry] = useState(false)
+  const [isGoogleChanging, setIsGoogleChanging] = useState(false)
+  const isInitialized = useRef(false)
 
   // Vérifier si les champs sont valides
   const isAddressValid = address.trim().length > 0
@@ -61,72 +64,149 @@ export default function LocationInput({
     }
   }, [])
 
-  // Initialiser l'autocomplétion Google Maps
-  useEffect(() => {
-    if (!window.google || !window.google.maps || !window.google.maps.places || !inputRef.current || manualEntry) {
+  // Fonction pour extraire les informations de l'adresse
+  const extractAddressComponents = useCallback((place: google.maps.places.PlaceResult) => {
+    let extractedAddress = ""
+    let extractedCity = ""
+    let extractedPostalCode = ""
+    
+    // Utiliser l'adresse formatée de Google
+    if (place.formatted_address) {
+      extractedAddress = place.formatted_address
+    }
+    
+    // Parcourir les composants d'adresse pour extraire ville et code postal
+    if (place.address_components) {
+      place.address_components.forEach(component => {
+        const types = component.types
+        
+        // Code postal
+        if (types.includes("postal_code")) {
+          extractedPostalCode = component.long_name
+        }
+        
+        // Ville - on cherche plusieurs types possibles
+        if (types.includes("locality")) {
+          extractedCity = component.long_name
+        } else if (types.includes("administrative_area_level_2") && !extractedCity) {
+          extractedCity = component.long_name
+        } else if (types.includes("sublocality") && !extractedCity) {
+          extractedCity = component.long_name
+        } else if (types.includes("sublocality_level_1") && !extractedCity) {
+          extractedCity = component.long_name
+        }
+      })
+    }
+    
+    return { extractedAddress, extractedCity, extractedPostalCode }
+  }, [])
+
+  // Fonction pour gérer la sélection d'une place Google
+  const handlePlaceChanged = useCallback(() => {
+    if (!autocompleteRef.current) return
+    
+    const place = autocompleteRef.current.getPlace()
+    
+    console.log("Place sélectionnée:", place)
+    
+    if (!place.address_components) {
+      console.log("Aucun composant d'adresse trouvé")
       return
     }
 
+    setIsGoogleChanging(true)
+    
+    const { extractedAddress, extractedCity, extractedPostalCode } = extractAddressComponents(place)
+    
+    console.log("Informations extraites:", { 
+      extractedAddress, 
+      extractedCity, 
+      extractedPostalCode 
+    })
+    
+    // Mettre à jour les champs individuellement d'abord
+    if (extractedAddress && onAddressChange) {
+      console.log("Mise à jour de l'adresse:", extractedAddress)
+      onAddressChange(extractedAddress)
+    }
+    if (extractedCity && onCityChange) {
+      console.log("Mise à jour de la ville:", extractedCity)
+      onCityChange(extractedCity)
+    }
+    if (extractedPostalCode && onPostalCodeChange) {
+      console.log("Mise à jour du code postal:", extractedPostalCode)
+      onPostalCodeChange(extractedPostalCode)
+    }
+    
+    // Ensuite, mettre à jour l'état global
+    setTimeout(() => {
+      if (onLocationUpdate) {
+        console.log("Mise à jour globale de la localisation")
+        onLocationUpdate(extractedAddress, extractedCity, extractedPostalCode)
+      }
+      setAddressSelected(true)
+      setManualEntry(false)
+      setIsGoogleChanging(false)
+    }, 50)
+  }, [extractAddressComponents, onAddressChange, onCityChange, onPostalCodeChange, onLocationUpdate])
+
+  // Initialiser l'autocomplétion Google Maps UNE SEULE FOIS
+  useEffect(() => {
+    if (!window.google || !window.google.maps || !window.google.maps.places || !inputRef.current || isInitialized.current) {
+      return
+    }
+
+    console.log("Initialisation de l'autocomplétion Google")
+    
     const autocomplete = new google.maps.places.Autocomplete(inputRef.current, {
       componentRestrictions: { country: "fr" },
       types: ["address"],
       fields: ["address_components", "formatted_address", "geometry"]
     })
 
+    autocompleteRef.current = autocomplete
+    isInitialized.current = true
+
     // Écouter les événements de changement de place
-    const listener = autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace()
-      
-      let newAddress = address
-      let newCity = city
-      let newPostalCode = postalCode
-      
-      if (place.formatted_address) {
-        newAddress = place.formatted_address
-      }
-      
-      if (place.address_components) {
-        place.address_components.forEach(component => {
-          if (component.types.includes("postal_code")) {
-            newPostalCode = component.long_name
-          }
-          
-          if (component.types.includes("locality")) {
-            newCity = component.long_name
-          }
-        })
-      }
-      
-      // Mettre à jour les états
-      onLocationUpdate(newAddress, newCity, newPostalCode)
-      setAddressSelected(true)
-    })
+    const listener = autocomplete.addListener("place_changed", handlePlaceChanged)
 
     // Nettoyer quand le composant est démonté
     return () => {
-      google.maps.event.removeListener(listener)
+      if (autocompleteRef.current) {
+        google.maps.event.clearInstanceListeners(autocompleteRef.current)
+        autocompleteRef.current = null
+        isInitialized.current = false
+      }
     }
-  }, [address, city, postalCode, onLocationUpdate, manualEntry])
+  }, []) // Pas de dépendances pour éviter la réinitialisation
 
   // Afficher les champs supplémentaires lorsque l'utilisateur commence à taper manuellement
   useEffect(() => {
-    if (address.trim().length > 0 && !addressSelected && !manualEntry) {
+    if (address.trim().length > 0 && !addressSelected && !manualEntry && !isGoogleChanging) {
       setManualEntry(true)
     }
-  }, [address, addressSelected, manualEntry])
+  }, [address, addressSelected, manualEntry, isGoogleChanging])
 
-  // Mettre à jour l'adresse, la ville et le code postal manuellement
+  // Mettre à jour l'adresse manuellement
   const handleManualAddressUpdate = (newAddress: string) => {
+    if (isGoogleChanging) return // Ignorer les changements pendant que Google met à jour
+    
+    setAddressSelected(false) // Reset l'état de sélection automatique
+    setManualEntry(true)
     onAddressChange(newAddress)
     onLocationUpdate(newAddress, city, postalCode)
   }
 
   const handleManualCityUpdate = (newCity: string) => {
+    if (isGoogleChanging) return
+    
     onCityChange(newCity)
     onLocationUpdate(address, newCity, postalCode)
   }
 
   const handleManualPostalCodeUpdate = (newPostalCode: string) => {
+    if (isGoogleChanging) return
+    
     const value = newPostalCode.replace(/\D/g, '')
     onPostalCodeChange(value)
     onLocationUpdate(address, city, value)
@@ -134,6 +214,14 @@ export default function LocationInput({
     // Mettre à jour le showMap si tous les champs sont valides
     if (address.trim().length > 0 && city.trim().length > 0 && value.length === 5) {
       setAddressSelected(true)
+    }
+  }
+
+  // Gérer le focus de l'input pour éviter les conflits
+  const handleInputFocus = () => {
+    if (autocompleteRef.current && inputRef.current) {
+      // S'assurer que l'autocomplétion est bien liée à l'input
+      google.maps.event.trigger(inputRef.current, 'focus')
     }
   }
 
@@ -151,8 +239,10 @@ export default function LocationInput({
               id="address"
               value={address}
               onChange={(e) => handleManualAddressUpdate(e.target.value)}
+              onFocus={handleInputFocus}
               placeholder="Saisissez votre adresse"
               className="bg-muted/30 border-muted w-full"
+              autoComplete="off"
             />
             
             {addressSelected && (

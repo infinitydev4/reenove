@@ -55,7 +55,7 @@ export default function HeroSection() {
             <Button className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-bold px-6 py-6 text-lg rounded-xl flex items-center gap-2" asChild>
               <Link href="/create-project-ai">
                 <Bot className="h-5 w-5" />
-                Lancez votre projet avec l'IA 
+                Demander un devis gratuit
               </Link>
             </Button>
             {/* <Button variant="outline" className="border-white/20 bg-white/10 hover:bg-white/20 text-white px-6 py-6 text-lg rounded-xl" asChild>

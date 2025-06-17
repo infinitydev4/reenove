@@ -42,6 +42,7 @@ export interface Message {
     min: number
     max: number
   }
+  showEstimationButton?: boolean
 }
 
 // État du projet
@@ -178,7 +179,7 @@ export default function ChatContainer({ onSaveProject }: ChatContainerProps) {
     const initialMessage: Message = {
       id: "welcome",
       type: "bot",
-      content: "Bonjour ! Je suis votre assistant pour créer votre projet de rénovation. Pour commencer, quel type de travaux souhaitez-vous réaliser ?",
+      content: "Bonjour ! Je suis ton assistant Reenove pour créer ton devis de rénovation. On va avancer étape par étape, pas de stress. Pour commencer, quel type de projet souhaites-tu réaliser ?",
       timestamp: new Date(),
     }
     
@@ -369,7 +370,8 @@ export default function ChatContainer({ onSaveProject }: ChatContainerProps) {
         id: `estimation-${Date.now()}`,
         type: "bot",
         content: "Selon les informations que vous m'avez fournies, je peux maintenant vous proposer une première estimation. Souhaitez-vous me donner d'autres précisions avant que je finalise mon analyse ?",
-        timestamp: new Date()
+        timestamp: new Date(),
+        showEstimationButton: true
       }
       
       setMessages(prev => [...prev, estimationMessage])
@@ -530,6 +532,83 @@ export default function ChatContainer({ onSaveProject }: ChatContainerProps) {
       
       setMessages(prev => [...prev, detailsMessage])
     }, 500)
+  }
+
+  // Fonction pour gérer le bouton d'estimation directe
+  const handleDirectEstimation = async () => {
+    setIsLoading(true)
+    
+    try {
+      // Appel à l'API pour obtenir l'estimation
+      const response = await fetch("/api/ai-project", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: "user",
+              content: "Je souhaite obtenir une estimation maintenant avec les informations déjà fournies"
+            }
+          ],
+          projectData: {
+            step: projectState.step,
+            location: projectState.location,
+            category: projectState.category,
+            service: projectState.service,
+            details: projectState.details,
+            title: projectState.title,
+            photos: projectState.photos,
+            projectDetails: projectState.projectDetails
+          },
+          requestEstimation: true
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la communication avec l'API")
+      }
+
+      const data = await response.json()
+      
+      // Mettre à jour l'état du projet avec l'estimation
+      setProjectState(prev => ({
+        ...prev,
+        step: "summary",
+        estimatedPrice: data.estimatedPrice
+      }))
+      
+      // Ajouter le message de résumé
+      const summaryMessage: Message = {
+        id: `summary-${Date.now()}`,
+        type: "summary",
+        content: "Voici votre devis estimatif :",
+        timestamp: new Date(),
+        estimatedPrice: data.estimatedPrice
+      }
+      
+      setMessages(prev => [...prev, summaryMessage])
+      
+      // Faire défiler vers le bas après l'ajout du message
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+      }, 100)
+    } catch (error) {
+      console.error("Erreur:", error)
+      
+      // Message d'erreur
+      const errorMessage: Message = {
+        id: `system-${Date.now()}`,
+        type: "system",
+        content: "Désolé, une erreur s'est produite lors de la génération de l'estimation. Veuillez réessayer.",
+        timestamp: new Date()
+      }
+      
+      setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   // Fonction pour gérer les messages utilisateur
@@ -828,12 +907,13 @@ export default function ChatContainer({ onSaveProject }: ChatContainerProps) {
               handleCategorySelect={handleCategorySelect}
               handleServiceSelect={handleServiceSelect}
               handleProjectAccept={handleProjectAccept}
+              handleDirectEstimation={handleDirectEstimation}
             />
           </div>
           
           {/* Composant d'upload de photos (affiché uniquement à l'étape photos) */}
           {projectState.step === "photos" && (
-            <div className="border-t border-white/10 bg-[#0E261C]/80 backdrop-blur-sm p-4">
+            <div className="border-t border-white/10 bg-[#0E261C]/80 backdrop-blur-sm p-4 overflow-y-auto">
               <h3 className="text-lg font-semibold text-white mb-3">Ajoutez des photos de votre projet</h3>
               <PhotoUpload 
                 onPhotosUploaded={handlePhotosUploaded} 

@@ -20,6 +20,7 @@ interface ChatMessagesProps {
   handleCategorySelect: (categoryId: string) => void
   handleServiceSelect: (serviceId: string) => void
   handleProjectAccept: () => void
+  handleDirectEstimation: () => void
 }
 
 export default function ChatMessages({
@@ -29,7 +30,8 @@ export default function ChatMessages({
   projectState,
   handleCategorySelect,
   handleServiceSelect,
-  handleProjectAccept
+  handleProjectAccept,
+  handleDirectEstimation
 }: ChatMessagesProps) {
   // Rendu des messages
   const renderMessage = (message: Message) => {
@@ -74,6 +76,18 @@ export default function ChatMessages({
                         {option.label}
                       </Button>
                     ))}
+                  </div>
+                )}
+                
+                {message.showEstimationButton && (
+                  <div className="mt-3 pt-2 border-t border-muted">
+                    <Button
+                      className="w-full bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-medium"
+                      onClick={handleDirectEstimation}
+                    >
+                      <Zap className="h-4 w-4 mr-2" />
+                      Donner une estimation maintenant
+                    </Button>
                   </div>
                 )}
               </div>
@@ -394,9 +408,14 @@ export default function ChatMessages({
           <div className="bg-[#0E261C] p-1.5 rounded-full border-[0.5px] border-[#FCDA89]/20">
             <Bot className="h-4 w-4 text-[#FCDA89]" />
           </div>
-          <div className="bg-card p-3 rounded-xl rounded-bl-sm shadow-sm border flex items-center">
-            <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            <span className="ml-2 text-sm text-muted-foreground">Génération en cours...</span>
+          <div className="bg-card p-3 rounded-xl rounded-bl-sm shadow-sm border flex items-center justify-center">
+            <div className="flex items-center">
+              <div className="flex space-x-1.5">
+                <div className="w-2 h-2 bg-[#FCDA89] rounded-full animate-bounce" style={{ animationDelay: '0ms', animationDuration: '1.4s' }}></div>
+                <div className="w-2 h-2 bg-[#FCDA89] rounded-full animate-bounce" style={{ animationDelay: '200ms', animationDuration: '1.4s' }}></div>
+                <div className="w-2 h-2 bg-[#FCDA89] rounded-full animate-bounce" style={{ animationDelay: '400ms', animationDuration: '1.4s' }}></div>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useToast } from '@/components/ui/use-toast'
 import * as LucideIcons from "lucide-react"
+import Link from "next/link"
 import { 
   Plus, 
   Save, 
@@ -300,6 +301,11 @@ export default function AdminCategoriesPage() {
           </p>
         </div>
         <div className="flex items-center space-x-2 mt-4 md:mt-0">
+          <Link href="/admin/services">
+            <Button variant="outline" className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+              Gérer les services
+            </Button>
+          </Link>
           <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">

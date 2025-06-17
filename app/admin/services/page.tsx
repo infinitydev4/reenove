@@ -54,6 +54,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { IconPicker } from '@/components/ui/icon-picker'
 import { cn } from '@/lib/utils'
+import Link from "next/link"
 
 // Types et interfaces
 interface Service {
@@ -332,6 +333,11 @@ export default function AdminServicesPage() {
           </p>
         </div>
         <div className="flex items-center space-x-2 mt-4 md:mt-0">
+          <Link href="/admin/categories">
+            <Button variant="outline" className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+              Gérer les catégories
+            </Button>
+          </Link>
           <Dialog open={formOpen} onOpenChange={setFormOpen}>
             <DialogTrigger asChild>
               <Button className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold" onClick={() => {
