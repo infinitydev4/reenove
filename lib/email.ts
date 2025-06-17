@@ -31,15 +31,15 @@ const welcomeEmailTemplate = (user: User) => `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenue chez Renoveo</title>
+    <title>Bienvenue chez reenove</title>
 </head>
 <body style="margin: 0; padding: 0; background: linear-gradient(135deg, #0E261C 0%, #1a3a2e 100%); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
     <div style="max-width: 600px; margin: 0 auto; background: #0E261C;">
         <!-- Header avec logo -->
         <div style="background: linear-gradient(135deg, #0E261C 0%, #1a3a2e 100%); padding: 40px 20px; text-align: center; border-bottom: 2px solid #FCDA89;">
-            <img src="https://renoveo.fr/logow.png" alt="Renoveo" style="height: 60px; margin-bottom: 20px;">
+            <img src="https://reenove.com/logow.png" alt="reenove" style="height: 60px; margin-bottom: 20px;">
             <h1 style="color: #FCDA89; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                🎉 Bienvenue chez Renoveo !
+                🎉 Bienvenue chez reenove !
             </h1>
         </div>
 
@@ -50,7 +50,7 @@ const welcomeEmailTemplate = (user: User) => `
                     Bonjour ${user.firstName || user.name} ! 👋
                 </h2>
                 <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6; margin: 0; font-size: 16px;">
-                    Nous sommes ravis de vous accueillir dans la communauté Renoveo ! Votre compte a été créé avec succès et vous pouvez maintenant profiter de tous nos services.
+                    Nous sommes ravis de vous accueillir dans la communauté reenove ! Votre compte a été créé avec succès et vous pouvez maintenant profiter de tous nos services.
                 </p>
             </div>
 
@@ -99,7 +99,7 @@ const welcomeEmailTemplate = (user: User) => `
 
             <!-- Call to action -->
             <div style="text-align: center; margin: 30px 0;">
-                <a href="https://renoveo.fr/create-project-ai" style="background: linear-gradient(135deg, #FCDA89 0%, #f5d080 100%); color: #0E261C; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(252, 218, 137, 0.3); transition: all 0.3s ease;">
+                <a href="https://reenove.com/create-project-ai" style="background: linear-gradient(135deg, #FCDA89 0%, #f5d080 100%); color: #0E261C; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(252, 218, 137, 0.3); transition: all 0.3s ease;">
                     🚀 Créer mon premier projet
                 </a>
             </div>
@@ -112,8 +112,8 @@ const welcomeEmailTemplate = (user: User) => `
                 <p style="color: rgba(255, 255, 255, 0.8); margin: 0 0 15px 0; font-size: 14px; line-height: 1.5;">
                     Notre équipe est là pour vous accompagner dans tous vos projets
                 </p>
-                <a href="mailto:support@renoveo.fr" style="color: #FCDA89; text-decoration: none; font-weight: 500;">
-                    📧 support@renoveo.fr
+                <a href="mailto:contact@reenove.com" style="color: #FCDA89; text-decoration: none; font-weight: 500;">
+                    📧 contact@reenove.com
                 </a>
             </div>
         </div>
@@ -121,10 +121,10 @@ const welcomeEmailTemplate = (user: User) => `
         <!-- Footer -->
         <div style="background: #0a1f15; padding: 30px 20px; text-align: center; border-top: 1px solid rgba(252, 218, 137, 0.2);">
             <p style="color: rgba(255, 255, 255, 0.6); margin: 0 0 10px 0; font-size: 14px;">
-                Merci de faire confiance à Renoveo pour vos projets de rénovation
+                Merci de faire confiance à reenove pour vos projets de rénovation
             </p>
             <p style="color: rgba(255, 255, 255, 0.4); margin: 0; font-size: 12px;">
-                © 2024 Renoveo. Tous droits réservés.
+                © 2024 reenove. Tous droits réservés.
             </p>
         </div>
     </div>
@@ -139,13 +139,13 @@ const quoteRequestEmailTemplate = (user: User, project: ProjectEstimation) => `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votre demande de devis - Renoveo</title>
+    <title>Votre demande de devis - Reenove</title>
 </head>
 <body style="margin: 0; padding: 0; background: linear-gradient(135deg, #0E261C 0%, #1a3a2e 100%); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
     <div style="max-width: 600px; margin: 0 auto; background: #0E261C;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #0E261C 0%, #1a3a2e 100%); padding: 40px 20px; text-align: center; border-bottom: 2px solid #FCDA89;">
-            <img src="https://renoveo.fr/logow.png" alt="Renoveo" style="height: 60px; margin-bottom: 20px;">
+            <img src="https://reenove.com/logow.png" alt="reenove" style="height: 60px; margin-bottom: 20px;">
             <h1 style="color: #FCDA89; margin: 0; font-size: 28px; font-weight: 700;">
                 ✅ Demande de devis confirmée
             </h1>
@@ -237,7 +237,7 @@ const quoteRequestEmailTemplate = (user: User, project: ProjectEstimation) => `
 
             <!-- Call to action -->
             <div style="text-align: center; margin: 30px 0;">
-                <a href="https://renoveo.fr/client" style="background: linear-gradient(135deg, #FCDA89 0%, #f5d080 100%); color: #0E261C; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(252, 218, 137, 0.3);">
+                <a href="https://reenove.com/client" style="background: linear-gradient(135deg, #FCDA89 0%, #f5d080 100%); color: #0E261C; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(252, 218, 137, 0.3);">
                     📊 Suivre mon projet
                 </a>
             </div>
@@ -250,8 +250,8 @@ const quoteRequestEmailTemplate = (user: User, project: ProjectEstimation) => `
                 <p style="color: rgba(255, 255, 255, 0.8); margin: 0 0 15px 0; font-size: 14px;">
                     Notre équipe est disponible pour vous accompagner
                 </p>
-                <a href="mailto:support@renoveo.fr" style="color: #FCDA89; text-decoration: none; font-weight: 500;">
-                    📧 support@renoveo.fr
+                <a href="mailto:contact@reenove.com" style="color: #FCDA89; text-decoration: none; font-weight: 500;">
+                    📧 contact@reenove.com
                 </a>
             </div>
         </div>
@@ -259,10 +259,10 @@ const quoteRequestEmailTemplate = (user: User, project: ProjectEstimation) => `
         <!-- Footer -->
         <div style="background: #0a1f15; padding: 30px 20px; text-align: center; border-top: 1px solid rgba(252, 218, 137, 0.2);">
             <p style="color: rgba(255, 255, 255, 0.6); margin: 0 0 10px 0; font-size: 14px;">
-                Merci de faire confiance à Renoveo pour vos projets de rénovation
+                Merci de faire confiance à reenove pour vos projets de rénovation
             </p>
             <p style="color: rgba(255, 255, 255, 0.4); margin: 0; font-size: 12px;">
-                © 2024 Renoveo. Tous droits réservés.
+                © 2024 Reenove. Tous droits réservés.
             </p>
         </div>
     </div>
@@ -274,9 +274,9 @@ const quoteRequestEmailTemplate = (user: User, project: ProjectEstimation) => `
 export async function sendWelcomeEmail(user: User) {
   try {
     const data = await resend.emails.send({
-      from: 'Renoveo <noreply@renoveo.fr>',
+      from: 'Reenove <contact@reenove.com>',
       to: [user.email],
-      subject: '🎉 Bienvenue chez Renoveo ! Votre compte est prêt',
+      subject: '🎉 Bienvenue chez Reenove ! Votre compte est prêt',
       html: welcomeEmailTemplate(user),
     })
 
@@ -292,7 +292,7 @@ export async function sendWelcomeEmail(user: User) {
 export async function sendQuoteRequestEmail(user: User, project: ProjectEstimation) {
   try {
     const data = await resend.emails.send({
-      from: 'Renoveo <noreply@renoveo.fr>',
+      from: 'Reenove <contact@reenove.com>',
       to: [user.email],
       subject: `✅ Demande de devis confirmée - ${project.title}`,
       html: quoteRequestEmailTemplate(user, project),
