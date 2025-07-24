@@ -23,7 +23,10 @@ import {
   BadgeCheck,
   Star,
   X,
-  ChevronLeft
+  ChevronLeft,
+  Loader2,
+  Building,
+  UserPlus
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -46,10 +49,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { FilterDrawer, FilterGroup } from "@/components/admin/FilterDrawer"
+import { toast } from "sonner"
 
 // Type pour un artisan
 type Artisan = {
@@ -71,15 +92,22 @@ type Artisan = {
   verificationStatus?: "PENDING" | "VERIFIED" | "REJECTED"
 }
 
-// Liste des spécialités 
-const specialities = [
-  "Plomberie",
-  "Électricité",
-  "Maçonnerie",
-  "Peinture",
-  "Menuiserie",
-  "Carrelage"
-]
+// Interface pour le formulaire d'ajout d'artisan
+interface CreateArtisanForm {
+  name: string
+  email: string
+  password: string
+  phone: string
+  address: string
+  city: string
+  postalCode: string
+  companyName: string
+  siret: string
+  yearsOfExperience: number
+  level: "BEGINNER" | "INTERMEDIATE" | "CONFIRMED" | "EXPERT"
+  specialties: string[]
+  preferredRadius: number
+}
 
 export default function AdminArtisansPage() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -93,6 +121,26 @@ export default function AdminArtisansPage() {
   const [uniqueSpecialities, setUniqueSpecialities] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  
+  // États pour le formulaire d'ajout d'artisan
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [services, setServices] = useState<{id: string, name: string, categoryName: string}[]>([])
+  const [createForm, setCreateForm] = useState<CreateArtisanForm>({
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    address: "",
+    city: "",
+    postalCode: "",
+    companyName: "",
+    siret: "",
+    yearsOfExperience: 0,
+    level: "BEGINNER",
+    specialties: [],
+    preferredRadius: 50
+  })
 
   // Récupération des filtres individuels pour retrocompatibilité avec le code existant
   const selectedStatus = selectedFilters.status
@@ -134,6 +182,30 @@ export default function AdminArtisansPage() {
 
     fetchArtisans()
   }, [])
+
+  // Charger les services pour le formulaire
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch('/api/services')
+        if (response.ok) {
+          const data = await response.json()
+          const formattedServices = data.map((service: any) => ({
+            id: service.id,
+            name: service.name,
+            categoryName: service.category?.name || "Non défini"
+          }))
+          setServices(formattedServices)
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des services:", error)
+      }
+    }
+    
+    if (isAddDialogOpen) {
+      fetchServices()
+    }
+  }, [isAddDialogOpen])
 
   // Définition des groupes de filtres
   const filterGroups: FilterGroup[] = [
@@ -198,6 +270,85 @@ export default function AdminArtisansPage() {
     });
     setSearchQuery("");
   };
+
+  // Fonction pour gérer les changements du formulaire
+  const handleFormChange = (field: keyof CreateArtisanForm, value: any) => {
+    setCreateForm(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
+  // Fonction pour gérer la sélection des spécialités
+  const handleSpecialtyToggle = (serviceId: string) => {
+    setCreateForm(prev => ({
+      ...prev,
+      specialties: prev.specialties.includes(serviceId)
+        ? prev.specialties.filter(id => id !== serviceId)
+        : [...prev.specialties, serviceId]
+    }))
+  }
+
+  // Fonction pour créer un artisan
+  const handleCreateArtisan = async () => {
+    try {
+      setIsSubmitting(true)
+
+      // Validation des champs obligatoires
+      if (!createForm.name || !createForm.email || !createForm.password) {
+        toast.error("Veuillez remplir tous les champs obligatoires")
+        return
+      }
+
+      if (createForm.specialties.length === 0) {
+        toast.error("Veuillez sélectionner au moins une spécialité")
+        return
+      }
+
+      const response = await fetch('/api/admin/artisans', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(createForm),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Erreur lors de la création de l\'artisan')
+      }
+
+      const newArtisan = await response.json()
+      
+      // Mettre à jour la liste des artisans
+      setArtisans(prev => [newArtisan, ...prev])
+      
+      // Réinitialiser le formulaire et fermer le dialog
+      setCreateForm({
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
+        address: "",
+        city: "",
+        postalCode: "",
+        companyName: "",
+        siret: "",
+        yearsOfExperience: 0,
+        level: "BEGINNER",
+        specialties: [],
+        preferredRadius: 50
+      })
+      setIsAddDialogOpen(false)
+      
+      toast.success("Artisan créé avec succès")
+    } catch (error: any) {
+      console.error("Erreur lors de la création:", error)
+      toast.error(error.message || "Impossible de créer l'artisan")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
 
   // Filtrer les artisans selon les critères
   const filteredArtisans = artisans.filter(artisan => {
@@ -320,8 +471,11 @@ export default function AdminArtisansPage() {
             Gérez tous les artisans partenaires de la plateforme.
           </p>
         </div>
-        <Button className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
-          <Hammer className="mr-2 h-4 w-4" />
+        <Button 
+          onClick={() => setIsAddDialogOpen(true)}
+          className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold"
+        >
+          <UserPlus className="mr-2 h-4 w-4" />
           Ajouter un artisan
         </Button>
       </div>
@@ -407,9 +561,9 @@ export default function AdminArtisansPage() {
           side="right"
           className="hidden md:block"
           trigger={
-                      <Button variant="outline" size="icon" className="h-9 w-9 hidden md:flex bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
-            <Filter className="h-4 w-4" />
-          </Button>
+            <Button variant="outline" size="icon" className="h-9 w-9 hidden md:flex bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+              <Filter className="h-4 w-4" />
+            </Button>
           }
           filterGroups={filterGroups}
           selectedFilters={selectedFilters}
@@ -424,28 +578,15 @@ export default function AdminArtisansPage() {
           side="bottom"
           isMobile={true}
           trigger={
-                      <Button variant="outline" size="icon" className="h-9 w-9 md:hidden bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
-            <Filter className="h-4 w-4" />
-          </Button>
+            <Button variant="outline" size="icon" className="h-9 w-9 md:hidden bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+              <Filter className="h-4 w-4" />
+            </Button>
           }
           filterGroups={filterGroups}
           selectedFilters={selectedFilters}
           onFilterChange={handleFilterChange}
           onResetFilters={handleResetFilters}
         />
-        
-        {/* Indicateurs de filtres actifs */}
-        {(selectedStatus || selectedSpeciality || selectedAvailability || selectedVerification) && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="hidden sm:inline-flex gap-1 h-9"
-            onClick={handleResetFilters}
-          >
-            <X className="h-3.5 w-3.5" />
-            Réinitialiser
-          </Button>
-        )}
         
         <Button variant="outline" size="icon" className="h-9 w-9 bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
           <Download className="h-4 w-4" />
@@ -517,179 +658,10 @@ export default function AdminArtisansPage() {
 
       <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
         <CardHeader className="pb-3">
-          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-            <div className="relative w-full md:max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-white/50" />
-              <Input
-                type="search"
-                placeholder="Rechercher par nom, email, téléphone..."
-                className="w-full pl-9 bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            
-            <div className="flex gap-2 flex-wrap">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Filter className="mr-2 h-4 w-4" />
-                    Statut
-                    {selectedStatus && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>Filtrer par statut</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", !selectedStatus && "font-bold")}
-                    onClick={() => handleFilterChange("status", null)}
-                  >
-                    Tous
-                    {!selectedStatus && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", selectedStatus === "actif" && "font-bold")}
-                    onClick={() => handleFilterChange("status", "actif")}
-                  >
-                    Actifs
-                    {selectedStatus === "actif" && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", selectedStatus === "inactif" && "font-bold")}
-                    onClick={() => handleFilterChange("status", "inactif")}
-                  >
-                    Inactifs
-                    {selectedStatus === "inactif" && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <SlidersHorizontal className="mr-2 h-4 w-4" />
-                    Spécialité
-                    {selectedSpeciality && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>Filtrer par spécialité</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", !selectedSpeciality && "font-bold")}
-                    onClick={() => handleFilterChange("speciality", null)}
-                  >
-                    Toutes
-                    {!selectedSpeciality && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  {uniqueSpecialities.map(speciality => (
-                    <DropdownMenuItem 
-                      key={speciality}
-                      className={cn("flex items-center gap-2 cursor-pointer", selectedSpeciality === speciality && "font-bold")}
-                      onClick={() => handleFilterChange("speciality", speciality)}
-                    >
-                      {speciality}
-                      {selectedSpeciality === speciality && <Check className="ml-auto h-4 w-4" />}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <SlidersHorizontal className="mr-2 h-4 w-4" />
-                    Disponibilité
-                    {selectedAvailability && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>Filtrer par disponibilité</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", !selectedAvailability && "font-bold")}
-                    onClick={() => handleFilterChange("availability", null)}
-                  >
-                    Toutes
-                    {!selectedAvailability && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "disponible" && "font-bold")}
-                    onClick={() => handleFilterChange("availability", "disponible")}
-                  >
-                    Disponible
-                    {selectedAvailability === "disponible" && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "occupé" && "font-bold")}
-                    onClick={() => handleFilterChange("availability", "occupé")}
-                  >
-                    Occupé
-                    {selectedAvailability === "occupé" && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", selectedAvailability === "indisponible" && "font-bold")}
-                    onClick={() => handleFilterChange("availability", "indisponible")}
-                  >
-                    Indisponible
-                    {selectedAvailability === "indisponible" && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Filter className="mr-2 h-4 w-4" />
-                    Vérification
-                    {selectedVerification && <Badge className="ml-2 bg-primary/20 text-primary">1</Badge>}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuLabel>Filtrer par vérification</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", !selectedVerification && "font-bold")}
-                    onClick={() => handleFilterChange("verification", null)}
-                  >
-                    Toutes
-                    {!selectedVerification && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "VERIFIED" && "font-bold")}
-                    onClick={() => handleFilterChange("verification", "VERIFIED")}
-                  >
-                    Vérifiées
-                    {selectedVerification === "VERIFIED" && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "REJECTED" && "font-bold")}
-                    onClick={() => handleFilterChange("verification", "REJECTED")}
-                  >
-                    Rejetées
-                    {selectedVerification === "REJECTED" && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    className={cn("flex items-center gap-2 cursor-pointer", selectedVerification === "PENDING" && "font-bold")}
-                    onClick={() => handleFilterChange("verification", "PENDING")}
-                  >
-                    En attente
-                    {selectedVerification === "PENDING" && <Check className="ml-auto h-4 w-4" />}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              <Button variant="outline" size="sm" onClick={handleResetFilters}>
-                Réinitialiser
-              </Button>
-              
-              <Button variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Exporter
-              </Button>
-            </div>
-          </div>
+          <CardTitle className="text-white">Liste des artisans</CardTitle>
+          <CardDescription className="text-white/70">
+            {filteredArtisans.length} artisan{filteredArtisans.length > 1 ? "s" : ""} trouvé{filteredArtisans.length > 1 ? "s" : ""}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -905,6 +877,231 @@ export default function AdminArtisansPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Dialog pour ajouter un artisan */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="bg-[#0E261C] border-[#FCDA89]/20 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-[#FCDA89]">Ajouter un nouvel artisan</DialogTitle>
+            <DialogDescription className="text-white/70">
+              Remplissez les informations pour créer un nouveau profil artisan
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+            {/* Informations personnelles */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-[#FCDA89]">Informations personnelles</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom complet *</Label>
+                <Input
+                  id="name"
+                  value={createForm.name}
+                  onChange={(e) => handleFormChange('name', e.target.value)}
+                  className="bg-white/5 border-[#FCDA89]/20"
+                  placeholder="Jean Dupont"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Email *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={createForm.email}
+                  onChange={(e) => handleFormChange('email', e.target.value)}
+                  className="bg-white/5 border-[#FCDA89]/20"
+                  placeholder="jean.dupont@example.com"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Mot de passe *</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={createForm.password}
+                  onChange={(e) => handleFormChange('password', e.target.value)}
+                  className="bg-white/5 border-[#FCDA89]/20"
+                  placeholder="••••••••"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="phone">Téléphone</Label>
+                <Input
+                  id="phone"
+                  value={createForm.phone}
+                  onChange={(e) => handleFormChange('phone', e.target.value)}
+                  className="bg-white/5 border-[#FCDA89]/20"
+                  placeholder="06 12 34 56 78"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="address">Adresse</Label>
+                <Input
+                  id="address"
+                  value={createForm.address}
+                  onChange={(e) => handleFormChange('address', e.target.value)}
+                  className="bg-white/5 border-[#FCDA89]/20"
+                  placeholder="123 Rue de la Paix"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="city">Ville</Label>
+                  <Input
+                    id="city"
+                    value={createForm.city}
+                    onChange={(e) => handleFormChange('city', e.target.value)}
+                    className="bg-white/5 border-[#FCDA89]/20"
+                    placeholder="Paris"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="postalCode">Code postal</Label>
+                  <Input
+                    id="postalCode"
+                    value={createForm.postalCode}
+                    onChange={(e) => handleFormChange('postalCode', e.target.value)}
+                    className="bg-white/5 border-[#FCDA89]/20"
+                    placeholder="75001"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Informations professionnelles */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-[#FCDA89]">Informations professionnelles</h3>
+              
+              <div className="space-y-2">
+                <Label htmlFor="companyName">Nom de l'entreprise</Label>
+                <Input
+                  id="companyName"
+                  value={createForm.companyName}
+                  onChange={(e) => handleFormChange('companyName', e.target.value)}
+                  className="bg-white/5 border-[#FCDA89]/20"
+                  placeholder="Entreprise Dupont SARL"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="siret">SIRET</Label>
+                <Input
+                  id="siret"
+                  value={createForm.siret}
+                  onChange={(e) => handleFormChange('siret', e.target.value)}
+                  className="bg-white/5 border-[#FCDA89]/20"
+                  placeholder="12345678901234"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="yearsOfExperience">Années d'expérience</Label>
+                  <Input
+                    id="yearsOfExperience"
+                    type="number"
+                    min="0"
+                    value={createForm.yearsOfExperience}
+                    onChange={(e) => handleFormChange('yearsOfExperience', parseInt(e.target.value) || 0)}
+                    className="bg-white/5 border-[#FCDA89]/20"
+                    placeholder="5"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="preferredRadius">Rayon d'intervention (km)</Label>
+                  <Input
+                    id="preferredRadius"
+                    type="number"
+                    min="1"
+                    value={createForm.preferredRadius}
+                    onChange={(e) => handleFormChange('preferredRadius', parseInt(e.target.value) || 50)}
+                    className="bg-white/5 border-[#FCDA89]/20"
+                    placeholder="50"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="level">Niveau</Label>
+                <Select value={createForm.level} onValueChange={(value: any) => handleFormChange('level', value)}>
+                  <SelectTrigger className="bg-white/5 border-[#FCDA89]/20">
+                    <SelectValue placeholder="Sélectionner un niveau" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BEGINNER">Débutant</SelectItem>
+                    <SelectItem value="INTERMEDIATE">Intermédiaire</SelectItem>
+                    <SelectItem value="CONFIRMED">Confirmé</SelectItem>
+                    <SelectItem value="EXPERT">Expert</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* Spécialités */}
+              <div className="space-y-2">
+                <Label>Spécialités *</Label>
+                <div className="max-h-32 overflow-y-auto space-y-2 p-2 border border-[#FCDA89]/20 rounded-md bg-white/5">
+                  {services.map((service) => (
+                    <div key={service.id} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`service-${service.id}`}
+                        checked={createForm.specialties.includes(service.id)}
+                        onChange={() => handleSpecialtyToggle(service.id)}
+                        className="rounded border-[#FCDA89]/20"
+                      />
+                      <label htmlFor={`service-${service.id}`} className="text-sm">
+                        <span className="font-medium">{service.name}</span>
+                        <span className="text-white/60 ml-2">({service.categoryName})</span>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {createForm.specialties.length > 0 && (
+                  <p className="text-xs text-[#FCDA89]">
+                    {createForm.specialties.length} spécialité{createForm.specialties.length > 1 ? 's' : ''} sélectionnée{createForm.specialties.length > 1 ? 's' : ''}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsAddDialogOpen(false)}
+              disabled={isSubmitting}
+              className="border-white/10 bg-white/5 hover:bg-white/10 text-white"
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={handleCreateArtisan}
+              disabled={isSubmitting}
+              className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C]"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Création...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Créer l'artisan
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

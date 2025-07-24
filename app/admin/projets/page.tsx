@@ -19,12 +19,17 @@ import {
   Construction,
   ListFilter,
   Download,
-  Loader2
+  Loader2,
+  Building,
+  Euro,
+  Grid3X3,
+  List
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Table,
   TableBody,
@@ -48,6 +53,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import {
   Sheet,
   SheetContent,
   SheetDescription,
@@ -62,6 +75,7 @@ import { formatDistanceToNow } from "date-fns"
 import { fr } from "date-fns/locale"
 import { FilterDrawer, FilterGroup } from "@/components/admin/FilterDrawer"
 import { toast } from "sonner"
+import { ProjectImg } from "@/components/ui/project-image"
 
 interface Project {
   id: string;
@@ -75,6 +89,7 @@ interface Project {
   postalCode: string | null;
   createdAt: string;
   updatedAt: string;
+  photos?: string[];
   user: {
     id: string;
     name: string | null;
@@ -115,6 +130,17 @@ function getStatusBadge(status: ProjectStatus) {
   }
 }
 
+// Fonction pour formater une date
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString)
+  const options: Intl.DateTimeFormatOptions = { 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  }
+  return date.toLocaleDateString('fr-FR', options)
+}
+
 export default function ProjetsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -126,6 +152,11 @@ export default function ProjetsPage() {
     location: null,
     category: null
   })
+
+  // États pour la gestion de la suppression
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Charger les projets depuis l'API
   useEffect(() => {
@@ -200,6 +231,41 @@ export default function ProjetsPage() {
     setStatusFilter("all");
     setSearchTerm("");
   };
+
+  // Fonction pour gérer la suppression de projet
+  const handleDeleteProject = async (projectId: string) => {
+    try {
+      setIsDeleting(true)
+      
+      const response = await fetch(`/api/admin/projects/${projectId}`, {
+        method: 'DELETE',
+      })
+      
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || "Erreur lors de la suppression du projet")
+      }
+      
+      // Mettre à jour la liste des projets après suppression
+      setProjects(prev => prev.filter(project => project.id !== projectId))
+      
+      toast.success("Projet supprimé avec succès")
+    } catch (error) {
+      console.error("Erreur lors de la suppression:", error)
+      toast.error("Impossible de supprimer le projet. Veuillez réessayer plus tard.")
+    } finally {
+      setIsDeleting(false)
+      setDeleteDialogOpen(false)
+      setProjectToDelete(null)
+    }
+  }
+  
+  // Fonction pour ouvrir la boîte de dialogue de confirmation
+  const openDeleteDialog = (projectId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    setProjectToDelete(projectId)
+    setDeleteDialogOpen(true)
+  }
 
   // Filtrage des projets
   const filteredProjects = projects.filter((project: Project) => {
@@ -430,132 +496,363 @@ export default function ProjetsPage() {
         </Card>
       </div>
 
-      {/* Table des projets */}
-      <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
-        <CardHeader className="pb-1">
-          <CardTitle className="text-white">Liste des projets</CardTitle>
-          <CardDescription className="text-white/70">
-            {filteredProjects.length} projet{filteredProjects.length > 1 ? "s" : ""} trouvé{filteredProjects.length > 1 ? "s" : ""}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="border-white/10">
-                <TableHead className="text-white/70">Projet</TableHead>
-                <TableHead className="text-white/70">Client</TableHead>
-                <TableHead className="text-white/70">Catégorie</TableHead>
-                <TableHead className="text-white/70">Budget</TableHead>
-                <TableHead className="text-white/70">Localisation</TableHead>
-                <TableHead className="text-white/70">Statut</TableHead>
-                <TableHead className="text-white/70">Date</TableHead>
-                <TableHead className="text-right text-white/70">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow className="border-white/10">
-                  <TableCell colSpan={8} className="text-center py-10">
-                    <div className="flex flex-col items-center justify-center">
-                      <Construction className="h-10 w-10 text-white/50 animate-pulse" />
-                      <p className="mt-2 text-white/70">Chargement des projets...</p>
+      {/* Onglets pour changer de vue */}
+      <Tabs defaultValue="grid" className="space-y-4">
+        <div className="flex justify-between items-center">
+          <TabsList className="bg-white/10 text-white">
+            <TabsTrigger value="grid" className="data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">
+              <Grid3X3 className="h-4 w-4 mr-2" />
+              Cartes
+            </TabsTrigger>
+            <TabsTrigger value="list" className="data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">
+              <List className="h-4 w-4 mr-2" />
+              Liste
+            </TabsTrigger>
+          </TabsList>
+          
+          <div className="text-sm text-white/70">
+            {filteredProjects.length} projet{filteredProjects.length > 1 ? 's' : ''} trouvé{filteredProjects.length > 1 ? 's' : ''}
+          </div>
+        </div>
+
+        {/* Vue en grille (cartes) */}
+        <TabsContent value="grid" className="space-y-4">
+          {isLoading ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {[...Array(6)].map((_, index) => (
+                <Card key={index} className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
+                  <CardContent className="p-4">
+                    <div className="animate-pulse">
+                      <div className="h-4 bg-white/10 rounded mb-2"></div>
+                      <div className="h-3 bg-white/10 rounded mb-3 w-3/4"></div>
+                      <div className="h-3 bg-white/10 rounded mb-2"></div>
+                      <div className="h-3 bg-white/10 rounded mb-4 w-1/2"></div>
+                      <div className="flex justify-between">
+                        <div className="h-6 bg-white/10 rounded w-16"></div>
+                        <div className="h-6 bg-white/10 rounded w-16"></div>
+                      </div>
                     </div>
-                  </TableCell>
-                </TableRow>
-              ) : filteredProjects.length === 0 ? (
-                <TableRow className="border-white/10">
-                  <TableCell colSpan={8} className="text-center py-10">
-                    <div className="flex flex-col items-center justify-center">
-                      <AlertCircle className="h-10 w-10 text-white/50" />
-                      <p className="mt-2 text-white/70">Aucun projet trouvé</p>
-                      {searchTerm && (
-                        <Button 
-                          variant="link" 
-                          className="text-[#FCDA89] hover:text-[#FCDA89]/80"
-                          onClick={() => {
-                            setSearchTerm("")
-                            setStatusFilter("all")
-                          }}
-                        >
-                          Réinitialiser les filtres
-                        </Button>
-                      )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredProjects.length === 0 ? (
+            <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <AlertCircle className="h-12 w-12 text-white/50 mb-4" />
+                <h3 className="text-lg font-medium text-white mb-2">Aucun projet trouvé</h3>
+                <p className="text-white/70 text-center">
+                  {searchTerm || statusFilter !== "all" || advancedFilters.category || advancedFilters.location
+                    ? "Aucun projet ne correspond à vos critères de recherche."
+                    : "Aucun projet n'est disponible pour le moment."}
+                </p>
+                {(searchTerm || statusFilter !== "all" || advancedFilters.category || advancedFilters.location) && (
+                  <Button 
+                    variant="link" 
+                    className="text-[#FCDA89] hover:text-[#FCDA89]/80 mt-2"
+                    onClick={handleResetFilters}
+                  >
+                    Réinitialiser les filtres
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredProjects.map((project) => (
+                <Card key={project.id} className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm hover:bg-white/10 transition-colors overflow-hidden">
+                  {/* Section image */}
+                  <div className="h-[200px] bg-white/10 relative">
+                    {project.photos && project.photos.length > 0 ? (
+                      <>
+                        <ProjectImg
+                          src={project.photos[0]}
+                          alt={project.title}
+                          className="object-cover w-full h-full"
+                        />
+                        
+                        {/* Afficher des miniatures des images supplémentaires si disponibles */}
+                        {project.photos.length > 1 && (
+                          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1 p-1 bg-black/30 backdrop-blur-sm rounded-lg">
+                            {project.photos.slice(1, 4).map((photo, index) => (
+                              <div key={index} className="h-12 w-12 rounded-md overflow-hidden border border-white/30">
+                                <ProjectImg
+                                  src={photo}
+                                  alt={`Photo ${index + 2}`}
+                                  className="object-cover w-full h-full"
+                                />
+                              </div>
+                            ))}
+                            {project.photos.length > 4 && (
+                              <div className="h-12 w-12 rounded-md overflow-hidden border border-white/30 flex items-center justify-center bg-black/50 text-white font-medium text-xs">
+                                +{project.photos.length - 4}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="flex items-center justify-center h-full bg-white/5">
+                        <Building className="h-12 w-12 text-[#FCDA89]" />
+                      </div>
+                    )}
+                    <div className="absolute top-2 right-2">
+                      {getStatusBadge(project.status)}
                     </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredProjects.map((project) => (
-                  <TableRow key={project.id} className="border-white/10 hover:bg-white/5">
-                    <TableCell>
-                      <div className="font-medium text-white">{project.title}</div>
-                      <div className="text-xs text-white/70 truncate max-w-[200px]">
-                        {project.description}
+                  </div>
+
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <CardTitle className="text-white text-base line-clamp-1 mb-1">{project.title}</CardTitle>
+                        <CardDescription className="text-white/70 text-sm line-clamp-2">
+                          {project.description}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-0 space-y-3">
+                    {/* Informations du client */}
+                    <div className="space-y-1">
+                      <div className="text-xs text-white/50">Client</div>
+                      <div className="text-sm text-white font-medium">{project.user.name || 'N/A'}</div>
+                      <div className="text-xs text-white/70">{project.user.email}</div>
+                    </div>
+
+                    {/* Catégorie et service */}
+                    <div className="space-y-1">
+                      <div className="text-xs text-white/50">Catégorie</div>
+                      <div className="text-sm text-white">{project.category?.name || 'Non définie'}</div>
+                      <div className="text-xs text-white/70">{project.service?.name || 'Non défini'}</div>
+                    </div>
+
+                    {/* Budget */}
+                    <div className="flex items-center gap-2">
+                      <Euro className="h-4 w-4 text-white/70" />
+                      <span className="text-sm text-white">
+                        {project.budget ? `${project.budget.toLocaleString('fr-FR')} €` : 'Budget non défini'}
+                      </span>
+                    </div>
+
+                    {/* Localisation */}
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-white/70" />
+                      <span className="text-sm text-white line-clamp-1">
+                        {project.city ? `${project.city}${project.postalCode ? ` (${project.postalCode})` : ''}` : project.location || 'Non spécifiée'}
+                      </span>
+                    </div>
+
+                    {/* Date et devis */}
+                    <div className="flex items-center justify-between text-xs text-white/70">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>{formatDistanceToNow(new Date(project.createdAt), { addSuffix: true, locale: fr })}</span>
                       </div>
                       {project._count.quotes > 0 && (
-                        <Badge variant="outline" className="mt-1 bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30">
+                        <Badge variant="outline" className="bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30 text-xs">
                           {project._count.quotes} devis
                         </Badge>
                       )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium text-white">{project.user.name}</div>
-                      <div className="text-xs text-white/70">{project.user.email}</div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="text-white">{project.category?.name || 'Non définie'}</div>
-                      <div className="text-xs text-white/70">{project.service?.name || 'Non défini'}</div>
-                    </TableCell>
-                    <TableCell className="text-white">
-                      {project.budget?.toLocaleString('fr-FR')} €
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3 text-white/50" />
-                        <span className="text-white">{project.location}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {getStatusBadge(project.status)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3 text-white/50" />
-                        <span className="text-xs text-white">
-                          {formatDistanceToNow(project.createdAt, { addSuffix: true, locale: fr })}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Actions</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/admin/projets/${project.id}`}>
-                              <Eye className="h-4 w-4 mr-2" /> Voir détails
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <Edit className="h-4 w-4 mr-2" /> Modifier
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-500">
-                            <Trash className="h-4 w-4 mr-2" /> Supprimer
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="pt-0">
+                    <div className="flex gap-2 w-full">
+                      <Button variant="outline" size="sm" className="flex-1 border-white/10 bg-white/5 hover:bg-white/10 text-white" asChild>
+                        <Link href={`/admin/projets/${project.id}`}>
+                          <Eye className="h-4 w-4 mr-1" />
+                          Voir
+                        </Link>
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-9 w-9 p-0 text-red-400 border-white/10 bg-white/5 hover:text-red-300 hover:bg-red-900/20"
+                        onClick={(e) => openDeleteDialog(project.id, e)}
+                        disabled={isDeleting}
+                      >
+                        {isDeleting && projectToDelete === project.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Trash className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* Vue en liste (tableau) */}
+        <TabsContent value="list">
+          <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
+            <CardHeader className="pb-1">
+              <CardTitle className="text-white">Liste des projets</CardTitle>
+              <CardDescription className="text-white/70">
+                {filteredProjects.length} projet{filteredProjects.length > 1 ? "s" : ""} trouvé{filteredProjects.length > 1 ? "s" : ""}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-white/10">
+                    <TableHead className="text-white/70">Projet</TableHead>
+                    <TableHead className="text-white/70">Client</TableHead>
+                    <TableHead className="text-white/70">Catégorie</TableHead>
+                    <TableHead className="text-white/70">Budget</TableHead>
+                    <TableHead className="text-white/70">Localisation</TableHead>
+                    <TableHead className="text-white/70">Statut</TableHead>
+                    <TableHead className="text-white/70">Date</TableHead>
+                    <TableHead className="text-right text-white/70">Actions</TableHead>
                   </TableRow>
-                ))
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow className="border-white/10">
+                      <TableCell colSpan={8} className="text-center py-10">
+                        <div className="flex flex-col items-center justify-center">
+                          <Construction className="h-10 w-10 text-white/50 animate-pulse" />
+                          <p className="mt-2 text-white/70">Chargement des projets...</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : filteredProjects.length === 0 ? (
+                    <TableRow className="border-white/10">
+                      <TableCell colSpan={8} className="text-center py-10">
+                        <div className="flex flex-col items-center justify-center">
+                          <AlertCircle className="h-10 w-10 text-white/50" />
+                          <p className="mt-2 text-white/70">Aucun projet trouvé</p>
+                          {searchTerm && (
+                            <Button 
+                              variant="link" 
+                              className="text-[#FCDA89] hover:text-[#FCDA89]/80"
+                              onClick={() => {
+                                setSearchTerm("")
+                                setStatusFilter("all")
+                              }}
+                            >
+                              Réinitialiser les filtres
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredProjects.map((project) => (
+                      <TableRow key={project.id} className="border-white/10 hover:bg-white/5">
+                        <TableCell>
+                          <div className="font-medium text-white">{project.title}</div>
+                          <div className="text-xs text-white/70 truncate max-w-[200px]">
+                            {project.description}
+                          </div>
+                          {project._count.quotes > 0 && (
+                            <Badge variant="outline" className="mt-1 bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30">
+                              {project._count.quotes} devis
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium text-white">{project.user.name}</div>
+                          <div className="text-xs text-white/70">{project.user.email}</div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-white">{project.category?.name || 'Non définie'}</div>
+                          <div className="text-xs text-white/70">{project.service?.name || 'Non défini'}</div>
+                        </TableCell>
+                        <TableCell className="text-white">
+                          {project.budget?.toLocaleString('fr-FR')} €
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-3 w-3 text-white/50" />
+                            <span className="text-white">{project.location}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(project.status)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3 text-white/50" />
+                            <span className="text-xs text-white">
+                              {formatDistanceToNow(new Date(project.createdAt), { addSuffix: true, locale: fr })}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Actions</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link href={`/admin/projets/${project.id}`}>
+                                  <Eye className="h-4 w-4 mr-2" /> Voir détails
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                <Edit className="h-4 w-4 mr-2" /> Modifier
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                className="text-red-500"
+                                onClick={() => openDeleteDialog(project.id)}
+                              >
+                                <Trash className="h-4 w-4 mr-2" /> Supprimer
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Boîte de dialogue de confirmation pour la suppression */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="bg-[#0E261C] border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle>Êtes-vous sûr de vouloir supprimer ce projet ?</DialogTitle>
+            <DialogDescription className="text-white/70">
+              Cette action est irréversible. Toutes les données associées à ce projet seront définitivement supprimées.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setDeleteDialogOpen(false)} 
+              disabled={isDeleting}
+              className="border-white/10 bg-white/5 hover:bg-white/10 text-white"
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={() => projectToDelete && handleDeleteProject(projectToDelete)}
+              disabled={isDeleting}
+              variant="destructive"
+              className="bg-red-500 hover:bg-red-600"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Suppression...
+                </>
+              ) : (
+                <>Supprimer</>
               )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 

@@ -36,6 +36,16 @@ export async function GET(request: NextRequest) {
             name: true,
           },
         },
+        images: {
+          select: {
+            id: true,
+            url: true,
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
         _count: {
           select: {
             quotes: true,
@@ -63,6 +73,7 @@ export async function GET(request: NextRequest) {
       user: project.user,
       category: project.category,
       service: project.service,
+      photos: project.images.map(img => img.url),
       _count: project._count,
     }))
 
