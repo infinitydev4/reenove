@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { 
   Heart, 
@@ -49,7 +51,7 @@ interface Artisan {
   id: string
   name: string
   avatar: string
-  specialites: string[]
+  specialities: string[]
   rating: number
   reviews: number
   location: string
@@ -57,73 +59,57 @@ interface Artisan {
   distance?: string
   disponible: boolean
   favorisDepuis?: string
+  favoriteId: string
+  addedAt: Date
 }
 
 export default function FavorisPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
   const [showRemoveDialog, setShowRemoveDialog] = useState(false)
   const [artisanToRemove, setArtisanToRemove] = useState<Artisan | null>(null)
+  const [artisans, setArtisans] = useState<Artisan[]>([])
+  const [loading, setLoading] = useState(true)
+  const [removingFavorite, setRemovingFavorite] = useState(false)
 
-  // Données fictives des artisans favoris
-  const artisans: Artisan[] = [
-    {
-      id: "a1",
-      name: "Martin Dupont",
-      avatar: "/placeholder.svg?height=48&width=48",
-      specialites: ["Plomberie", "Sanitaire"],
-      rating: 4.8,
-      reviews: 45,
-      location: "Lyon 6ème",
-      description: "Artisan plombier spécialisé dans la rénovation de salles de bain et l'installation de sanitaires.",
-      distance: "5 km",
-      disponible: true,
-      favorisDepuis: "Il y a 3 mois"
-    },
-    {
-      id: "a2",
-      name: "Sophie Martin",
-      avatar: "/placeholder.svg?height=48&width=48",
-      specialites: ["Peinture", "Décoration"],
-      rating: 4.7,
-      reviews: 38,
-      location: "Lyon 3ème",
-      description: "Artisane peintre avec plus de 10 ans d'expérience, spécialisée dans les finitions et la décoration d'intérieur.",
-      distance: "3.2 km",
-      disponible: true,
-      favorisDepuis: "Il y a 2 semaines"
-    },
-    {
-      id: "a3",
-      name: "Jean Durand",
-      avatar: "/placeholder.svg?height=48&width=48",
-      specialites: ["Menuiserie", "Cuisines"],
-      rating: 4.9,
-      reviews: 27,
-      location: "Villeurbanne",
-      description: "Artisan cuisiniste et menuisier spécialisé dans l'installation et la conception de cuisines, placards et dressing sur mesure.",
-      distance: "7.5 km",
-      disponible: false,
-      favorisDepuis: "Il y a 6 mois"
-    },
-    {
-      id: "a4",
-      name: "Émilie Petit",
-      avatar: "/placeholder.svg?height=48&width=48",
-      specialites: ["Électricité", "Domotique"],
-      rating: 4.6,
-      reviews: 32,
-      location: "Lyon 7ème",
-      description: "Électricienne certifiée spécialisée dans la mise aux normes électriques et l'installation de systèmes domotiques.",
-      distance: "2.8 km",
-      disponible: true,
-      favorisDepuis: "Il y a 1 mois"
-    },
-  ]
+  // Vérifier l'authentification
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth?tab=login&redirect=/client/favoris")
+      return
+    }
+  }, [status, router])
+
+  // Charger les favoris depuis l'API
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (session?.user) {
+        try {
+          const response = await fetch('/api/client/favorites')
+          if (response.ok) {
+            const data = await response.json()
+            setArtisans(data.favorites || [])
+          } else {
+            console.error('Erreur lors du chargement des favoris')
+            setArtisans([])
+          }
+        } catch (error) {
+          console.error('Erreur lors du chargement des favoris:', error)
+          setArtisans([])
+        } finally {
+          setLoading(false)
+        }
+      }
+    }
+    
+    fetchFavorites()
+  }, [session?.user])
 
   // Obtenir toutes les spécialités uniques pour le filtre
   const allSpecialities = Array.from(
-    new Set(artisans.flatMap(artisan => artisan.specialites))
+    new Set(artisans.flatMap(artisan => artisan.specialities))
   ).sort()
 
   // Filtrer les artisans en fonction des critères
@@ -132,11 +118,11 @@ export default function FavorisPage() {
       artisan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       artisan.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       artisan.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      artisan.specialites.some(spec => spec.toLowerCase().includes(searchTerm.toLowerCase()))
+      artisan.specialities.some((spec: string) => spec.toLowerCase().includes(searchTerm.toLowerCase()))
     
     const matchesCategory = 
       categoryFilter === "all" ||
-      artisan.specialites.some(spec => spec === categoryFilter)
+      artisan.specialities.some((spec: string) => spec === categoryFilter)
     
     return matchesSearch && matchesCategory
   })
@@ -146,13 +132,41 @@ export default function FavorisPage() {
     setShowRemoveDialog(true)
   }
 
-  const confirmRemoveFavorite = () => {
-    if (artisanToRemove) {
-      // Ici, implémenter la logique de suppression d'un favori
-      toast.success(`${artisanToRemove.name} a été retiré de vos favoris`)
-      setShowRemoveDialog(false)
-      setArtisanToRemove(null)
+  const confirmRemoveFavorite = async () => {
+    if (artisanToRemove && !removingFavorite) {
+      setRemovingFavorite(true)
+      
+      try {
+        const response = await fetch(`/api/client/favorites?favoriteId=${artisanToRemove.favoriteId}`, {
+          method: 'DELETE'
+        })
+
+        if (response.ok) {
+          // Supprimer de l'état local
+          setArtisans(prev => prev.filter(a => a.id !== artisanToRemove.id))
+          toast.success(`${artisanToRemove.name} a été retiré de vos favoris`)
+        } else {
+          const error = await response.json()
+          toast.error(error.message || 'Erreur lors de la suppression')
+        }
+      } catch (error) {
+        console.error('Erreur lors de la suppression du favori:', error)
+        toast.error('Erreur lors de la suppression du favori')
+      } finally {
+        setRemovingFavorite(false)
+        setShowRemoveDialog(false)
+        setArtisanToRemove(null)
+      }
     }
+  }
+
+  // Afficher un état de chargement
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FCDA89]"></div>
+      </div>
+    )
   }
 
   return (
@@ -161,6 +175,11 @@ export default function FavorisPage() {
         <h1 className="text-lg font-bold flex items-center gap-2">
           <Heart className="h-5 w-5 text-[#FCDA89]" />
           Artisans favoris
+          {!loading && artisans.length > 0 && (
+            <Badge variant="outline" className="ml-2 border-[#FCDA89]/30 text-[#FCDA89]">
+              {artisans.length}
+            </Badge>
+          )}
         </h1>
       </div>
 
@@ -208,7 +227,7 @@ export default function FavorisPage() {
                       <div>
                         <h3 className="font-medium text-sm">{artisan.name}</h3>
                         <div className="flex flex-wrap gap-1 mt-0.5">
-                          {artisan.specialites.map((spec, index) => (
+                          {artisan.specialities.map((spec: string, index: number) => (
                             <Badge key={index} variant="outline" className="text-xs py-0 border-[#FCDA89]/30 bg-[#FCDA89]/10 text-[#FCDA89]">
                               {spec}
                             </Badge>
@@ -265,7 +284,7 @@ export default function FavorisPage() {
 
                 <div className="flex gap-2 mt-3">
                   <Button size="sm" className="flex-1 bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90" asChild>
-                    <Link href={`/client/artisans/${artisan.id}`}>
+                    <Link href={`/artisans/${artisan.id}`}>
                       Voir profil
                     </Link>
                   </Button>
@@ -309,11 +328,21 @@ export default function FavorisPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setShowRemoveDialog(false)} className="border-white/10 bg-white/5 hover:bg-white/10 text-white">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowRemoveDialog(false)} 
+              className="border-white/10 bg-white/5 hover:bg-white/10 text-white"
+              disabled={removingFavorite}
+            >
               Annuler
             </Button>
-            <Button variant="destructive" onClick={confirmRemoveFavorite} className="bg-red-500 hover:bg-red-600 text-white">
-              Retirer
+            <Button 
+              variant="destructive" 
+              onClick={confirmRemoveFavorite} 
+              className="bg-red-500 hover:bg-red-600 text-white"
+              disabled={removingFavorite}
+            >
+              {removingFavorite ? "Suppression..." : "Retirer"}
             </Button>
           </DialogFooter>
         </DialogContent>

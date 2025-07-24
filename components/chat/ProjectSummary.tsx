@@ -213,8 +213,8 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
         return
       }
       
-      // Si tout s'est bien passé, rediriger vers le tableau de bord
-      router.push("/client")
+      // Si tout s'est bien passé, la redirection sera gérée par le parent (bouton manuel)
+      console.log("✅ Inscription et sauvegarde réussies - redirection gérée manuellement")
     } catch (error: any) {
       console.error("Erreur:", error)
       setFormError(error.message || "Une erreur est survenue")

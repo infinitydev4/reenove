@@ -111,6 +111,10 @@ model User {
   artisanProfile     ArtisanProfile?
   artisanSpecialties ArtisanSpecialty[]
   artisanDocuments   ArtisanDocument[]
+
+  // Favoris
+  favoriteArtisans UserFavorite[] @relation("ClientFavorites")
+  favoritedBy      UserFavorite[] @relation("ArtisanFavorites")
 }
 
 model ArtisanProfile {
@@ -372,6 +376,19 @@ model Notification {
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserFavorite {
+  id        String   @id @default(cuid())
+  clientId  String // L'utilisateur qui ajoute en favori
+  artisanId String // L'artisan ajouté en favori
+  createdAt DateTime @default(now())
+
+  // Relations
+  client  User @relation("ClientFavorites", fields: [clientId], references: [id], onDelete: Cascade)
+  artisan User @relation("ArtisanFavorites", fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, artisanId])
 }
 
 // NextAuth models

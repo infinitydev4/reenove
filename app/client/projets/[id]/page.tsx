@@ -44,6 +44,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { ProjectImg } from "@/components/ui/project-image"
 
 // Interface pour les projets
 interface Project {
@@ -145,26 +146,7 @@ const getProjectProgress = (status: string) => {
   }
 }
 
-// Fonction pour récupérer les vraies URLs depuis les références sessionStorage
-const getImageFromSessionStorage = (imageUrl: string) => {
-  if (imageUrl.startsWith('session:')) {
-    const key = imageUrl.replace('session:', '');
-    try {
-      const sessionImage = typeof window !== 'undefined' ? sessionStorage.getItem(key) : null;
-      if (sessionImage) {
-        console.log("Image récupérée avec succès depuis sessionStorage:", key);
-        return sessionImage;
-      } else {
-        console.warn("Image non trouvée dans sessionStorage:", key);
-        return '/placeholder-project.png';
-      }
-    } catch (error) {
-      console.error("Erreur lors de la récupération de l'image depuis sessionStorage:", error);
-      return '/placeholder-project.png';
-    }
-  }
-  return imageUrl;
-};
+
 
 export default function ProjectDetailPage() {
   const { data: session } = useSession()

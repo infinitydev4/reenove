@@ -66,14 +66,12 @@ export async function GET(request: NextRequest) {
 
     // Transformer les données pour le frontend
     const formattedProjects = projects.map(project => {
-      // Vérifier les URLs des images
-      const photoUrls = project.images.map(image => {
-        if (image.url.startsWith('session:')) {
-          console.log("URL d'image non reconnue:", image.url);
-          return '/placeholder-project.png';
-        }
-        return image.url;
-      });
+      // Garder les URLs d'images telles quelles (y compris celles avec session:)
+      const photoUrls = project.images.map(image => image.url);
+      
+      if (photoUrls.length > 0) {
+        console.log(`📷 Projet ${project.title} - ${photoUrls.length} image(s) trouvée(s)`)
+      }
 
       return {
         id: project.id,

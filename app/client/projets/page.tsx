@@ -58,6 +58,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { ProjectImg } from "@/components/ui/project-image"
 
 // Interface pour les projets
 interface Project {
@@ -132,26 +133,7 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('fr-FR', options)
 }
 
-// Fonction pour récupérer les vraies URLs depuis les références sessionStorage
-const getImageFromSessionStorage = (imageUrl: string) => {
-  if (imageUrl.startsWith('session:')) {
-    const key = imageUrl.replace('session:', '');
-    try {
-      const sessionImage = typeof window !== 'undefined' ? sessionStorage.getItem(key) : null;
-      if (sessionImage) {
-        console.log("Image récupérée avec succès depuis sessionStorage:", key);
-        return sessionImage;
-      } else {
-        console.warn("Image non trouvée dans sessionStorage:", key);
-        return '/placeholder-project.png';
-      }
-    } catch (error) {
-      console.error("Erreur lors de la récupération de l'image depuis sessionStorage:", error);
-      return '/placeholder-project.png';
-    }
-  }
-  return imageUrl;
-};
+
 
 export default function ProjectsPage() {
   const { data: session } = useSession()
@@ -350,13 +332,10 @@ export default function ProjectsPage() {
                   <div className="h-[300px] bg-white/10 relative">
                     {project.photos && project.photos.length > 0 ? (
                       <>
-                        <img
-                          src={getImageFromSessionStorage(project.photos[0])}
+                        <ProjectImg
+                          src={project.photos[0]}
                           alt={project.title}
                           className="object-cover w-full h-full"
-                          onError={(e) => {
-                            e.currentTarget.src = "/placeholder-project.png"
-                          }}
                         />
                         
                         {/* Afficher des miniatures des images supplémentaires si disponibles */}
@@ -364,13 +343,10 @@ export default function ProjectsPage() {
                           <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1 p-1 bg-black/30 backdrop-blur-sm rounded-lg">
                             {project.photos.slice(1, 4).map((photo, index) => (
                               <div key={index} className="h-16 w-16 rounded-md overflow-hidden border border-white/30">
-                                <img
-                                  src={getImageFromSessionStorage(photo)}
+                                <ProjectImg
+                                  src={photo}
                                   alt={`Photo ${index + 2}`}
                                   className="object-cover w-full h-full"
-                                  onError={(e) => {
-                                    e.currentTarget.src = "/placeholder-project.png"
-                                  }}
                                 />
                               </div>
                             ))}

@@ -102,13 +102,7 @@ export async function GET(
       urgencyLevel: project.urgencyLevel,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
-      photos: project.images.map((image) => {
-        if (image.url.startsWith('session:')) {
-          console.log("URL d'image non reconnue:", image.url);
-          return '/placeholder-project.png';
-        }
-        return image.url;
-      }),
+      photos: project.images.map((image) => image.url),
       quotes: project.quotes.map((quote) => ({
         id: quote.id,
         amount: quote.amount,

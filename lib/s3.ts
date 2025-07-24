@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3"
+import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3"
 
 // Vérifier si AWS S3 est correctement configuré
 const isS3Configured = !!(process.env.REENOVE_AWS_ACCESS_KEY_ID && 
@@ -36,12 +36,16 @@ export async function uploadToS3(buffer: Buffer, key: string, contentType: strin
   try {
     console.log("Upload du fichier vers S3:", key)
     
-    // Upload du fichier vers S3 sans ACL (compatible avec les buckets qui n'autorisent pas les ACLs)
+    // Upload du fichier vers S3 avec lecture publique
     await s3Client.send(new PutObjectCommand({
       Bucket: bucketName,
       Key: key,
       Body: buffer,
-      ContentType: contentType
+      ContentType: contentType,
+      CacheControl: 'public, max-age=31536000', // Cache 1 an
+      Metadata: {
+        'uploaded-by': 'renoveo-app'
+      }
     }))
     
     // Générer l'URL du fichier
@@ -123,11 +127,70 @@ export function getBucketName(): string {
   return bucketName
 }
 
+/**
+ * Récupérer une image depuis S3 et la convertir en base64 pour OpenAI Vision
+ * @param imageUrl - URL complète de l'image S3
+ * @returns Data URL en base64 ou null en cas d'erreur
+ */
+export async function getImageAsBase64(imageUrl: string): Promise<string | null> {
+  if (!isS3Configured || !s3Client) {
+    console.warn("AWS S3 n'est pas configuré. Impossible de récupérer l'image.")
+    return null
+  }
+
+  try {
+    const key = extractKeyFromS3Url(imageUrl)
+    if (!key) {
+      console.error("Impossible d'extraire la clé S3 de l'URL:", imageUrl)
+      return null
+    }
+
+    console.log("🖼️ Récupération image S3 pour base64:", key)
+
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key
+    })
+
+    const response = await s3Client.send(command)
+    
+    if (!response.Body) {
+      console.error("Image non trouvée dans S3:", key)
+      return null
+    }
+
+    // Convertir le stream en buffer
+    const chunks: Uint8Array[] = []
+    const reader = response.Body.transformToWebStream().getReader()
+    
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      chunks.push(value)
+    }
+    
+    const buffer = Buffer.concat(chunks)
+    const contentType = response.ContentType || 'image/jpeg'
+    
+    // Convertir en base64
+    const base64 = buffer.toString('base64')
+    const dataUrl = `data:${contentType};base64,${base64}`
+    
+    console.log("✅ Image convertie en base64, taille:", buffer.length, "bytes")
+    return dataUrl
+
+  } catch (error) {
+    console.error("❌ Erreur récupération image S3:", error)
+    return null
+  }
+}
+
 export default {
   uploadToS3,
   deleteFromS3,
   extractKeyFromS3Url,
   isS3Available,
   getS3Client,
-  getBucketName
+  getBucketName,
+  getImageAsBase64
 } 

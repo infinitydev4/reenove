@@ -1,11 +1,65 @@
-import { Search, Filter, SlidersHorizontal } from "lucide-react"
+"use client"
+
+import { useState, useEffect } from "react"
+import { Search, Filter, SlidersHorizontal, Users } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import ArtisanCard from "@/components/artisan-card"
 import Navbar from "@/components/navbar"
+
+interface Artisan {
+  id: string
+  name: string
+  firstName: string
+  lastName: string
+  profession: string
+  specialties: string[]
+  city: string
+  rating: number
+  reviews: number
+  image: string
+  verified: boolean
+}
+
 export default function ArtisansPage() {
+  const [artisans, setArtisans] = useState<Artisan[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedTab, setSelectedTab] = useState("all")
+
+  // Charger les artisans depuis l'API
+  useEffect(() => {
+    const fetchArtisans = async () => {
+      try {
+        const params = new URLSearchParams()
+        if (searchQuery) params.append('search', searchQuery)
+        
+        const response = await fetch(`/api/artisans?${params.toString()}`)
+        if (response.ok) {
+          const data = await response.json()
+          setArtisans(data.artisans || [])
+        } else {
+          console.error('Erreur lors du chargement des artisans')
+          setArtisans([])
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des artisans:', error)
+        setArtisans([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchArtisans()
+  }, [searchQuery])
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
       <Navbar />
@@ -18,6 +72,8 @@ export default function ArtisansPage() {
                 type="search"
                 placeholder="Rechercher par nom, métier ou localisation..."
                 className="w-full pl-9 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm"
+                value={searchQuery}
+                onChange={handleSearch}
               />
             </div>
             <Button variant="outline" className="flex items-center gap-2">
@@ -26,7 +82,7 @@ export default function ArtisansPage() {
             </Button>
           </div>
 
-          <Tabs defaultValue="all" className="mt-4">
+          <Tabs value={selectedTab} onValueChange={setSelectedTab} className="mt-4">
             <TabsList className="w-full max-w-md mx-auto grid grid-cols-4">
               <TabsTrigger value="all">Tous</TabsTrigger>
               <TabsTrigger value="popular">Populaires</TabsTrigger>
@@ -47,84 +103,64 @@ export default function ArtisansPage() {
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="rounded-full">
               <Filter className="h-3 w-3 mr-1" />
-              Lyon et alentours
+              France
             </Badge>
             <Badge variant="outline" className="rounded-full">
-              8 artisans
+              {loading ? "..." : `${artisans.length} artisan${artisans.length > 1 ? 's' : ''}`}
             </Badge>
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <ArtisanCard
-            name="Thomas Dubois"
-            profession="Menuisier"
-            rating={4.9}
-            reviews={124}
-            image="/focused-craftsman.png"
-            location="Lyon"
-          />
-          <ArtisanCard
-            name="Marie Laurent"
-            profession="Électricienne"
-            rating={4.8}
-            reviews={98}
-            image="/empowered-electrician.png"
-            location="Paris"
-          />
-          <ArtisanCard
-            name="Jean Moreau"
-            profession="Plombier"
-            rating={4.7}
-            reviews={156}
-            image="/confident-plumber.png"
-            location="Marseille"
-          />
-          <ArtisanCard
-            name="Sophie Blanc"
-            profession="Peintre"
-            rating={4.6}
-            reviews={87}
-            image="/placeholder.svg?height=300&width=300&query=professional painter woman portrait"
-            location="Bordeaux"
-          />
-          <ArtisanCard
-            name="Pierre Martin"
-            profession="Maçon"
-            rating={4.8}
-            reviews={112}
-            image="/placeholder.svg?height=300&width=300&query=professional mason portrait"
-            location="Toulouse"
-          />
-          <ArtisanCard
-            name="Lucie Petit"
-            profession="Décoratrice"
-            rating={4.9}
-            reviews={76}
-            image="/placeholder.svg?height=300&width=300&query=professional interior designer woman portrait"
-            location="Nice"
-          />
-          <ArtisanCard
-            name="Antoine Leroy"
-            profession="Jardinier"
-            rating={4.7}
-            reviews={93}
-            image="/placeholder.svg?height=300&width=300&query=professional gardener portrait"
-            location="Nantes"
-          />
-          <ArtisanCard
-            name="Camille Roux"
-            profession="Carreleur"
-            rating={4.6}
-            reviews={68}
-            image="/placeholder.svg?height=300&width=300&query=professional tile setter portrait"
-            location="Strasbourg"
-          />
-        </div>
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : artisans.length === 0 ? (
+          <Card className="p-8 text-center">
+            <CardContent className="flex flex-col items-center gap-4">
+              <Users className="h-16 w-16 text-muted-foreground" />
+              <div>
+                <h3 className="text-xl font-semibold mb-2">Aucun artisan pour le moment</h3>
+                <p className="text-muted-foreground">
+                  {searchQuery 
+                    ? `Aucun artisan trouvé pour "${searchQuery}"` 
+                    : "Les artisans ne sont pas encore disponibles sur la plateforme."
+                  }
+                </p>
+              </div>
+              {searchQuery && (
+                <Button 
+                  variant="outline" 
+                  onClick={() => setSearchQuery("")}
+                >
+                  Effacer la recherche
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {artisans.map((artisan) => (
+                <ArtisanCard
+                  key={artisan.id}
+                  name={artisan.name}
+                  profession={artisan.profession}
+                  rating={artisan.rating}
+                  reviews={artisan.reviews}
+                  image={artisan.image}
+                  location={artisan.city}
+                />
+              ))}
+            </div>
 
-        <div className="flex justify-center mt-8">
-          <Button variant="outline">Charger plus d&apos;artisans</Button>
-        </div>
+            {artisans.length >= 50 && (
+              <div className="flex justify-center mt-8">
+                <Button variant="outline">Charger plus d&apos;artisans</Button>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   )

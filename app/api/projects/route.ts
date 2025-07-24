@@ -204,6 +204,32 @@ export async function POST(req: NextRequest) {
       data: projectData
     })
     
+    // Créer les images du projet si elles existent
+    if (data.photos && Array.isArray(data.photos) && data.photos.length > 0) {
+      console.log(`📸 Sauvegarde de ${data.photos.length} photos pour le projet ${project.id}`)
+      
+      const imagePromises = data.photos.map((photoUrl: string, index: number) => {
+        if (photoUrl && photoUrl.trim()) {
+          console.log(`📸 Sauvegarde photo ${index + 1}:`, photoUrl.substring(0, 100) + '...')
+          return prisma.projectImage.create({
+            data: {
+              projectId: project.id,
+              url: photoUrl,
+              order: index
+            }
+          })
+        }
+        return null
+      }).filter(Boolean)
+      
+      if (imagePromises.length > 0) {
+        await Promise.all(imagePromises)
+        console.log(`✅ ${imagePromises.length} photos sauvegardées avec succès`)
+      }
+    } else {
+      console.log('📸 Aucune photo à sauvegarder pour ce projet')
+    }
+    
     // Créer une étape initiale pour le projet
     await prisma.projectStep.create({
       data: {

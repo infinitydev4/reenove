@@ -36,7 +36,7 @@ export default function GoogleAddressAutocomplete({
     libraries
   })
 
-  // Initialiser l'autocomplétion lorsque l'API est chargée
+    // Initialiser l'autocomplétion lorsque l'API est chargée
   useEffect(() => {
     if (!isLoaded || !inputRef.current) return
     
@@ -47,22 +47,35 @@ export default function GoogleAddressAutocomplete({
       fields: ['address_components', 'formatted_address', 'geometry', 'name']
     })
     
+    // Variable pour éviter les doubles appels
+    let isProcessing = false
+    
     // Écouter les événements de sélection de lieu
     if (!autocompleteRef.current) return
     
     const listener = autocompleteRef.current.addListener('place_changed', () => {
-      if (!autocompleteRef.current) return
+      if (!autocompleteRef.current || isProcessing) return
       
-      const place = autocompleteRef.current.getPlace()
+      isProcessing = true
       
-      if (place && place.formatted_address) {
-        onChange(place.formatted_address)
+      // Petit délai pour s'assurer que Google a fini de traiter
+      setTimeout(() => {
+        const place = autocompleteRef.current?.getPlace()
         
-        // Extraire le code postal et la ville
-        if (onPlaceSelect && place.address_components) {
-          onPlaceSelect(place)
+        if (place && place.formatted_address) {
+          onChange(place.formatted_address)
+          
+          // Extraire le code postal et la ville
+          if (onPlaceSelect && place.address_components) {
+            onPlaceSelect(place)
+          }
         }
-      }
+        
+        // Réinitialiser le flag après traitement
+        setTimeout(() => {
+          isProcessing = false
+        }, 200)
+      }, 50)
     })
     
     // Nettoyage

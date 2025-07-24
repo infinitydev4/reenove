@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useEffect } from "react"
 import { Upload, Image as ImageIcon, X, Loader2, UploadCloud } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
@@ -9,14 +9,21 @@ import { useDropzone } from "react-dropzone"
 interface PhotoUploadProps {
   onPhotosUploaded: (photoUrls: string[]) => void
   maxPhotos?: number
+  initialPhotos?: string[]
+  onContinue?: (photoUrls: string[]) => void
 }
 
-export default function PhotoUpload({ onPhotosUploaded, maxPhotos = 5 }: PhotoUploadProps) {
-  const [photos, setPhotos] = useState<string[]>([])
+export default function PhotoUpload({ onPhotosUploaded, maxPhotos = 5, initialPhotos = [], onContinue }: PhotoUploadProps) {
+  const [photos, setPhotos] = useState<string[]>(initialPhotos)
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Synchroniser avec les photos initiales
+  useEffect(() => {
+    setPhotos(initialPhotos)
+  }, [initialPhotos])
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!acceptedFiles.length) return
@@ -202,7 +209,7 @@ export default function PhotoUpload({ onPhotosUploaded, maxPhotos = 5 }: PhotoUp
                 triggerFileInput()
               }}
               disabled={uploading || photos.length >= maxPhotos}
-              className="border-white/20 bg-white/10 hover:bg-white/20 text-white"
+              className="border-white/20 bg-white/10 hover:bg-white/20 text-black"
             >
               <Upload className="h-4 w-4 mr-2" />
               Sélectionner des photos
@@ -253,6 +260,22 @@ export default function PhotoUpload({ onPhotosUploaded, maxPhotos = 5 }: PhotoUp
               </div>
             ))}
           </div>
+        </div>
+      )}
+      
+      {/* Bouton Continuer si des photos sont présentes */}
+      {photos.length > 0 && onContinue && (
+        <div className="mt-4 flex items-center justify-between p-3 bg-muted/20 rounded-lg border border-muted">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>{photos.length}/5 photo{photos.length > 1 ? 's' : ''} ajoutée{photos.length > 1 ? 's' : ''}</span>
+          </div>
+          <Button
+            onClick={() => onContinue(photos)}
+            className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-medium"
+            disabled={uploading}
+          >
+            Continuer avec {photos.length} photo{photos.length > 1 ? 's' : ''}
+          </Button>
         </div>
       )}
     </div>
