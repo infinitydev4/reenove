@@ -8,8 +8,11 @@ const openai = new OpenAI({
 export const runtime = "edge"
 
 export async function POST(req: NextRequest) {
+  let rawValue = ""
+  
   try {
-    const { field, rawValue, lastSuggestions, projectContext } = await req.json()
+    const { field, rawValue: extractedRawValue, lastSuggestions, projectContext } = await req.json()
+    rawValue = extractedRawValue
 
     if (!rawValue || typeof rawValue !== 'string') {
       return NextResponse.json({ cleanedValue: rawValue })
