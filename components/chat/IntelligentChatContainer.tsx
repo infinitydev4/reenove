@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, Bot, Send, ArrowLeft, Camera, Upload, User } from "lucide-react"
+import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,6 +15,7 @@ import GoogleAddressAutocomplete from "@/components/maps/GoogleAddressAutocomple
 import PhotoUpload from "@/components/chat/PhotoUpload"
 import ProjectSummary from "./ProjectSummary"
 import { Badge } from "@/components/ui/badge"
+import MultiRoomSelector from "@/components/chat/MultiRoomSelector"
 
 // Types pour le système intelligent
 export type MessageType = "user" | "bot" | "system" | "photos" | "summary" | "expert_analysis"
@@ -194,19 +196,18 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
         throw new Error("Erreur lors de l'initialisation experte")
       }
 
-      // Récupérer l'ID de session depuis les headers
-      const newSessionId = response.headers.get('x-session-id')
-      if (newSessionId) {
-        setSessionId(newSessionId)
-      }
-
       const data = await response.json()
+      
+      // Récupérer l'ID de session depuis la réponse JSON (nouvelle méthode)
+      if (data.sessionId) {
+        setSessionId(data.sessionId)
+      }
       
       // Ajouter le message d'accueil expert
       const welcomeMessage: IntelligentMessage = {
         id: "expert-welcome",
         type: "bot",
-        content: data.response || "Bonjour ! Je suis votre expert Reenove spécialisé en devis de rénovation.",
+        content: data.output || "Bonjour ! Je suis votre expert Reenove spécialisé en devis de rénovation.",
         timestamp: new Date(),
         currentQuestion: data.currentQuestion,
         options: data.options, // Ajouter les options reçues de l'API
@@ -296,16 +297,15 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
         throw new Error("Erreur lors de la communication avec l'expert IA")
       }
 
-      // Récupérer l'ID de session depuis les headers si ce n'est pas déjà fait
-      const newSessionId = response.headers.get('x-session-id')
-      if (newSessionId && !sessionId) {
-        setSessionId(newSessionId)
-      }
-
       const data = await response.json()
       
+      // Récupérer l'ID de session depuis la réponse JSON si ce n'est pas déjà fait
+      if (data.sessionId && !sessionId) {
+        setSessionId(data.sessionId)
+      }
+      
       // Mettre à jour les états
-      setProjectState(data.projectState || {})
+      setProjectState(data.finalAnswers || {})
       setConversationState(data.conversationState || {})
       setCurrentQuestion(data.currentQuestion)
       setIsComplete(data.isComplete || false)
@@ -318,7 +318,7 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
       const expertMessage: IntelligentMessage = {
         id: `expert-${Date.now()}`,
         type: data.isComplete ? "summary" : "bot",
-        content: data.response,
+        content: data.output,
         timestamp: new Date(),
         currentQuestion: data.currentQuestion,
         estimatedPrice: data.estimatedPrice,
@@ -834,6 +834,7 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
       budget: '',
       factors: [] as string[],
       photoAnalysis: '',
+      photos: [] as string[],
       conclusion: ''
     }
     
@@ -845,6 +846,8 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
       
       if (trimmed.includes('📋 DÉTAILS DU PROJET')) {
         currentSection = 'details'
+      } else if (trimmed.includes('📸 PHOTOS DU PROJET')) {
+        currentSection = 'photosSection'
       } else if (trimmed.includes('💰 Estimation budgétaire')) {
         currentSection = 'budget'
         result.budget = trimmed.replace('💰 Estimation budgétaire :', '').trim()
@@ -859,6 +862,12 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
         const [key, value] = trimmed.split(':').map(s => s.trim())
         if (key && value) {
           result.projectDetails[key] = value
+        }
+      } else if (currentSection === 'photosSection' && trimmed.startsWith('Photo ') && trimmed.includes('https')) {
+        // Extraire l'URL de la photo depuis "Photo X: URL"
+        const photoUrl = trimmed.split(': ')[1]
+        if (photoUrl) {
+          result.photos.push(photoUrl)
         }
       } else if (currentSection === 'factors' && trimmed.startsWith('•')) {
         result.factors.push(trimmed.replace('•', '').trim())
@@ -898,10 +907,10 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
             </div>
             <div className="bg-card p-3 rounded-xl rounded-bl-sm max-w-[85%] shadow-sm border border-muted">
               <div className="space-y-2">
-                <div>{message.content}</div>
+                <div>{cleanMarkdown(message.content)}</div>
                 
-                {/* Options de sélection si disponibles */}
-                {message.options && (
+                {/* Options de sélection si disponibles (sauf pour room_type qui a sa propre interface) */}
+                {message.options && (message.currentQuestion?.id !== 'room_type' && message.currentQuestion !== 'room_type') && (
                   <div className="grid gap-2 mt-3">
                     {message.options.map(option => (
                       <Button
@@ -917,7 +926,7 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                 )}
                 
                 {/* Interface spécialisée pour l'upload de photos */}
-                {message.currentQuestion?.id === 'photos_uploaded' && (
+                {(message.currentQuestion?.id === 'photos_uploaded' || message.currentQuestion === 'photos_uploaded') && (
                   <div className="mt-4 p-3 bg-muted/20 rounded-lg border border-muted">
                     <PhotoUpload 
                       onPhotosUploaded={(urls) => {
@@ -934,9 +943,24 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                     />
                   </div>
                 )}
+
+                {/* Interface spécialisée pour la sélection multiple de room_type */}
+                {(message.currentQuestion?.id === 'room_type' || message.currentQuestion === 'room_type') && message.options && (
+                  <div className="mt-4 p-3 bg-muted/20 rounded-lg border border-muted">
+                    <MultiRoomSelector 
+                      options={message.options}
+                      onSelectionChange={(selectedRooms: string[]) => {
+                        if (selectedRooms.length > 0) {
+                          const roomsText = selectedRooms.join(', ');
+                          handleExpertMessage(roomsText);
+                        }
+                      }}
+                    />
+                  </div>
+                )}
                 
                 {/* Interface spécialisée pour l'adresse avec autocomplétion Google */}
-                {message.currentQuestion?.id === 'project_location' && (
+                {(message.currentQuestion?.id === 'project_location' || message.currentQuestion === 'project_location') && (
                   <div className="mt-4 p-3 bg-muted/20 rounded-lg border border-muted">
                     <div className="space-y-3">
                       <GoogleAddressAutocomplete
@@ -994,6 +1018,7 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                         const img = document.createElement('img')
                         img.src = photoUrl
                         img.className = 'max-w-full max-h-full object-contain rounded-lg cursor-default'
+                        img.loading = 'lazy'
                         img.onclick = (e: MouseEvent) => e.stopPropagation()
                         
                         const closeBtn = document.createElement('button')
@@ -1015,9 +1040,11 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                         document.addEventListener('keydown', handleEscape)
                       }}
                     >
-                      <img
+                      <Image
                         src={photoUrl}
                         alt={`Photo ${index + 1}`}
+                        width={48}
+                        height={48}
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
@@ -1083,6 +1110,131 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                 </div>
               </div>
 
+              {/* Photos du projet avec slider si plusieurs */}
+              {parsedSummary.photos && parsedSummary.photos.length > 0 && (
+                <div className="bg-card p-4 rounded-xl shadow-sm border border-muted">
+                  <h4 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                    📸 Photos du projet ({parsedSummary.photos.length})
+                  </h4>
+                                     {parsedSummary.photos.length === 1 ? (
+                     // Affichage simple pour une seule photo
+                     <div className="w-full max-w-md mx-auto">
+                       <Image
+                         src={parsedSummary.photos[0]}
+                         alt="Photo du projet"
+                         width={400}
+                         height={192}
+                         className="w-full h-48 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                         onClick={() => {
+                          // Modal pour agrandir l'image
+                          const modal = document.createElement('div')
+                          modal.className = 'fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 cursor-pointer'
+                          modal.onclick = (e: MouseEvent) => {
+                            if (e.target === modal) modal.remove()
+                          }
+                          
+                                                     const img = document.createElement('img')
+                           img.src = parsedSummary.photos[0]
+                           img.className = 'max-w-full max-h-full object-contain rounded-lg cursor-default'
+                           img.loading = 'lazy'
+                           img.onclick = (e: MouseEvent) => e.stopPropagation()
+                          
+                          const closeBtn = document.createElement('button')
+                          closeBtn.innerHTML = '✕'
+                          closeBtn.className = 'absolute top-4 right-4 text-white bg-black/50 rounded-full w-10 h-10 hover:bg-black/70 transition-colors'
+                          closeBtn.onclick = () => modal.remove()
+                          
+                          modal.appendChild(img)
+                          modal.appendChild(closeBtn)
+                          document.body.appendChild(modal)
+                          
+                          const handleEscape = (e: KeyboardEvent) => {
+                            if (e.key === 'Escape') {
+                              modal.remove()
+                              document.removeEventListener('keydown', handleEscape)
+                            }
+                          }
+                          document.addEventListener('keydown', handleEscape)
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    // Slider pour plusieurs photos
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                             {parsedSummary.photos.map((photoUrl, index) => (
+                         <div key={index} className="relative group">
+                           <Image
+                             src={photoUrl}
+                             alt={`Photo ${index + 1}`}
+                             width={200}
+                             height={128}
+                             className="w-full h-32 object-cover rounded-lg cursor-pointer group-hover:opacity-90 transition-opacity"
+                             onClick={() => {
+                              // Modal avec navigation entre photos
+                              const modal = document.createElement('div')
+                              modal.className = 'fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4'
+                              
+                              let currentIndex = index
+                              
+                              const updateImage = () => {
+                                const img = modal.querySelector('img')
+                                const counter = modal.querySelector('.photo-counter')
+                                if (img && counter) {
+                                  img.src = parsedSummary.photos[currentIndex]
+                                  counter.textContent = `${currentIndex + 1} / ${parsedSummary.photos.length}`
+                                }
+                              }
+                              
+                                                             modal.innerHTML = `
+                                 <button class="absolute top-4 right-4 text-white bg-black/50 rounded-full w-10 h-10 hover:bg-black/70 transition-colors z-10">✕</button>
+                                 <button class="absolute left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full w-10 h-10 hover:bg-black/70 transition-colors prev-btn">‹</button>
+                                 <button class="absolute right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full w-10 h-10 hover:bg-black/70 transition-colors next-btn">›</button>
+                                 <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-white bg-black/50 px-3 py-1 rounded-full text-sm photo-counter">${currentIndex + 1} / ${parsedSummary.photos.length}</div>
+                                 <img src="${photoUrl}" class="max-w-full max-h-full object-contain rounded-lg" loading="lazy">
+                               `
+                              
+                              modal.querySelector('.prev-btn')?.addEventListener('click', () => {
+                                currentIndex = (currentIndex - 1 + parsedSummary.photos.length) % parsedSummary.photos.length
+                                updateImage()
+                              })
+                              
+                              modal.querySelector('.next-btn')?.addEventListener('click', () => {
+                                currentIndex = (currentIndex + 1) % parsedSummary.photos.length
+                                updateImage()
+                              })
+                              
+                              modal.querySelector('button')?.addEventListener('click', () => modal.remove())
+                              modal.addEventListener('click', (e) => {
+                                if (e.target === modal) modal.remove()
+                              })
+                              
+                              document.body.appendChild(modal)
+                              
+                              const handleEscape = (e: KeyboardEvent) => {
+                                if (e.key === 'Escape') {
+                                  modal.remove()
+                                  document.removeEventListener('keydown', handleEscape)
+                                } else if (e.key === 'ArrowLeft') {
+                                  currentIndex = (currentIndex - 1 + parsedSummary.photos.length) % parsedSummary.photos.length
+                                  updateImage()
+                                } else if (e.key === 'ArrowRight') {
+                                  currentIndex = (currentIndex + 1) % parsedSummary.photos.length
+                                  updateImage()
+                                }
+                              }
+                              document.addEventListener('keydown', handleEscape)
+                            }}
+                          />
+                          <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                            {index + 1}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Estimation budgétaire */}
               {(parsedSummary.budget || message.estimatedPrice) && (
                 <div className="bg-gradient-to-r from-[#FCDA89]/10 to-amber-100/10 p-4 rounded-xl border border-[#FCDA89]/20">
@@ -1095,7 +1247,7 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                         {parsedSummary.budget || `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`}
                       </div>
                       <p className="text-sm opacity-80 mt-1">
-                        Prix estimé main d'œuvre et matériaux inclus
+                        Prix estimé main d&apos;œuvre et matériaux inclus
                       </p>
                     </div>
                   </div>
@@ -1158,12 +1310,12 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex-1 flex flex-col w-full h-full overflow-hidden md:max-w-5xl md:mx-auto"
+      className="flex-1 flex flex-col h-full overflow-hidden"
     >
-      <Card className="flex-1 flex flex-col h-full w-full border-0 md:border shadow-none md:shadow-sm bg-background overflow-hidden rounded-none md:rounded-md">
+      <Card className="flex-1 flex flex-col h-full border-0 md:border shadow-none md:shadow-sm bg-background overflow-hidden rounded-none md:rounded-md">
         <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
           {/* En-tête expert */}
-          <div className="py-3 px-4 border-b bg-[#0E261C] flex items-center sticky top-0 z-10">
+          <div className="py-3 px-4 border-b bg-[#0E261C] flex items-center flex-shrink-0 z-10">
             <div className="flex items-center gap-3 flex-1">
               <div className="bg-white p-2 rounded-full">
                 <Bot className="h-5 w-5 text-primary" />
@@ -1187,14 +1339,8 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
             </button>
           </div>
           
-          {/* Zone des messages - Ajustée pour une hauteur adaptative quand le drawer est ouvert */}
-          <div 
-            className={`flex-1 overflow-hidden ${isDrawerOpen ? "max-h-[5vh]" : ""}`} 
-            style={{ 
-              height: isDrawerOpen ? undefined : 'calc(100vh - 200px)',
-              maxHeight: '100%' 
-            }}
-          >
+          {/* Zone des messages - Adaptée dynamiquement */}
+          <div className={`flex-1 overflow-hidden ${isDrawerOpen ? "h-16" : ""}`}>
             <div 
               ref={messagesContainerRef}
               className="h-full overflow-y-auto p-3 space-y-3 md:space-y-4 scrollbar-thin"
@@ -1238,27 +1384,9 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
             </div>
           </div>
           
-          {/* Barre de saisie experte (non affichée quand le drawer est ouvert) */}
+          {/* Barre de saisie experte - fixe en bas */}
           {!isComplete && !isDrawerOpen && (
-            <div className="border-t bg-background">
-              {/* Zone upload photos si demandé */}
-              {currentQuestion?.type === 'photos' && (
-                <div className="p-3 border-b bg-[#0E261C]/5">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Camera className="h-4 w-4 text-[#FCDA89]" />
-                    <span className="text-sm font-medium">Photos de votre projet</span>
-                  </div>
-
-                  <label
-                    htmlFor="photo-upload"
-                    className="inline-flex items-center gap-2 px-3 py-2 bg-[#FCDA89] text-[#0E261C] rounded-md cursor-pointer hover:bg-[#FCDA89]/90 text-sm"
-                  >
-                    <Upload className="h-4 w-4" />
-                    Ajouter des photos
-                  </label>
-                </div>
-              )}
-              
+            <div className="flex-shrink-0 border-t bg-background">
               {/* Bouton continuer vers l'espace client */}
               {showContinueButton && (
                 <div className="p-3 bg-[#FCDA89]/10 border-t border-[#FCDA89]/20">
@@ -1273,31 +1401,31 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
 
               {/* Input de saisie */}
               {!showContinueButton && (
-                <div className="p-3 sticky bottom-0 bg-background z-10">
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder={
-                      currentQuestion ? 
-                        `Répondez à la question de l'expert...` :
-                        "Posez votre question à l'expert..."
-                    }
-                    disabled={isLoading}
-                    className="flex-1 bg-muted/30 border-muted focus-visible:ring-primary/30"
-                    autoComplete="off"
-                  />
-                  <Button
-                    onClick={() => handleExpertMessage()}
-                    size="icon"
-                    className="bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90"
-                    disabled={!inputValue.trim() || isLoading}
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
+                <div className="p-3">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder={
+                        currentQuestion ? 
+                          `Répondez à la question de l'expert...` :
+                          "Posez votre question à l'expert..."
+                      }
+                      disabled={isLoading}
+                      className="flex-1 bg-muted/30 border-muted focus-visible:ring-primary/30"
+                      autoComplete="off"
+                    />
+                    <Button
+                      onClick={() => handleExpertMessage()}
+                      size="icon"
+                      className="bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90"
+                      disabled={!inputValue.trim() || isLoading}
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
               )}
             </div>
           )}

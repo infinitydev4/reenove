@@ -2,13 +2,14 @@
 
 import React, { useState, FormEvent } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowRight, Loader2, Mail, Lock, User as UserIcon, Calendar, CheckCircle, ChevronDown, ArrowUpRight } from "lucide-react"
+import { ArrowRight, Loader2, Mail, Lock, User as UserIcon, Calendar, CheckCircle, ChevronDown, ArrowUpRight, Phone } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { ProjectState } from "./ChatContainer"
+import { signIn as nextAuthSignIn } from "next-auth/react"
 
 interface ProjectSummaryProps {
   projectState: ProjectState
@@ -21,6 +22,7 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     password: "",
     confirmPassword: ""
   })
@@ -34,63 +36,47 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
     return new Intl.NumberFormat('fr-FR').format(price)
   }
 
-  // Fonction pour obtenir le CSRF token
-  const getCsrfToken = async () => {
-    try {
-      const response = await fetch("/api/auth/csrf")
-      if (!response.ok) {
-        console.error("Erreur lors de la récupération du CSRF token:", response.status)
-        return null
-      }
-      
-      const data = await response.json()
-      return data.csrfToken
-    } catch (error) {
-      console.error("Erreur lors de la récupération du CSRF token:", error)
-      return null
-    }
-  }
-
   // Fonction pour connecter l'utilisateur
   const signIn = async ({ email, password }: { email: string, password: string }) => {
-    // Récupération du CSRF token
-    const csrfToken = await getCsrfToken()
-    if (!csrfToken) {
-      throw new Error("Impossible de récupérer le jeton de sécurité")
-    }
-    
-    const response = await fetch("/api/auth/callback/credentials", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    try {
+      // Utiliser NextAuth signIn au lieu d'appeler directement l'API
+      const result = await nextAuthSignIn('credentials', {
         email,
         password,
-        redirect: false,
-        csrfToken
-      }),
-    })
-    
-    if (!response.ok) {
-      throw new Error("Erreur lors de la connexion")
-    }
-    
-    try {
-      return await response.json()
+        redirect: false, // Important : éviter les redirections automatiques
+      })
+
+      console.log('🔐 Résultat NextAuth signIn:', result)
+
+      if (result?.error) {
+        // Traduire les erreurs d'authentification NextAuth
+        const errorMessage = result.error
+        if (errorMessage.includes("CredentialsSignin") || errorMessage === "Aucun compte trouvé avec cet email") {
+          throw new Error("Aucun compte trouvé avec cet email")
+        } else if (errorMessage.includes("Mot de passe incorrect")) {
+          throw new Error("Mot de passe incorrect")
+        } else {
+          throw new Error("Erreur de connexion : " + errorMessage)
+        }
+      }
+
+      if (!result?.ok) {
+        throw new Error("Erreur de connexion")
+      }
+
+      return result
     } catch (error) {
-      console.error("Erreur parsing JSON dans signIn:", error)
-      // Retourner un objet vide en cas d'échec de parsing
-      return {}
+      console.error("Erreur dans signIn:", error)
+      throw error
     }
   }
 
   // Fonction pour gérer la soumission du formulaire
-  const handleFormSubmit = async (e: FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setFormError("")
-    
+
     try {
       if (activeTab === "signup") {
         // Vérifier que les mots de passe correspondent
@@ -100,8 +86,15 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
           return
         }
         
+        // Validation basique du numéro de téléphone français (optionnel)
+        if (formData.phone && !/^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/.test(formData.phone.replace(/\s/g, ''))) {
+          setFormError("Le numéro de téléphone n'est pas valide (format français attendu)")
+          setIsSubmitting(false)
+          return
+        }
+        
         // Séparer le nom complet en prénom et nom si possible
-        let firstName = formData.name;
+        let firstName = formData.name.trim();
         let lastName = "";
         
         // Diviser le nom complet en prénom et nom s'il contient un espace
@@ -111,7 +104,7 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
           lastName = nameParts.slice(1).join(" ");
         }
         
-        // Enregistrer l'utilisateur
+        // Inscription
         const registerResponse = await fetch("/api/register", {
           method: "POST",
           headers: {
@@ -121,6 +114,7 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
             firstName: firstName,
             lastName: lastName || firstName, // Si pas de nom, utiliser le prénom comme nom
             email: formData.email,
+            phone: formData.phone,
             password: formData.password,
             role: "USER"
           }),
@@ -144,43 +138,41 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
           throw new Error(errorMessage)
         }
         
-        // Inscription réussie, tenter de connecter l'utilisateur
-        let signInSuccess = false
+        // Inscription réussie, tenter de connecter l'utilisateur automatiquement
         try {
           await signIn({ email: formData.email, password: formData.password })
-          signInSuccess = true
+          console.log("✅ Inscription et connexion automatique réussies")
         } catch (signInError) {
           console.error("Erreur lors de la connexion après inscription:", signInError)
-          // Continuer malgré l'erreur de connexion, car l'inscription a réussi
-        }
-        
-        // Si la connexion a échoué, informer l'utilisateur mais continuer
-        if (!signInSuccess) {
-          console.log("Inscription réussie mais connexion automatique échouée. Continuons quand même.")
+          // Si la connexion automatique échoue après inscription, proposer connexion manuelle
+          setFormError("Votre compte a été créé avec succès ! Cependant, la connexion automatique a échoué. Veuillez vous connecter manuellement avec vos nouveaux identifiants.")
+          setActiveTab("login") // Basculer vers l'onglet connexion
+          setIsSubmitting(false)
+          return
         }
       } else {
-        // Se connecter (onglet login)
+        // Connexion
         try {
           await signIn({ email: formData.email, password: formData.password })
+          console.log("✅ Connexion réussie")
         } catch (loginError: any) {
-          // Afficher l'erreur mais ne pas arrêter le processus
           console.error("Erreur de connexion:", loginError)
           
           if (loginError.message.includes("jeton de sécurité")) {
             setFormError("Vous semblez déjà connecté avec un autre compte. Veuillez vous déconnecter d'abord.")
-            setIsSubmitting(false)
-            return
+          } else {
+            setFormError(loginError.message || "Erreur lors de la connexion")
           }
-          
-          setFormError(loginError.message || "Erreur lors de la connexion")
           setIsSubmitting(false)
           return
         }
       }
       
-      // Tenter de sauvegarder le projet même si la connexion a échoué
+      // À ce point, l'utilisateur est connecté (inscription + connexion auto réussies OU connexion réussie)
+      // Maintenant on peut tenter de sauvegarder le projet
       try {
         await onSaveProject()
+        console.log("✅ Projet sauvegardé avec succès")
         
         // Envoyer l'email de demande de devis après la sauvegarde du projet
         try {
@@ -198,25 +190,26 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
                 location: projectState.location?.address || "",
                 city: projectState.location?.city || "",
                 postalCode: projectState.location?.postalCode || "",
-                                 estimatedPrice: projectState.estimatedPrice
+                estimatedPrice: projectState.estimatedPrice
               }
             })
           })
+          console.log("✅ Email de demande de devis envoyé")
         } catch (emailError) {
           // Log l'erreur email mais ne pas faire échouer le processus
           console.error("Erreur lors de l'envoi de l'email de demande de devis:", emailError)
         }
       } catch (saveError) {
         console.error("Erreur lors de la sauvegarde du projet:", saveError)
-        setFormError("Votre compte a été créé mais le projet n'a pas pu être sauvegardé. Veuillez vous connecter pour réessayer.")
+        setFormError("Connexion réussie, mais une erreur s'est produite lors de la sauvegarde de votre projet. Veuillez réessayer.")
         setIsSubmitting(false)
         return
       }
       
-      // Si tout s'est bien passé, la redirection sera gérée par le parent (bouton manuel)
-      console.log("✅ Inscription et sauvegarde réussies - redirection gérée manuellement")
+      // Si tout s'est bien passé, la redirection sera gérée par le parent
+      console.log("✅ Processus complet réussi - redirection gérée manuellement")
     } catch (error: any) {
-      console.error("Erreur:", error)
+      console.error("Erreur globale:", error)
       setFormError(error.message || "Une erreur est survenue")
     } finally {
       setIsSubmitting(false)
@@ -321,7 +314,7 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
               </li>
               <li className="flex items-center gap-2">
                 <div className="bg-[#FCDA89]/30 text-[#FCDA89] w-5 h-5 rounded-full flex items-center justify-center font-medium">3</div>
-                <span className="text-white/80">Choisissez l'artisan qui vous convient</span>
+                <span className="text-white/80">Choisissez l&apos;artisan qui vous convient</span>
               </li>
             </ol>
           </div>
@@ -330,7 +323,7 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
           <div className="bg-[#0E261C]/60 border border-[#FCDA89]/10 rounded-lg p-4 shadow-lg">
             <Tabs defaultValue="signup" value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="mb-3 w-full grid grid-cols-2">
-                <TabsTrigger value="signup" className="data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">S'inscrire</TabsTrigger>
+                <TabsTrigger value="signup" className="data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">S&apos;inscrire</TabsTrigger>
                 <TabsTrigger value="login" className="data-[state=active]:bg-[#FCDA89] data-[state=active]:text-[#0E261C]">Se connecter</TabsTrigger>
               </TabsList>
               
@@ -372,6 +365,21 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
                       />
                     </div>
                   </div>
+                  
+                    <div>
+                     <Label htmlFor="phone" className="text-xs text-white mb-1 block">Téléphone</Label>
+                     <div className="relative">
+                       <Phone className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+                       <Input
+                         id="phone"
+                         type="tel"
+                         className="pl-8 h-9 text-sm bg-muted/30 border-muted"
+                         placeholder="06 12 34 56 78"
+                         value={formData.phone}
+                         onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                       />
+                     </div>
+                   </div>
                   
                   <div>
                     <Label htmlFor="password" className="text-xs text-white mb-1 block">Mot de passe</Label>
@@ -461,7 +469,7 @@ export default function ProjectSummary({ projectState, onSaveProject }: ProjectS
                   </Button>
                   
                   <p className="text-[10px] text-center text-muted-foreground pt-1">
-                    En continuant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité.
+                    En continuant, vous acceptez nos conditions d&apos;utilisation et notre politique de confidentialité.
                   </p>
                 </div>
                 

@@ -32,16 +32,17 @@ export default function AIProjectCreationPage() {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden w-full">
-      <div className="md:block hidden md:max-w-5xl md:w-full md:mx-auto">
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Header uniquement sur desktop */}
+      <div className="hidden md:block flex-shrink-0 px-4 py-4">
         <PageHeader
           title="Créez votre projet avec notre assistant IA intelligent"
           description="Notre assistant autonome s'adapte à vos réponses pour créer le devis parfait"
-          className="mb-4 mt-4"
         />
       </div>
       
-      <div className="flex-1 h-full overflow-hidden w-full md:mb-4">
+      {/* Chat container qui prend tout l'espace restant */}
+      <div className="flex-1 overflow-hidden">
         <IntelligentChatContainer onSaveProject={saveProjectOnly} />
       </div>
     </div>

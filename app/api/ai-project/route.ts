@@ -7,9 +7,14 @@ export const runtime = "edge";
 const sessions = new Map<string, IntelligentFormRunner>();
 
 function getSessionId(req: NextRequest): string {
-  // Générer un ID de session simple (en production, utiliser une méthode plus robuste)
-  const sessionId = req.headers.get('x-session-id') || `session-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-  return sessionId;
+  // Récupérer l'ID de session depuis les headers ou générer un nouveau
+  const sessionId = req.headers.get('x-session-id');
+  if (sessionId) {
+    return sessionId;
+  }
+  
+  // Générer un nouvel ID seulement si aucun n'existe
+  return `session-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 }
 
 export async function POST(req: NextRequest) {
@@ -25,10 +30,13 @@ export async function POST(req: NextRequest) {
     // Récupérer ou créer l'instance pour cette session
     let formRunner = sessions.get(sessionId);
     
-    if (!formRunner || resetFlow) {
+    if (!formRunner) {
       console.log("✨ Création nouvelle instance FormRunner");
       formRunner = new IntelligentFormRunner();
       sessions.set(sessionId, formRunner);
+    } else {
+      console.log("♻️ Réutilisation instance FormRunner existante");
+      console.log("🗂️ État projet actuel:", formRunner.getProjectState());
     }
 
     // Si reset demandé, réinitialiser
@@ -48,38 +56,22 @@ export async function POST(req: NextRequest) {
 
     // Adapter la réponse au format attendu par l'ancien système
     const response = {
-      response: result.output,
+      output: result.output,
       isComplete: result.isComplete,
-      currentQuestion: result.currentQuestion,
+      currentQuestion: result.currentQuestion?.id,
       conversationState: result.conversationState,
-      projectState: formRunner.getProjectState(),
-      estimatedPrice: result.estimatedPrice,
       finalAnswers: result.finalAnswers,
-      options: result.options // Ajouter les options pour l'affichage des boutons
+      estimatedPrice: result.estimatedPrice,
+      photos: result.photos,
+      options: result.options,
+      sessionId: sessionId // Retourner l'ID de session pour le frontend
     };
 
-    // Nettoyer les sessions anciennes (simple cleanup)
-    if (sessions.size > 100) {
-      const oldestKey = sessions.keys().next().value;
-      if (oldestKey) {
-        sessions.delete(oldestKey);
-      }
-    }
-
-    // Retourner l'ID de session dans les headers pour le client
-    const nextResponse = NextResponse.json(response);
-    nextResponse.headers.set('x-session-id', sessionId);
-    
-    return nextResponse;
-
-  } catch (error: any) {
+    return NextResponse.json(response);
+  } catch (error) {
     console.error("❌ Erreur API Intelligent Chat:", error);
     return NextResponse.json(
-      { 
-        error: "Erreur lors du traitement de votre demande",
-        response: "Désolé, une erreur s'est produite. Pouvez-vous réessayer ?",
-        isComplete: false
-      },
+      { error: "Erreur lors du traitement de la demande" },
       { status: 500 }
     );
   }

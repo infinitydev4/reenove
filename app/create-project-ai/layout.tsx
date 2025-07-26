@@ -17,19 +17,22 @@ export default function CreateProjectAILayout({
   const { theme } = useTheme()
   
   return (
-    <div className="min-h-screen h-screen flex flex-col bg-[#0E261C] overflow-hidden">
+    <div className="fixed inset-0 flex flex-col bg-[#0E261C] overflow-hidden">
       <Script
         src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
         strategy="beforeInteractive"
       />
-      <div className="md:block hidden">
+      
+      {/* Navbar fixe en haut sur desktop uniquement */}
+      <div className="hidden md:block flex-shrink-0">
         <Navbar />
       </div>
       
-     <main className="flex-1 flex flex-col h-full w-full overflow-hidden">
-          <div className="md:max-w-5xl md:mx-auto md:w-full w-full h-full flex flex-col">
-            {children}
-          </div>
+      {/* Contenu principal qui prend tout l'espace restant */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden max-w-5xl mx-auto w-full">
+          {children}
+        </div>
       </main>
     </div>
   )
