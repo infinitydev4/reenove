@@ -375,7 +375,38 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
 
   // Analyser l'intention utilisateur
   private async analyzeIntent(input: string, context: ConversationContext): Promise<string> {
-    if (!this.useAI || !input) {
+    if (!input) {
+      return 'complete_answer';
+    }
+
+    // NOUVEAU: Vérification déterministe AVANT l'IA
+    // Si l'input correspond exactement aux options communes, c'est forcément "complete_answer"
+    if (context.currentFocus) {
+      const inputLower = input.trim().toLowerCase();
+      
+      // Options communes pour les champs les plus fréquents
+      const commonOptions = {
+        project_category: ['plomberie', 'électricité', 'menuiserie', 'peinture', 'maçonnerie', 'salle de bain', 'portes et fenêtres', 'jardinage', 'rénovation générale', 'autre'],
+        current_state: ['bon état', 'état moyen', 'mauvais état', 'endommagé', 'problèmes d\'humidité'],
+        materials_preferences: ['aucune préférence', 'standard', 'haute qualité', 'économique', 'finition mate', 'finition satinée'],
+        project_urgency: ['urgent', 'dans les 15 jours', 'dans les 30 jours', 'quand vous voulez'],
+        surface_area: ['moins de 10 m²', '10-20 m²', '20-50 m²', 'plus de 50 m²']
+      };
+      
+      const fieldOptions = commonOptions[context.currentFocus as keyof typeof commonOptions];
+      if (fieldOptions && fieldOptions.some(option => 
+        option.toLowerCase() === inputLower || 
+        inputLower.includes(option.toLowerCase()) ||
+        option.toLowerCase().includes(inputLower)
+      )) {
+        console.log('✅ Réponse exacte détectée pour', context.currentFocus, ':', input);
+        this.conversationState.lastIntent = 'complete_answer';
+        return 'complete_answer';
+      }
+    }
+
+    // Fallback vers l'analyse IA seulement si pas de correspondance exacte
+    if (!this.useAI) {
       return 'complete_answer';
     }
 
@@ -397,6 +428,7 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
       const intent = typeof result.content === 'string' ? result.content.trim().toLowerCase() : 'complete_answer';
       this.conversationState.lastIntent = intent;
       
+      console.log('🎭 Intention détectée par IA:', intent, 'pour input:', input);
       return intent;
     } catch (error) {
       console.error('❌ Erreur analyse intention:', error);
@@ -707,6 +739,13 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'luminaires', label: '💡 Ajouter des luminaires', value: 'ajouter des luminaires' },
         { id: 'mise_aux_normes', label: '🛡️ Mise aux normes', value: 'mise aux normes électrique' }
       ],
+      // Version sans accent pour compatibilité
+      'Electricite': [
+        { id: 'tableau', label: '⚡ Changer le tableau électrique', value: 'changer le tableau électrique' },
+        { id: 'prises', label: '🔌 Installer des prises', value: 'installer des prises' },
+        { id: 'luminaires', label: '💡 Ajouter des luminaires', value: 'ajouter des luminaires' },
+        { id: 'mise_aux_normes', label: '🛡️ Mise aux normes', value: 'mise aux normes électrique' }
+      ],
       'Plomberie': [
         { id: 'robinet', label: '🚰 Réparer/changer un robinet', value: 'réparer un robinet' },
         { id: 'fuite', label: '💧 Réparer une fuite', value: 'réparer une fuite' },
@@ -724,16 +763,84 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'parquet', label: '🪵 Poser du parquet', value: 'poser du parquet' },
         { id: 'etageres', label: '📚 Créer des étagères', value: 'créer des étagères' },
         { id: 'escalier', label: '🪜 Réparer un escalier', value: 'réparer un escalier' }
+      ],
+      'Maçonnerie': [
+        { id: 'mur', label: '🧱 Construire un mur', value: 'construire un mur' },
+        { id: 'cloison', label: '🚧 Monter une cloison', value: 'monter une cloison' },
+        { id: 'dalle', label: '🏗️ Couler une dalle', value: 'couler une dalle béton' },
+        { id: 'facade', label: '🏠 Rénover la façade', value: 'rénover la façade' }
+      ],
+      // Version sans accent pour compatibilité
+      'Maconnerie': [
+        { id: 'mur', label: '🧱 Construire un mur', value: 'construire un mur' },
+        { id: 'cloison', label: '🚧 Monter une cloison', value: 'monter une cloison' },
+        { id: 'dalle', label: '🏗️ Couler une dalle', value: 'couler une dalle béton' },
+        { id: 'facade', label: '🏠 Rénover la façade', value: 'rénover la façade' }
+      ],
+      'Salle de bain': [
+        { id: 'renovation_complete', label: '🛁 Rénovation complète', value: 'rénovation complète salle de bain' },
+        { id: 'douche', label: '🚿 Installer une douche', value: 'installer une douche' },
+        { id: 'baignoire', label: '🛀 Changer la baignoire', value: 'changer la baignoire' },
+        { id: 'carrelage', label: '🟫 Refaire le carrelage', value: 'refaire le carrelage' }
+      ],
+      'Portes et fenêtres': [
+        { id: 'porte', label: '🚪 Installer une porte', value: 'installer une porte' },
+        { id: 'fenetre', label: '🪟 Changer les fenêtres', value: 'changer les fenêtres' },
+        { id: 'volets', label: '🪟 Poser des volets', value: 'poser des volets' },
+        { id: 'porte_fenetre', label: '🚪 Porte-fenêtre', value: 'installer porte-fenêtre' }
+      ],
+      // Version sans accents pour compatibilité
+      'Portes et fenetres': [
+        { id: 'porte', label: '🚪 Installer une porte', value: 'installer une porte' },
+        { id: 'fenetre', label: '🪟 Changer les fenêtres', value: 'changer les fenêtres' },
+        { id: 'volets', label: '🪟 Poser des volets', value: 'poser des volets' },
+        { id: 'porte_fenetre', label: '🚪 Porte-fenêtre', value: 'installer porte-fenêtre' }
+      ],
+      'Jardinage': [
+        { id: 'amenagement', label: '🌿 Aménagement paysager', value: 'aménagement paysager' },
+        { id: 'pelouse', label: '🌱 Créer une pelouse', value: 'créer une pelouse' },
+        { id: 'plantation', label: '🌳 Plantation d\'arbres', value: 'plantation d\'arbres' },
+        { id: 'terrasse', label: '🪵 Terrasse en bois', value: 'construire terrasse bois' }
+      ],
+      'Rénovation générale': [
+        { id: 'renovation_complete', label: '🏠 Rénovation complète', value: 'rénovation complète' },
+        { id: 'agrandissement', label: '📐 Agrandissement', value: 'agrandissement maison' },
+        { id: 'isolation', label: '🧱 Isolation thermique', value: 'isolation thermique' },
+        { id: 'combles', label: '🏠 Aménagement combles', value: 'aménagement combles' }
+      ],
+      // Version sans accents pour compatibilité
+      'Renovation generale': [
+        { id: 'renovation_complete', label: '🏠 Rénovation complète', value: 'rénovation complète' },
+        { id: 'agrandissement', label: '📐 Agrandissement', value: 'agrandissement maison' },
+        { id: 'isolation', label: '🧱 Isolation thermique', value: 'isolation thermique' },
+        { id: 'combles', label: '🏠 Aménagement combles', value: 'aménagement combles' }
+      ],
+      'Autre': [
+        { id: 'autre_service', label: '🔧 Autre service', value: 'autre type de travaux' },
+        { id: 'conseil', label: '💡 Demande de conseil', value: 'demande de conseil' },
+        { id: 'devis', label: '📋 Devis personnalisé', value: 'devis personnalisé' },
+        { id: 'expertise', label: '🔍 Expertise technique', value: 'expertise technique' }
       ]
     };
 
-    return serviceSuggestions[category];
+    console.log('🔍 getServiceTypeSuggestions - Recherche pour catégorie:', category);
+    const suggestions = serviceSuggestions[category];
+    console.log('📋 Suggestions trouvées:', suggestions ? suggestions.length : 0);
+    
+    return suggestions || [];
   }
 
   // Suggestions pour l'état actuel selon la catégorie
   private getCurrentStateSuggestions(category: string): Array<{ id: string; label: string; value: string }> {
     const stateSuggestions: Record<string, Array<{ id: string; label: string; value: string }>> = {
       'Électricité': [
+        { id: 'vetuste', label: '⚠️ Vétuste mais fonctionne', value: 'vétuste mais fonctionne' },
+        { id: 'disjoncte', label: '⚡ Disjoncte souvent', value: 'disjoncte souvent' },
+        { id: 'norme', label: '✅ Aux normes', value: 'aux normes' },
+        { id: 'panne', label: '❌ En panne', value: 'en panne' }
+      ],
+      // Version sans accent pour compatibilité
+      'Electricite': [
         { id: 'vetuste', label: '⚠️ Vétuste mais fonctionne', value: 'vétuste mais fonctionne' },
         { id: 'disjoncte', label: '⚡ Disjoncte souvent', value: 'disjoncte souvent' },
         { id: 'norme', label: '✅ Aux normes', value: 'aux normes' },
@@ -750,10 +857,77 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'fissures', label: '🔍 Murs avec fissures', value: 'murs avec fissures' },
         { id: 'bon_etat', label: '✅ En bon état', value: 'en bon état' },
         { id: 'humidite', label: '💧 Problèmes d\'humidité', value: 'problèmes d\'humidité' }
+      ],
+      'Menuiserie': [
+        { id: 'bon_etat', label: '✅ En bon état', value: 'en bon état' },
+        { id: 'abime', label: '⚠️ Abîmé', value: 'abîmé' },
+        { id: 'pourri', label: '❌ Bois pourri', value: 'bois pourri' },
+        { id: 'a_renover', label: '🔨 À rénover', value: 'à rénover' }
+      ],
+      'Maçonnerie': [
+        { id: 'fissures', label: '🔍 Fissures visibles', value: 'fissures visibles' },
+        { id: 'bon_etat', label: '✅ Structure saine', value: 'structure saine' },
+        { id: 'humidite', label: '💧 Problèmes d\'humidité', value: 'problèmes d\'humidité' },
+        { id: 'renovation', label: '🔨 À rénover', value: 'à rénover complètement' }
+      ],
+      // Version sans accent pour compatibilité
+      'Maconnerie': [
+        { id: 'fissures', label: '🔍 Fissures visibles', value: 'fissures visibles' },
+        { id: 'bon_etat', label: '✅ Structure saine', value: 'structure saine' },
+        { id: 'humidite', label: '💧 Problèmes d\'humidité', value: 'problèmes d\'humidité' },
+        { id: 'renovation', label: '🔨 À rénover', value: 'à rénover complètement' }
+      ],
+      'Salle de bain': [
+        { id: 'vieillot', label: '⚠️ Vieillotte mais fonctionnelle', value: 'vieillotte mais fonctionnelle' },
+        { id: 'humidite', label: '💧 Problèmes d\'humidité', value: 'problèmes d\'humidité' },
+        { id: 'carrelage_abime', label: '🟫 Carrelage abîmé', value: 'carrelage abîmé' },
+        { id: 'renovation', label: '🔨 À rénover', value: 'à rénover complètement' }
+      ],
+      'Portes et fenêtres': [
+        { id: 'bon_etat', label: '✅ En bon état', value: 'en bon état' },
+        { id: 'isolation', label: '❄️ Mauvaise isolation', value: 'mauvaise isolation' },
+        { id: 'abime', label: '⚠️ Abîmées', value: 'abîmées' },
+        { id: 'changer', label: '🔄 À changer', value: 'à changer' }
+      ],
+      // Version sans accents pour compatibilité
+      'Portes et fenetres': [
+        { id: 'bon_etat', label: '✅ En bon état', value: 'en bon état' },
+        { id: 'isolation', label: '❄️ Mauvaise isolation', value: 'mauvaise isolation' },
+        { id: 'abime', label: '⚠️ Abîmées', value: 'abîmées' },
+        { id: 'changer', label: '🔄 À changer', value: 'à changer' }
+      ],
+      'Jardinage': [
+        { id: 'entretenu', label: '✅ Bien entretenu', value: 'bien entretenu' },
+        { id: 'a_amenager', label: '🌱 À aménager', value: 'à aménager' },
+        { id: 'friche', label: '🌿 En friche', value: 'en friche' },
+        { id: 'vierge', label: '🟫 Terrain vierge', value: 'terrain vierge' }
+      ],
+      'Rénovation générale': [
+        { id: 'habitable', label: '✅ Habitable', value: 'habitable' },
+        { id: 'renovation_legere', label: '🔧 Rénovation légère', value: 'rénovation légère nécessaire' },
+        { id: 'gros_travaux', label: '🏗️ Gros travaux', value: 'gros travaux nécessaires' },
+        { id: 'a_refaire', label: '🔨 Tout à refaire', value: 'tout à refaire' }
+      ],
+      // Version sans accents pour compatibilité
+      'Renovation generale': [
+        { id: 'habitable', label: '✅ Habitable', value: 'habitable' },
+        { id: 'renovation_legere', label: '🔧 Rénovation légère', value: 'rénovation légère nécessaire' },
+        { id: 'gros_travaux', label: '🏗️ Gros travaux', value: 'gros travaux nécessaires' },
+        { id: 'a_refaire', label: '🔨 Tout à refaire', value: 'tout à refaire' }
+      ],
+      'Autre': [
+        { id: 'bon_etat', label: '✅ En bon état', value: 'en bon état' },
+        { id: 'moyen', label: '⚠️ État moyen', value: 'état moyen' },
+        { id: 'mauvais', label: '❌ Mauvais état', value: 'mauvais état' },
+        { id: 'expertise', label: '🔍 Besoin d\'expertise', value: 'besoin d\'expertise' }
       ]
     };
 
-    return stateSuggestions[category] || [
+    console.log('🔍 getCurrentStateSuggestions - Recherche pour catégorie:', category);
+    const suggestions = stateSuggestions[category];
+    console.log('📋 Suggestions état trouvées:', suggestions ? suggestions.length : 0);
+
+    return suggestions || [
       { id: 'bon', label: '✅ En bon état', value: 'en bon état' },
       { id: 'moyen', label: '⚠️ État moyen', value: 'état moyen' },
       { id: 'mauvais', label: '❌ Mauvais état', value: 'mauvais état' }
@@ -770,15 +944,95 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'satine', label: '🌟 Finition satinée', value: 'finition satinée' },
         { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
       ],
+      'Électricité': [
+        { id: 'standard', label: '⚡ Matériel standard', value: 'matériel électrique standard' },
+        { id: 'qualite', label: '💎 Haute qualité', value: 'matériel haute qualité' },
+        { id: 'economique', label: '💰 Économique', value: 'matériel économique' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      ],
+      // Version sans accent pour compatibilité
+      'Electricite': [
+        { id: 'standard', label: '⚡ Matériel standard', value: 'matériel électrique standard' },
+        { id: 'qualite', label: '💎 Haute qualité', value: 'matériel haute qualité' },
+        { id: 'economique', label: '💰 Économique', value: 'matériel économique' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      ],
+      'Plomberie': [
+        { id: 'cuivre', label: '🔸 Cuivre', value: 'tuyaux en cuivre' },
+        { id: 'per', label: '🔹 PER', value: 'tuyaux PER' },
+        { id: 'pvc', label: '⚪ PVC', value: 'tuyaux PVC' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      ],
       'Menuiserie': [
         { id: 'massif', label: '🪵 Bois massif', value: 'bois massif' },
         { id: 'agglomere', label: '📦 Aggloméré', value: 'aggloméré' },
         { id: 'mdf', label: '🔧 MDF', value: 'MDF' },
         { id: 'stratifie', label: '✨ Stratifié', value: 'stratifié' }
+      ],
+      'Maçonnerie': [
+        { id: 'beton', label: '🏗️ Béton', value: 'béton' },
+        { id: 'brique', label: '🧱 Brique', value: 'brique' },
+        { id: 'pierre', label: '🪨 Pierre naturelle', value: 'pierre naturelle' },
+        { id: 'parpaing', label: '⬜ Parpaing', value: 'parpaing' }
+      ],
+      // Version sans accent pour compatibilité
+      'Maconnerie': [
+        { id: 'beton', label: '🏗️ Béton', value: 'béton' },
+        { id: 'brique', label: '🧱 Brique', value: 'brique' },
+        { id: 'pierre', label: '🪨 Pierre naturelle', value: 'pierre naturelle' },
+        { id: 'parpaing', label: '⬜ Parpaing', value: 'parpaing' }
+      ],
+      'Salle de bain': [
+        { id: 'ceramique', label: '🟫 Céramique', value: 'carrelage céramique' },
+        { id: 'faience', label: '🔳 Faïence', value: 'faïence' },
+        { id: 'gres', label: '⬛ Grès cérame', value: 'grès cérame' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      ],
+      'Portes et fenêtres': [
+        { id: 'pvc', label: '⚪ PVC', value: 'PVC' },
+        { id: 'aluminium', label: '🔘 Aluminium', value: 'aluminium' },
+        { id: 'bois', label: '🪵 Bois', value: 'bois' },
+        { id: 'mixte', label: '🔄 Mixte', value: 'matériaux mixtes' }
+      ],
+      // Version sans accents pour compatibilité
+      'Portes et fenetres': [
+        { id: 'pvc', label: '⚪ PVC', value: 'PVC' },
+        { id: 'aluminium', label: '🔘 Aluminium', value: 'aluminium' },
+        { id: 'bois', label: '🪵 Bois', value: 'bois' },
+        { id: 'mixte', label: '🔄 Mixte', value: 'matériaux mixtes' }
+      ],
+      'Jardinage': [
+        { id: 'bois', label: '🪵 Bois', value: 'bois naturel' },
+        { id: 'composite', label: '🔧 Composite', value: 'matériau composite' },
+        { id: 'pierre', label: '🪨 Pierre', value: 'pierre naturelle' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      ],
+      'Rénovation générale': [
+        { id: 'standard', label: '⭐ Standard', value: 'matériaux standard' },
+        { id: 'qualite', label: '💎 Haute qualité', value: 'matériaux haute qualité' },
+        { id: 'eco', label: '🌱 Écologique', value: 'matériaux écologiques' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      ],
+      // Version sans accents pour compatibilité
+      'Renovation generale': [
+        { id: 'standard', label: '⭐ Standard', value: 'matériaux standard' },
+        { id: 'qualite', label: '💎 Haute qualité', value: 'matériaux haute qualité' },
+        { id: 'eco', label: '🌱 Écologique', value: 'matériaux écologiques' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      ],
+      'Autre': [
+        { id: 'standard', label: '⭐ Standard', value: 'matériaux standard' },
+        { id: 'qualite', label: '💎 Haute qualité', value: 'matériaux haute qualité' },
+        { id: 'economique', label: '💰 Économique', value: 'matériaux économiques' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
       ]
     };
 
-    return materialSuggestions[category] || [
+    console.log('🔍 getMaterialsSuggestions - Recherche pour catégorie:', category);
+    const suggestions = materialSuggestions[category];
+    console.log('📋 Suggestions matériaux trouvées:', suggestions ? suggestions.length : 0);
+
+    return suggestions || [
       { id: 'standard', label: '⭐ Standard', value: 'standard' },
       { id: 'qualite', label: '💎 Haute qualité', value: 'haute qualité' },
       { id: 'economique', label: '💰 Économique', value: 'économique' }
@@ -800,15 +1054,89 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'normes', label: '🛡️ Mise aux normes', value: 'Je veux mettre aux normes' },
         { id: 'renovation', label: '✨ Rénovation complète', value: 'Je rénove tout l\'électrique' }
       ],
+      // Version sans accent pour compatibilité
+      'Electricite': [
+        { id: 'panne', label: '⚡ Problème électrique', value: 'J\'ai un problème électrique' },
+        { id: 'ajout', label: '🔌 Ajouter des prises', value: 'Je veux ajouter des prises' },
+        { id: 'normes', label: '🛡️ Mise aux normes', value: 'Je veux mettre aux normes' },
+        { id: 'renovation', label: '✨ Rénovation complète', value: 'Je rénove tout l\'électrique' }
+      ],
       'Plomberie': [
         { id: 'fuite', label: '💧 Problème de fuite', value: 'J\'ai une fuite' },
         { id: 'robinet', label: '🚰 Changer robinet', value: 'Je veux changer le robinet' },
         { id: 'douche', label: '🚿 Installation douche', value: 'Je veux installer une douche' },
         { id: 'chauffage', label: '🔥 Problème chauffage', value: 'J\'ai un problème de chauffage' }
+      ],
+      'Menuiserie': [
+        { id: 'placard', label: '🗄️ Créer un placard', value: 'Je veux créer un placard sur mesure' },
+        { id: 'parquet', label: '🪵 Poser du parquet', value: 'Je veux poser du parquet' },
+        { id: 'escalier', label: '🪜 Rénover escalier', value: 'Je veux rénover mon escalier' },
+        { id: 'porte', label: '🚪 Installer une porte', value: 'Je veux installer une porte' }
+      ],
+      'Maçonnerie': [
+        { id: 'mur', label: '🧱 Construire un mur', value: 'Je veux construire un mur' },
+        { id: 'cloison', label: '🚧 Abattre/monter cloison', value: 'Je veux abattre ou monter une cloison' },
+        { id: 'dalle', label: '🏗️ Couler une dalle', value: 'Je veux couler une dalle béton' },
+        { id: 'facade', label: '🏠 Rénover façade', value: 'Je veux rénover ma façade' }
+      ],
+      // Version sans accent pour compatibilité
+      'Maconnerie': [
+        { id: 'mur', label: '🧱 Construire un mur', value: 'Je veux construire un mur' },
+        { id: 'cloison', label: '🚧 Abattre/monter cloison', value: 'Je veux abattre ou monter une cloison' },
+        { id: 'dalle', label: '🏗️ Couler une dalle', value: 'Je veux couler une dalle béton' },
+        { id: 'facade', label: '🏠 Rénover façade', value: 'Je veux rénover ma façade' }
+      ],
+      'Salle de bain': [
+        { id: 'renovation', label: '🛁 Rénovation complète', value: 'Je veux rénover complètement ma salle de bain' },
+        { id: 'douche', label: '🚿 Remplacer baignoire par douche', value: 'Je veux remplacer ma baignoire par une douche' },
+        { id: 'carrelage', label: '🟫 Refaire le carrelage', value: 'Je veux refaire le carrelage' },
+        { id: 'moderniser', label: '✨ Moderniser', value: 'Je veux moderniser ma salle de bain' }
+      ],
+      'Portes et fenêtres': [
+        { id: 'isolation', label: '❄️ Améliorer isolation', value: 'Je veux améliorer l\'isolation' },
+        { id: 'changer', label: '🔄 Changer fenêtres', value: 'Je veux changer mes fenêtres' },
+        { id: 'porte', label: '🚪 Installer porte', value: 'Je veux installer une nouvelle porte' },
+        { id: 'volets', label: '🪟 Ajouter volets', value: 'Je veux ajouter des volets' }
+      ],
+      // Version sans accents pour compatibilité
+      'Portes et fenetres': [
+        { id: 'isolation', label: '❄️ Améliorer isolation', value: 'Je veux améliorer l\'isolation' },
+        { id: 'changer', label: '🔄 Changer fenêtres', value: 'Je veux changer mes fenêtres' },
+        { id: 'porte', label: '🚪 Installer porte', value: 'Je veux installer une nouvelle porte' },
+        { id: 'volets', label: '🪟 Ajouter volets', value: 'Je veux ajouter des volets' }
+      ],
+      'Jardinage': [
+        { id: 'amenagement', label: '🌿 Aménager le jardin', value: 'Je veux aménager mon jardin' },
+        { id: 'pelouse', label: '🌱 Créer une pelouse', value: 'Je veux créer une belle pelouse' },
+        { id: 'terrasse', label: '🪵 Construire terrasse', value: 'Je veux construire une terrasse' },
+        { id: 'plantation', label: '🌳 Planter des arbres', value: 'Je veux planter des arbres et arbustes' }
+      ],
+      'Rénovation générale': [
+        { id: 'complete', label: '🏠 Rénovation complète', value: 'Je veux rénover complètement' },
+        { id: 'agrandissement', label: '📐 Agrandir la maison', value: 'Je veux agrandir ma maison' },
+        { id: 'moderniser', label: '✨ Moderniser', value: 'Je veux moderniser mon habitat' },
+        { id: 'isolation', label: '🧱 Améliorer isolation', value: 'Je veux améliorer l\'isolation thermique' }
+      ],
+      // Version sans accents pour compatibilité
+      'Renovation generale': [
+        { id: 'complete', label: '🏠 Rénovation complète', value: 'Je veux rénover complètement' },
+        { id: 'agrandissement', label: '📐 Agrandir la maison', value: 'Je veux agrandir ma maison' },
+        { id: 'moderniser', label: '✨ Moderniser', value: 'Je veux moderniser mon habitat' },
+        { id: 'isolation', label: '🧱 Améliorer isolation', value: 'Je veux améliorer l\'isolation thermique' }
+      ],
+      'Autre': [
+        { id: 'conseil', label: '💡 Demande de conseil', value: 'J\'ai besoin de conseils' },
+        { id: 'devis', label: '📋 Devis personnalisé', value: 'Je veux un devis personnalisé' },
+        { id: 'expertise', label: '🔍 Expertise technique', value: 'J\'ai besoin d\'une expertise technique' },
+        { id: 'urgent', label: '🚨 Intervention urgente', value: 'J\'ai besoin d\'une intervention urgente' }
       ]
     };
 
-    return descriptionSuggestions[category];
+    console.log('🔍 getProjectDescriptionSuggestions - Recherche pour catégorie:', category);
+    const suggestions = descriptionSuggestions[category];
+    console.log('📋 Suggestions description trouvées:', suggestions ? suggestions.length : 0);
+
+    return suggestions || [];
   }
 
   // Clarifier un champ
@@ -1704,6 +2032,11 @@ CONTRAINTES IMPORTANTES :
 
     // Critères spécifiques par champ
     const sufficientAnswers: Record<string, string[]> = {
+      project_category: [
+        'plomberie', 'électricité', 'menuiserie', 'peinture', 'maçonnerie', 
+        'salle de bain', 'portes et fenêtres', 'jardinage', 'rénovation générale', 'autre'
+      ],
+      service_type: [], // Toute réponse non vide est acceptée pour le type de service
       current_state: [
         'problèmes d\'humidité', 'en bon état', 'état moyen', 'mauvais état', 
         'en excellent état', 'nécessite des réparations', 'fissures visibles',
@@ -1736,6 +2069,12 @@ CONTRAINTES IMPORTANTES :
       return true;
     }
 
+    // Pour service_type, toute valeur non vide de plus de 3 caractères est suffisante
+    if (fieldName === 'service_type' && trimmedValue.length > 3) {
+      console.log('✅ service_type considéré comme suffisant:', trimmedValue);
+      return true;
+    }
+
     // Pour specific_requirements, "non" est une réponse complète
     if (fieldName === 'specific_requirements' && 
         (trimmedValue === 'non' || trimmedValue === 'aucune' || trimmedValue.includes('pas d\'exigence'))) {
@@ -1763,10 +2102,21 @@ CONTRAINTES IMPORTANTES :
 
     // Vérifier si la valeur correspond aux réponses suffisantes
     const validAnswers = sufficientAnswers[fieldName] || [];
-    return validAnswers.some(answer => 
+    const isValid = validAnswers.some(answer => 
       trimmedValue === answer.toLowerCase() || 
       trimmedValue.includes(answer.toLowerCase()) ||
       answer.toLowerCase().includes(trimmedValue)
     );
+    
+    // Log spécial pour project_category pour debug
+    if (fieldName === 'project_category') {
+      console.log('🔍 Vérification project_category:', {
+        value: trimmedValue,
+        validAnswers,
+        isValid
+      });
+    }
+    
+    return isValid;
   }
 } 

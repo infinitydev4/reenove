@@ -111,7 +111,7 @@ export const DEFAULT_FIELDS: FieldConfig[] = [
     required: true,
     question: 'Dans quelle ville se situent les travaux ?',
     helpPrompt: 'La localisation influence les prix et la disponibilité',
-    examples: ['Paris', 'Marseille', 'Lyon']
+    examples: ['Marseille', 'Nice', 'Toulon']
   }
 ];
 

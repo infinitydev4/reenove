@@ -176,12 +176,20 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
   }
 
   const initializeExpertChat = async () => {
+    // PROTECTION: Ne pas réinitialiser si on a déjà des messages
+    if (messages.length > 0) {
+      console.log('🚫 Initialisation ignorée - messages déjà présents')
+      return
+    }
+    
     setIsLoading(true)
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" }
       if (sessionId) {
         headers['x-session-id'] = sessionId
       }
+
+      console.log('🚀 Initialisation chat expert - Session:', sessionId)
 
       const response = await fetch("/api/ai-project", {
         method: "POST",
@@ -965,17 +973,23 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                     <div className="space-y-3">
                       <GoogleAddressAutocomplete
                         value={addressValue}
-                        onChange={setAddressValue}
+                        onChange={(newAddress) => {
+                          console.log('📍 IntelligentChatContainer - onChange reçu:', newAddress)
+                          console.log('📍 IntelligentChatContainer - ancienne valeur addressValue:', addressValue)
+                          setAddressValue(newAddress)
+                          console.log('📍 IntelligentChatContainer - setAddressValue appelé avec:', newAddress)
+                        }}
                         onPlaceSelect={(place) => {
-                          if (place.formatted_address) {
-                            setAddressValue(place.formatted_address)
-                          }
+                          // Plus besoin d'appeler setAddressValue ici car GoogleAddressAutocomplete
+                          // appelle déjà onChange(place.formatted_address) qui met à jour addressValue
+                          console.log('📍 Adresse sélectionnée par l\'utilisateur:', place.formatted_address)
                         }}
                         placeholder="Saisissez l'adresse de votre projet..."
                         className="w-full"
                       />
                       <Button 
                         onClick={() => {
+                          console.log('📍 IntelligentChatContainer - Bouton confirmé cliqué avec addressValue:', addressValue)
                           if (addressValue.trim()) {
                             handleExpertMessage(addressValue)
                           }
