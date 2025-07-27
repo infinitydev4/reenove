@@ -2,6 +2,34 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+// Interface générique pour l'envoi d'emails
+export interface EmailData {
+  to: string
+  subject: string
+  html: string
+  text?: string
+  from?: string
+}
+
+// Fonction générique pour envoyer des emails
+export async function sendEmail(emailData: EmailData) {
+  try {
+    const data = await resend.emails.send({
+      from: emailData.from || 'Reenove <contact@reenove.com>',
+      to: [emailData.to],
+      subject: emailData.subject,
+      html: emailData.html,
+      text: emailData.text,
+    })
+
+    console.log('Email envoyé avec succès:', data)
+    return { success: true, data }
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi de l\'email:', error)
+    return { success: false, error }
+  }
+}
+
 export interface User {
   name: string
   email: string
@@ -301,8 +329,8 @@ const quoteRequestEmailTemplate = (user: User, project: ProjectEstimation) => `
         </div>
     </div>
 </body>
-</html>
-`
+  </html>
+  `
 
 // Fonction pour envoyer l'email de bienvenue
 export async function sendWelcomeEmail(user: User) {

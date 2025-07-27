@@ -5,12 +5,28 @@ import { authOptions } from '@/lib/auth'
 import { Role, ArtisanLevel } from "@/lib/generated/prisma"
 import bcrypt from "bcrypt"
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url)
+    const search = searchParams.get('search')
+    const specialty = searchParams.get('specialty')
+    const availability = searchParams.get('availability')
+
+    // Construire les conditions de recherche
+    const whereConditions: any = {
+      role: Role.ARTISAN
+    }
+
+    // Filtre de recherche par nom ou email
+    if (search) {
+      whereConditions.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search, mode: 'insensitive' } }
+      ]
+    }
+
     const artisans = await prisma.user.findMany({
-      where: {
-        role: Role.ARTISAN
-      },
+      where: whereConditions,
       include: {
         artisanProfile: true,
         artisanSpecialties: {
@@ -35,18 +51,21 @@ export async function GET() {
       }
     })
 
-    const formattedArtisans = artisans.map(artisan => {
+    console.log(`Artisans trouvés dans la DB: ${artisans.length}`)
+    console.log('Filtres appliqués:', { search, specialty, availability })
+
+    let formattedArtisans = artisans.map(artisan => {
       const projectsCompleted = artisan.quotes.filter(q => q.status === "completed").length;
       const currentProjects = artisan.quotes.filter(q => q.status === "accepted").length;
       const totalEarnings = artisan.quotes.filter(q => q.status === "completed")
         .reduce((sum, quote) => sum + Number(quote.amount), 0);
 
       // Déterminer la disponibilité
-      let availability = "disponible";
+      let artisanAvailability = "disponible";
       if (currentProjects >= 3) {
-        availability = "occupé";
-      } else if (artisan.role !== Role.ARTISAN) {
-        availability = "indisponible";
+        artisanAvailability = "occupé";
+      } else if (artisan.role !== Role.ARTISAN || !artisan.artisanProfile?.availableForWork) {
+        artisanAvailability = "indisponible";
       }
 
       // Récupérer la spécialité principale de l'artisan
@@ -58,13 +77,14 @@ export async function GET() {
         email: artisan.email || "",
         phone: artisan.phone || "Non renseigné",
         address: artisan.address || "Non renseignée",
+        city: artisan.city || "Non renseignée",
         status: artisan.role === Role.ARTISAN ? "actif" : "inactif",
         speciality: primarySpecialty,
         rating: (Math.random() * (5 - 4) + 4).toFixed(1),
         projectsCompleted,
         currentProjects,
         totalEarnings: `${totalEarnings}€`,
-        availability,
+        availability: artisanAvailability,
         startDate: new Date(artisan.createdAt).toLocaleDateString('fr-FR', {
           year: 'numeric',
           month: 'long',
@@ -76,6 +96,20 @@ export async function GET() {
       };
     });
 
+    // Appliquer les filtres côté serveur
+    if (specialty) {
+      formattedArtisans = formattedArtisans.filter(artisan => 
+        artisan.speciality.toLowerCase().includes(specialty.toLowerCase())
+      )
+    }
+
+    if (availability === 'available') {
+      formattedArtisans = formattedArtisans.filter(artisan => 
+        artisan.availability === 'disponible'
+      )
+    }
+
+    console.log(`Artisans trouvés: ${formattedArtisans.length}`)
     return NextResponse.json(formattedArtisans);
   } catch (error) {
     console.error("Erreur lors de la récupération des artisans :", error);

@@ -21,7 +21,9 @@ import {
   Star,
   Download,
   Eye,
-  MoreHorizontal
+  MoreHorizontal,
+  UserPlus,
+  X
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -39,6 +41,7 @@ import {
 import { toast } from "sonner"
 import { ProjectStatus } from "@/lib/generated/prisma"
 import GoogleMapComponent from "@/components/maps/GoogleMapComponent"
+import ArtisanSelectionDialog from "@/components/admin/projects/ArtisanSelectionDialog"
 
 interface Project {
   id: string;
@@ -103,6 +106,8 @@ export default function ProjectDetailPage() {
   const [project, setProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false)
+  const [assignedArtisan, setAssignedArtisan] = useState<any>(null)
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -113,11 +118,28 @@ export default function ProjectDetailPage() {
         }
         const data = await response.json()
         setProject(data)
+        
+        // Si le projet est assigné, récupérer les informations de l'artisan
+        if (data.status === ProjectStatus.ASSIGNED) {
+          fetchAssignedArtisan()
+        }
       } catch (err) {
         console.error('Erreur lors du chargement du projet:', err)
         setError('Impossible de charger les détails du projet')
       } finally {
         setIsLoading(false)
+      }
+    }
+
+    const fetchAssignedArtisan = async () => {
+      try {
+        const response = await fetch(`/api/admin/projects/${projectId}/assigned-artisan`)
+        if (response.ok) {
+          const data = await response.json()
+          setAssignedArtisan(data.artisan)
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement de l\'artisan assigné:', err)
       }
     }
 
@@ -141,6 +163,58 @@ export default function ProjectDetailPage() {
     } catch (err) {
       console.error('Erreur:', err)
       toast.error('Impossible de supprimer le projet')
+    }
+  }
+
+  const handleAssignSuccess = () => {
+    // Recharger les données du projet pour voir le nouveau statut
+    const fetchProject = async () => {
+      try {
+        const response = await fetch(`/api/admin/projects/${projectId}`)
+        if (response.ok) {
+          const data = await response.json()
+          setProject(data)
+          
+          // Récupérer les informations de l'artisan assigné
+          if (data.status === ProjectStatus.ASSIGNED) {
+            const artisanResponse = await fetch(`/api/admin/projects/${projectId}/assigned-artisan`)
+            if (artisanResponse.ok) {
+              const artisanData = await artisanResponse.json()
+              setAssignedArtisan(artisanData.artisan)
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Erreur lors du rechargement:', err)
+      }
+    }
+    fetchProject()
+  }
+
+  const handleUnassignProject = async () => {
+    if (!confirm('Êtes-vous sûr de vouloir désattribuer ce projet ? L\'artisan sera notifié de cette annulation.')) return
+    
+    try {
+      const response = await fetch(`/api/admin/projects/${projectId}/unassign`, {
+        method: 'POST'
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Erreur lors de la désattribution')
+      }
+
+      const result = await response.json()
+      
+      toast.success('Attribution annulée avec succès')
+      
+      // Recharger les données du projet
+      setProject(result.project)
+      setAssignedArtisan(null)
+
+    } catch (error: any) {
+      console.error('Erreur:', error)
+      toast.error(error.message || 'Impossible de désattribuer le projet')
     }
   }
 
@@ -355,13 +429,111 @@ export default function ProjectDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Artisan assigné */}
+          {project.status === ProjectStatus.ASSIGNED && assignedArtisan && (
+            <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-white">Artisan assigné</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-3 mb-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={assignedArtisan.image || undefined} alt={assignedArtisan.name || ""} />
+                    <AvatarFallback className="bg-[#FCDA89] text-[#0E261C] font-semibold">
+                      {assignedArtisan.name?.charAt(0) || "A"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-medium text-white flex items-center gap-2">
+                      {assignedArtisan.name || "Artisan"}
+                      {assignedArtisan.profile?.verificationStatus === 'VERIFIED' && (
+                        <CheckCircle className="h-4 w-4 text-green-400" />
+                      )}
+                    </h3>
+                    <p className="text-sm text-white/70">{assignedArtisan.email}</p>
+                    {assignedArtisan.specialties?.length > 0 && (
+                      <p className="text-xs text-white/60">
+                        {assignedArtisan.specialties.find((s: any) => s.isPrimary)?.service || assignedArtisan.specialties[0]?.service}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="space-y-2 text-sm">
+                  {assignedArtisan.phone && (
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Phone className="h-3 w-3" />
+                      <span>{assignedArtisan.phone}</span>
+                    </div>
+                  )}
+                  {assignedArtisan.address && (
+                    <div className="flex items-center gap-2 text-white/70">
+                      <MapPin className="h-3 w-3" />
+                      <span>{assignedArtisan.address}</span>
+                    </div>
+                  )}
+                  {assignedArtisan.assignment?.assignedAt && (
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Calendar className="h-3 w-3" />
+                      <span>
+                        Assigné le {new Date(assignedArtisan.assignment.assignedAt).toLocaleDateString('fr-FR')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                                 <div className="mt-4 space-y-2">
+                   <Button variant="outline" size="sm" className="w-full bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+                     <Mail className="mr-2 h-4 w-4" />
+                     Contacter l'artisan
+                   </Button>
+                   <Button variant="outline" size="sm" className="w-full bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
+                     <MessageSquare className="mr-2 h-4 w-4" />
+                     Voir les messages
+                   </Button>
+                   <Button 
+                     variant="outline" 
+                     size="sm" 
+                     className="w-full bg-red-500/5 border-red-500/20 text-red-400 hover:bg-red-500/10"
+                     onClick={() => handleUnassignProject()}
+                   >
+                     <X className="mr-2 h-4 w-4" />
+                     Désattribuer
+                   </Button>
+                 </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Actions rapides */}
           <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-white">Actions rapides</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button className="w-full bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
+              {project.status !== ProjectStatus.ASSIGNED && project.status !== ProjectStatus.IN_PROGRESS && project.status !== ProjectStatus.COMPLETED && (
+                <Button 
+                  onClick={() => setAssignDialogOpen(true)}
+                  className="w-full bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold"
+                >
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  Attribuer à un artisan
+                </Button>
+              )}
+              
+              {project.status === ProjectStatus.ASSIGNED && (
+                <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                  <div className="flex items-center gap-2 text-green-400 text-sm font-medium">
+                    <CheckCircle className="h-4 w-4" />
+                    Projet attribué avec succès
+                  </div>
+                  <p className="text-green-400/70 text-xs mt-1">
+                    L'artisan a été notifié par email
+                  </p>
+                </div>
+              )}
+
+              <Button className="w-full bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10" variant="outline">
                 <CheckCircle className="mr-2 h-4 w-4" />
                 Marquer comme terminé
               </Button>
@@ -460,6 +632,16 @@ export default function ProjectDetailPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog d'attribution */}
+      <ArtisanSelectionDialog
+        open={assignDialogOpen}
+        onOpenChange={setAssignDialogOpen}
+        projectId={projectId}
+        projectTitle={project.title}
+        projectCategory={project.category?.name}
+        onAssignSuccess={handleAssignSuccess}
+      />
     </div>
   )
 } 

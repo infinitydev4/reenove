@@ -22,7 +22,9 @@ import {
   XCircle,
   Loader2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  UserPlus,
+  X
 } from "lucide-react"
 import { 
   Card, 
@@ -65,6 +67,7 @@ import {
   BOOKING_STATUS_COLORS,
   TIME_SLOT_LABELS 
 } from "@/types/express"
+import ArtisanSelectionDialog from "@/components/admin/express/ArtisanSelectionDialog"
 
 // Interfaces
 interface ExpressBooking {
@@ -150,6 +153,10 @@ export default function AdminExpressReservationsPage() {
   const [selectedBooking, setSelectedBooking] = useState<ExpressBooking | null>(null)
   const [showDetails, setShowDetails] = useState(false)
   const [showUpdate, setShowUpdate] = useState(false)
+  
+  // Attribution d'artisan
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false)
+  const [assignedArtisan, setAssignedArtisan] = useState<any>(null)
   
   // Formulaire de mise à jour
   const form = useForm<UpdateFormValues>({
@@ -277,6 +284,62 @@ export default function AdminExpressReservationsPage() {
   const onSubmitUpdate = (values: UpdateFormValues) => {
     if (selectedBooking) {
       updateBooking(selectedBooking.id, values)
+    }
+  }
+
+  // Gérer l'attribution d'artisan
+  const handleShowAssignDialog = (booking: ExpressBooking) => {
+    setSelectedBooking(booking)
+    setAssignDialogOpen(true)
+  }
+
+  const handleAssignSuccess = () => {
+    fetchBookings(pagination.page)
+    setAssignDialogOpen(false)
+    // Récupérer les détails de l'artisan assigné si nécessaire
+    if (selectedBooking) {
+      fetchAssignedArtisan(selectedBooking.id)
+    }
+  }
+
+  // Récupérer l'artisan assigné pour une réservation
+  const fetchAssignedArtisan = async (bookingId: string) => {
+    try {
+      const response = await fetch(`/api/admin/express-bookings/${bookingId}/assigned-artisan`)
+      if (response.ok) {
+        const data = await response.json()
+        setAssignedArtisan(data.artisan)
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'artisan assigné:", error)
+    }
+  }
+
+  // Désattribuer un artisan
+  const handleUnassign = async (bookingId: string) => {
+    try {
+      const response = await fetch(`/api/admin/express-bookings/${bookingId}/unassign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erreur lors de la désattribution')
+      }
+
+      toast({
+        title: "Succès",
+        description: "Artisan désattribué avec succès",
+      })
+
+      fetchBookings(pagination.page)
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: error.message,
+      })
     }
   }
 
@@ -484,6 +547,30 @@ export default function AdminExpressReservationsPage() {
                                 <Edit className="h-4 w-4" />
                               )}
                             </Button>
+                            
+                            {/* Bouton d'attribution/désattribution */}
+                            {booking.assignedArtisan ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleUnassign(booking.id)}
+                                className="text-red-400 hover:bg-red-400/10"
+                                title="Désattribuer l'artisan"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleShowAssignDialog(booking)}
+                                className="text-green-400 hover:bg-green-400/10"
+                                disabled={booking.status === 'COMPLETED' || booking.status === 'CANCELLED'}
+                                title="Attribuer à un artisan"
+                              >
+                                <UserPlus className="h-4 w-4" />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -733,6 +820,21 @@ export default function AdminExpressReservationsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog d'attribution d'artisan */}
+      <ArtisanSelectionDialog
+        booking={selectedBooking ? {
+          id: selectedBooking.id,
+          serviceName: selectedBooking.serviceName,
+          categoryName: selectedBooking.categoryName,
+          clientName: selectedBooking.clientName,
+          bookingDate: selectedBooking.bookingDate,
+          city: selectedBooking.city
+        } : null}
+        open={assignDialogOpen}
+        onClose={() => setAssignDialogOpen(false)}
+        onAssignSuccess={handleAssignSuccess}
+      />
     </div>
   )
 } 
