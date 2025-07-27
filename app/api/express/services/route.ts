@@ -1,27 +1,12 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+// Désactiver le cache pour cette API en production
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET() {
   try {
-    // 🔍 DEBUG: Vérifier tous les services d'abord
-    const allServices = await prisma.service.findMany({
-      select: {
-        id: true,
-        name: true,
-        isActive: true,
-        isExpressAvailable: true,
-        expressPrice: true,
-      }
-    });
-    
-    console.log('🔍 TOUS les services dans la DB:', allServices);
-    console.log('📊 Services actifs:', allServices.filter(s => s.isActive));
-    console.log('⚡ Services Express disponibles:', allServices.filter(s => s.isExpressAvailable));
-    console.log('💰 Services avec prix Express:', allServices.filter(s => s.expressPrice !== null));
-    console.log('✅ Services Express complets:', allServices.filter(s => 
-      s.isActive && s.isExpressAvailable && s.expressPrice !== null
-    ));
-    
     // Récupérer tous les services Express actifs avec leurs catégories
     const expressServices = await prisma.service.findMany({
       where: {
@@ -90,11 +75,18 @@ export async function GET() {
 
     const finalServicesByCategory = Object.values(servicesByCategory)
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       services: formattedServices,
       servicesByCategory: finalServicesByCategory,
       totalServices: formattedServices.length,
     })
+
+    // Ajouter des headers anti-cache pour éviter le cache en production
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+
+    return response
     
   } catch (error) {
     console.error("Erreur lors de la récupération des services Express:", error)

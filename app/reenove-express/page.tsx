@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
+
+// Forcer le rendu dynamique pour éviter le cache en production
+export const dynamic = 'force-dynamic'
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -51,11 +54,26 @@ export default function ReenoveExpressPage() {
 
   useEffect(() => {
     fetchExpressServices()
+    
+    // Revalidation périodique en production pour éviter les problèmes de cache
+    const interval = setInterval(() => {
+      fetchExpressServices()
+    }, 60000) // Refetch toutes les 60 secondes
+    
+    return () => clearInterval(interval)
   }, [])
 
   const fetchExpressServices = async () => {
     try {
-      const response = await fetch('/api/express/services')
+      // Ajouter des headers anti-cache pour éviter les problèmes en production
+      const response = await fetch('/api/express/services', {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
       if (!response.ok) {
         throw new Error('Erreur lors du chargement des services Express')
       }

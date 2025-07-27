@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { slugify } from "@/lib/utils";
+import { revalidatePath } from 'next/cache';
 
 // Vérifier les permissions d'administrateur
 async function isAdmin(session: any) {
@@ -162,6 +163,17 @@ export async function PUT(
         category: true,
       },
     });
+
+    // Revalider les pages Reenove Express si c'est un service Express
+    if (updateData.isExpressAvailable || updatedService.isExpressAvailable) {
+      try {
+        revalidatePath('/reenove-express');
+        revalidatePath('/api/express/services');
+        console.log('✅ Revalidation Reenove Express effectuée pour:', updatedService.name);
+      } catch (error) {
+        console.error('❌ Erreur revalidation:', error);
+      }
+    }
 
     return NextResponse.json(updatedService);
   } catch (error) {

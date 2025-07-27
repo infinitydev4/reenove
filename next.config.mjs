@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Désactiver la génération statique pour les routes Express
+  experimental: {
+    staticGenerationAsyncStorage: false,
+  },
   images: {
     remotePatterns: [
       {
