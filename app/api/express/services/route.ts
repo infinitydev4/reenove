@@ -3,6 +3,25 @@ import { prisma } from "@/lib/prisma"
 
 export async function GET() {
   try {
+    // 🔍 DEBUG: Vérifier tous les services d'abord
+    const allServices = await prisma.service.findMany({
+      select: {
+        id: true,
+        name: true,
+        isActive: true,
+        isExpressAvailable: true,
+        expressPrice: true,
+      }
+    });
+    
+    console.log('🔍 TOUS les services dans la DB:', allServices);
+    console.log('📊 Services actifs:', allServices.filter(s => s.isActive));
+    console.log('⚡ Services Express disponibles:', allServices.filter(s => s.isExpressAvailable));
+    console.log('💰 Services avec prix Express:', allServices.filter(s => s.expressPrice !== null));
+    console.log('✅ Services Express complets:', allServices.filter(s => 
+      s.isActive && s.isExpressAvailable && s.expressPrice !== null
+    ));
+    
     // Récupérer tous les services Express actifs avec leurs catégories
     const expressServices = await prisma.service.findMany({
       where: {
