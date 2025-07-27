@@ -213,12 +213,12 @@ export default function ServiceBookingPage() {
       const result = await response.json()
 
       toast({
-        title: "Réservation confirmée !",
-        description: `Votre réservation pour ${service.name} a été enregistrée.`,
+        title: "Réservation créée !",
+        description: `Procédez maintenant au paiement pour confirmer votre réservation.`,
       })
 
-      // Rediriger vers une page de confirmation ou le dashboard
-      router.push(`/client/projets`)
+      // Rediriger vers la page de paiement
+      router.push(`/reenove-express/booking/${result.booking.id}/payment`)
       
     } catch (err: any) {
       console.error('Erreur réservation:', err)

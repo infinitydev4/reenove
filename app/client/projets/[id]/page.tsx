@@ -49,6 +49,7 @@ import { ProjectImg } from "@/components/ui/project-image"
 // Interface pour les projets
 interface Project {
   id: string
+  type?: 'PROJECT' | 'EXPRESS'
   title: string
   description: string
   status: string
@@ -72,6 +73,19 @@ interface Project {
     status: string
     providerName?: string
   }[]
+  // Informations spécifiques Express
+  expressBookingDate?: string
+  expressTimeSlot?: string
+  expressClientName?: string
+  expressClientPhone?: string
+  expressClientEmail?: string
+  expressPrice?: number
+  expressNotes?: string
+  expressSpecialRequirements?: string
+  expressFloor?: number
+  expressHasElevator?: boolean
+  serviceIcon?: string
+  categoryIcon?: string
 }
 
 // Fonction pour formater le statut du projet
@@ -122,6 +136,17 @@ const formatDate = (dateString?: string) => {
     year: 'numeric' 
   }
   return date.toLocaleDateString('fr-FR', options)
+}
+
+// Fonction pour formater les créneaux horaires
+const getTimeSlotLabel = (timeSlot: string) => {
+  const timeSlotLabels: Record<string, string> = {
+    'MORNING_8_12': '8h - 12h',
+    'AFTERNOON_14_18': '14h - 18h', 
+    'EVENING_18_20': '18h - 20h',
+    'ALL_DAY': 'Toute la journée'
+  }
+  return timeSlotLabels[timeSlot] || timeSlot
 }
 
 // Fonction pour obtenir le pourcentage d'avancement du projet
@@ -284,7 +309,14 @@ export default function ProjectDetailPage() {
             </Link>
           </Button>
           <div className="min-w-0 overflow-hidden">
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight truncate">{project.title}</h1>
+            <div className="flex items-center gap-2 mb-1">
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight truncate">{project.title}</h1>
+              {project.type === 'EXPRESS' && (
+                <Badge className="bg-[#FCDA89] text-[#0E261C] font-semibold">
+                  Reenove Express
+                </Badge>
+              )}
+            </div>
             <div className="flex items-center gap-1 md:gap-2 text-white/70 text-xs md:text-sm overflow-hidden">
               <span className="truncate">{project.categoryName}</span>
               {project.serviceName && (
@@ -294,7 +326,11 @@ export default function ProjectDetailPage() {
                 </>
               )}
               <span className="shrink-0">•</span>
-              <span className="truncate shrink-0">Créé le {formatDate(project.createdAt)}</span>
+              <span className="truncate shrink-0">
+                {project.type === 'EXPRESS' && project.expressBookingDate
+                  ? `Réservation : ${formatDate(project.expressBookingDate)}`
+                  : `Créé le ${formatDate(project.createdAt)}`}
+              </span>
             </div>
           </div>
         </div>
@@ -410,6 +446,125 @@ export default function ProjectDetailPage() {
               <p className="whitespace-pre-line">{project.description}</p>
             </CardContent>
           </Card>
+
+          {/* Informations Express spécifiques */}
+          {project.type === 'EXPRESS' && (
+            <Card className="bg-gradient-to-br from-[#FCDA89]/10 to-[#FCDA89]/5 border-[#FCDA89]/20 text-white">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {(project.serviceIcon || project.categoryIcon) ? (
+                    <div className="w-24 h-24 flex items-center justify-center">
+                      <ProjectImg
+                        src={project.serviceIcon || project.categoryIcon || ''}
+                        alt="Icône du service"
+                        className="w-24 h-18 object-cover rounded-lg border border-white/10"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 flex items-center justify-center bg-[#FCDA89]/20 rounded-lg">
+                      <Building className="w-5 h-5 text-[#FCDA89]" />
+                    </div>
+                  )}
+                  Détails de la réservation Express
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Adresse d'intervention */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-[#FCDA89]" />
+                      Adresse d'intervention
+                    </h3>
+                    <div className="text-white/80 bg-white/10 rounded-lg p-3">
+                      <p>{project.location}</p>
+                      <p className="text-sm text-white/60">{project.postalCode} {project.city}</p>
+                      {project.expressFloor && (
+                        <p className="text-sm text-white/60">
+                          Étage {project.expressFloor} {project.expressHasElevator ? '(avec ascenseur)' : '(sans ascenseur)'}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Date et créneau */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-[#FCDA89]" />
+                      Date et créneau
+                    </h3>
+                    <div className="text-white/80 bg-white/10 rounded-lg p-3">
+                      {project.expressBookingDate && (
+                        <p className="font-medium">
+                          {formatDate(project.expressBookingDate)}
+                        </p>
+                      )}
+                      {project.expressTimeSlot && (
+                        <p className="text-sm text-white/60">
+                          {getTimeSlotLabel(project.expressTimeSlot)}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Informations client */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                      <User className="h-4 w-4 text-[#FCDA89]" />
+                      Contact client
+                    </h3>
+                    <div className="text-white/80 bg-white/10 rounded-lg p-3 space-y-1">
+                      {project.expressClientName && (
+                        <p className="font-medium">{project.expressClientName}</p>
+                      )}
+                      {project.expressClientPhone && (
+                        <p className="text-sm text-white/60">{project.expressClientPhone}</p>
+                      )}
+                      {project.expressClientEmail && (
+                        <p className="text-sm text-white/60">{project.expressClientEmail}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Prix */}
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                      <Euro className="h-4 w-4 text-[#FCDA89]" />
+                      Tarif Express
+                    </h3>
+                    <div className="text-white/80 bg-white/10 rounded-lg p-3">
+                      <p className="text-lg font-semibold text-[#FCDA89]">
+                        {project.expressPrice ? `${project.expressPrice}€` : project.budget ? `${project.budget}€` : 'Prix sur devis'}
+                      </p>
+                      <p className="text-sm text-white/60">Tarif fixe tout compris</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notes et exigences */}
+                {(project.expressNotes || project.expressSpecialRequirements) && (
+                  <div className="mt-6 pt-6 border-t border-[#FCDA89]/30">
+                    {project.expressNotes && (
+                      <div className="mb-4">
+                        <h3 className="text-sm font-medium text-white mb-2">Notes</h3>
+                        <p className="text-white/80 bg-white/10 rounded-lg p-3 text-sm">
+                          {project.expressNotes}
+                        </p>
+                      </div>
+                    )}
+                    {project.expressSpecialRequirements && (
+                      <div>
+                        <h3 className="text-sm font-medium text-white mb-2">Exigences particulières</h3>
+                        <p className="text-white/80 bg-white/10 rounded-lg p-3 text-sm">
+                          {project.expressSpecialRequirements}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Informations financières */}

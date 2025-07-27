@@ -63,6 +63,7 @@ import { ProjectImg } from "@/components/ui/project-image"
 // Interface pour les projets
 interface Project {
   id: string
+  type?: 'PROJECT' | 'EXPRESS'
   title: string
   description: string
   status: string
@@ -83,6 +84,14 @@ interface Project {
     status: string
     providerName?: string
   }[]
+  // Informations spécifiques Express
+  expressBookingDate?: string
+  expressTimeSlot?: string
+  expressClientName?: string
+  expressClientPhone?: string
+  expressClientEmail?: string
+  serviceIcon?: string
+  categoryIcon?: string
 }
 
 // Fonction pour formater le statut du projet
@@ -368,7 +377,14 @@ export default function ProjectsPage() {
                     </div>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-semibold text-base mb-1 line-clamp-1">{project.title}</h3>
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="font-semibold text-base line-clamp-1 flex-1">{project.title}</h3>
+                      {project.type === 'EXPRESS' && (
+                        <Badge className="ml-2 bg-[#FCDA89] text-[#0E261C] font-semibold text-xs">
+                          Express
+                        </Badge>
+                      )}
+                    </div>
                     <p className="text-sm text-white/70 mb-3">
                       {project.categoryName} {project.serviceName ? `• ${project.serviceName}` : ''}
                     </p>
@@ -390,7 +406,11 @@ export default function ProjectsPage() {
                       </div>
                       <div className="flex items-start gap-2 text-sm">
                         <CalendarDays className="h-4 w-4 text-white/70 shrink-0 mt-0.5" />
-                        <span>Créé le {formatDate(project.createdAt)}</span>
+                        <span>
+                          {project.type === 'EXPRESS' && project.expressBookingDate
+                            ? `Réservation : ${formatDate(project.expressBookingDate)}`
+                            : `Créé le ${formatDate(project.createdAt)}`}
+                        </span>
                       </div>
                     </div>
                     <div className="flex justify-between gap-2 mt-4">
@@ -461,6 +481,11 @@ export default function ProjectsPage() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <h3 className="font-medium">{project.title}</h3>
+                          {project.type === 'EXPRESS' && (
+                            <Badge className="bg-[#FCDA89] text-[#0E261C] font-semibold text-xs">
+                              Express
+                            </Badge>
+                          )}
                           {getStatusBadge(project.status)}
                         </div>
                         <p className="text-sm text-white/70">

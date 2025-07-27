@@ -37,7 +37,11 @@ export async function POST(
       where: { id: bookingId },
       include: {
         user: true,
-        service: true,
+        service: {
+          include: {
+            category: true,
+          },
+        },
       },
     })
 
@@ -164,7 +168,11 @@ export async function GET(
           },
         },
         user: true,
-        service: true,
+        service: {
+          include: {
+            category: true,
+          },
+        },
       },
     })
 
@@ -199,7 +207,18 @@ export async function GET(
       booking: {
         id: booking.id,
         serviceName: booking.service.name,
+        categoryName: booking.service.category.name,
         clientName: booking.clientName,
+        clientPhone: booking.clientPhone,
+        clientEmail: booking.clientEmail,
+        address: booking.address,
+        city: booking.city,
+        postalCode: booking.postalCode,
+        floor: booking.floor,
+        hasElevator: booking.hasElevator,
+        timeSlot: booking.timeSlot,
+        notes: booking.notes,
+        specialRequirements: booking.specialRequirements,
         price: booking.price,
         status: booking.status,
         bookingDate: booking.bookingDate,

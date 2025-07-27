@@ -34,7 +34,7 @@ export async function GET(
     
     const projectId = params.id
     
-    // Récupérer les détails du projet
+    // D'abord, essayer de récupérer un projet classique
     const project = await prisma.project.findUnique({
       where: {
         id: projectId,
@@ -77,47 +77,142 @@ export async function GET(
       },
     })
     
-    if (!project) {
-      return NextResponse.json({ error: "Projet non trouvé" }, { status: 404 })
+    if (project) {
+      // Formatter la réponse pour un projet classique
+      const formattedProject = {
+        id: project.id,
+        type: 'PROJECT',
+        title: project.title,
+        description: project.description,
+        status: project.status,
+        categoryId: project.categoryId,
+        categoryName: project.category?.name,
+        serviceId: project.serviceId,
+        serviceName: project.service?.name,
+        budget: project.budget,
+        budgetType: project.budgetType,
+        budgetMax: project.budgetMax,
+        location: project.location,
+        city: project.city,
+        postalCode: project.postalCode,
+        startDate: project.startDate,
+        endDate: project.endDate,
+        urgencyLevel: project.urgencyLevel,
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt,
+        photos: project.images.map((image) => image.url),
+        quotes: project.quotes.map((quote) => ({
+          id: quote.id,
+          amount: quote.amount,
+          status: quote.status,
+          providerName: quote.provider?.name || '',
+        })),
+      }
+      
+      return NextResponse.json(formattedProject)
     }
-    
-    // Formatter la réponse
-    const formattedProject = {
-      id: project.id,
-      title: project.title,
-      description: project.description,
-      status: project.status,
-      categoryId: project.categoryId,
-      categoryName: project.category?.name,
-      serviceId: project.serviceId,
-      serviceName: project.service?.name,
-      budget: project.budget,
-      budgetType: project.budgetType,
-      budgetMax: project.budgetMax,
-      location: project.location,
-      city: project.city,
-      postalCode: project.postalCode,
-      startDate: project.startDate,
-      endDate: project.endDate,
-      urgencyLevel: project.urgencyLevel,
-      createdAt: project.createdAt,
-      updatedAt: project.updatedAt,
-      photos: project.images.map((image) => image.url),
-      quotes: project.quotes.map((quote) => ({
-        id: quote.id,
-        amount: quote.amount,
-        status: quote.status,
-        providerName: quote.provider?.name || '',
-      })),
+
+    // Si pas de projet classique, essayer de récupérer une réservation Express
+    const expressBooking = await prisma.expressBooking.findUnique({
+      where: {
+        id: projectId,
+        userId: user.id, // S'assurer que la réservation appartient à l'utilisateur
+      },
+      include: {
+        service: {
+          select: {
+            id: true,
+            name: true,
+            icon: true,
+            expressDescription: true,
+            estimatedDuration: true,
+            categoryId: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                icon: true
+              }
+            }
+          }
+        },
+        payments: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            paidAt: true,
+            createdAt: true,
+            description: true
+          }
+        }
+      }
+    })
+
+    if (expressBooking) {
+      // Mapper les statuts Express vers les statuts de projet
+      const mapExpressStatus = (status: string) => {
+        switch (status) {
+          case 'PENDING': return 'PENDING'
+          case 'CONFIRMED': return 'ASSIGNED'
+          case 'IN_PROGRESS': return 'IN_PROGRESS'
+          case 'COMPLETED': return 'COMPLETED'
+          case 'CANCELLED': return 'CANCELLED'
+          default: return 'PENDING'
+        }
+      }
+
+      const successfulPayment = expressBooking.payments.find(p => p.status === 'SUCCEEDED')
+
+      // Formatter la réponse pour une réservation Express
+      const formattedExpressBooking = {
+        id: expressBooking.id,
+        type: 'EXPRESS',
+        title: `${expressBooking.service.name} - Reenove Express`,
+        description: expressBooking.service.expressDescription || `Service Express de ${expressBooking.service.name}`,
+        status: mapExpressStatus(expressBooking.status),
+        categoryId: expressBooking.service.categoryId,
+        categoryName: expressBooking.service.category?.name,
+        serviceId: expressBooking.serviceId,
+        serviceName: expressBooking.service.name,
+        budget: expressBooking.price,
+        budgetType: 'fixed',
+        budgetMax: undefined,
+        location: expressBooking.address,
+        city: expressBooking.city,
+        postalCode: expressBooking.postalCode,
+        startDate: expressBooking.bookingDate,
+        endDate: undefined,
+        urgencyLevel: 'HIGH',
+        createdAt: expressBooking.createdAt,
+        updatedAt: expressBooking.updatedAt,
+        photos: expressBooking.service.icon ? [expressBooking.service.icon] : (expressBooking.service.category?.icon ? [expressBooking.service.category.icon] : []),
+        quotes: successfulPayment ? [{
+          id: successfulPayment.id,
+          amount: successfulPayment.amount,
+          status: 'accepted',
+          providerName: 'Reenove Express'
+        }] : [],
+        // Informations spécifiques Express
+        expressBookingDate: expressBooking.bookingDate,
+        expressTimeSlot: expressBooking.timeSlot,
+        expressClientName: expressBooking.clientName,
+        expressClientPhone: expressBooking.clientPhone,
+        expressClientEmail: expressBooking.clientEmail,
+        expressPrice: expressBooking.price,
+        expressNotes: expressBooking.notes,
+        expressSpecialRequirements: expressBooking.specialRequirements,
+        expressFloor: expressBooking.floor,
+        expressHasElevator: expressBooking.hasElevator,
+        serviceIcon: expressBooking.service.icon,
+        categoryIcon: expressBooking.service.category?.icon
+      }
+
+      return NextResponse.json(formattedExpressBooking)
     }
-    
-    // console.log("Détails du projet récupérés:", { 
-    //   id: formattedProject.id,
-    //   title: formattedProject.title,
-    //   photos: formattedProject.photos
-    // })
-    
-    return NextResponse.json(formattedProject)
+
+    // Ni projet ni réservation Express trouvé
+    return NextResponse.json({ error: "Projet non trouvé" }, { status: 404 })
     
   } catch (error) {
     console.error("Erreur lors de la récupération du projet:", error)
