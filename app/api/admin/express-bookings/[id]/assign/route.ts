@@ -141,12 +141,14 @@ export async function POST(
         bookingId: booking.id
       })
 
-      await sendEmail({
-        to: artisan.email,
-        subject: `🚀 Nouvelle réservation express attribuée - ${booking.service.name}`,
-        html: emailTemplate.html,
-        text: emailTemplate.text
-      })
+      if (artisan.email) {
+        await sendEmail({
+          to: artisan.email,
+          subject: `🚀 Nouvelle réservation express attribuée - ${booking.service.name}`,
+          html: emailTemplate.html,
+          text: emailTemplate.text
+        })
+      }
 
       console.log(`Email d'attribution envoyé à l'artisan ${artisan.email}`)
     } catch (emailError) {

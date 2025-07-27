@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useSession } from "next-auth/react"
+import { useSession, signOut } from "next-auth/react"
 import { 
   LayoutDashboard, 
   FileText, 
@@ -118,6 +118,7 @@ export function ClientSidebar({ isOpen, closeSidebar }: ClientSidebarProps) {
             </Link>
             <Button
               variant="ghost"
+              onClick={() => signOut({ callbackUrl: '/' })}
               className="w-full justify-start px-3 py-2.5 h-auto font-normal text-sm rounded-lg text-red-400 hover:bg-red-900/30 hover:text-red-300 transition-colors"
             >
               <LogOut className="mr-3 h-5 w-5 flex-shrink-0" />

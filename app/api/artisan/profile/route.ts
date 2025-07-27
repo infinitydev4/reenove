@@ -71,7 +71,7 @@ export async function GET() {
   }
 }
 
-// POST - Créer ou mettre à jour le profil de l'artisan
+// POST - Mettre à jour le profil de l'artisan
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -81,23 +81,32 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id
-    const data = await request.json()
+    
+    // Récupérer les données du FormData
+    const formData = await request.formData()
+    
+    const name = formData.get('name')?.toString() || ''
+    const phone = formData.get('phone')?.toString() || ''
+    const address = formData.get('address')?.toString() || ''
+    const city = formData.get('city')?.toString() || ''
+    const postalCode = formData.get('postalCode')?.toString() || ''
+    const companyName = formData.get('companyName')?.toString() || ''
+    const siren = formData.get('siren')?.toString() || ''
 
-    console.log("Données reçues pour mise à jour du profil:", data)
+    console.log("Données reçues pour mise à jour du profil:", {
+      name, phone, address, city, postalCode, companyName, siren
+    })
 
     try {
-      // Créer le nom complet à partir du prénom et du nom
-      const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim();
-
       // Mise à jour des données utilisateur
-      await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: {
-          name: fullName,
-          phone: data.phone,
-          address: data.address,
-          city: data.city,
-          postalCode: data.postalCode,
+          name: name || undefined,
+          phone: phone || undefined,
+          address: address || undefined,
+          city: city || undefined,
+          postalCode: postalCode || undefined,
         },
       })
 
@@ -106,45 +115,35 @@ export async function POST(request: NextRequest) {
         where: { userId },
         create: {
           userId,
-          companyName: data.companyName,
-          siret: data.siret,
-          yearsOfExperience: data.yearsOfExperience,
-          preferredRadius: data.preferredRadius,
+          companyName: companyName || undefined,
+          siret: siren || undefined,
         },
         update: {
-          companyName: data.companyName,
-          siret: data.siret,
-          yearsOfExperience: data.yearsOfExperience,
-          preferredRadius: data.preferredRadius,
+          companyName: companyName || undefined,
+          siret: siren || undefined,
         },
       })
 
-      // Mettre à jour la progression de l'onboarding
-      try {
-        // Si les données contiennent une adresse et un code postal, cela concerne l'étape de localisation
-        if (data.address && data.postalCode) {
-          await updateOnboardingProgress(userId, 'location')
-          console.log(`Étape location complétée pour l'utilisateur ${userId}`)
-        } else {
-          await updateOnboardingProgress(userId, 'profile')
-          console.log(`Étape profile complétée pour l'utilisateur ${userId}`)
-        }
-      } catch (progressError) {
-        console.error("Erreur lors de la mise à jour de la progression:", progressError)
-        // Ne pas bloquer la réponse en cas d'erreur de progression
+      // Marquer l'étape profil comme complétée dans l'onboarding
+      await updateOnboardingProgress(userId, "profile")
+
+      // Retourner le profil mis à jour
+      const profileData = {
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        address: updatedUser.address,
+        city: updatedUser.city,
+        postalCode: updatedUser.postalCode,
+        companyName: artisanProfile.companyName,
+        siren: artisanProfile.siret,
       }
 
-      return NextResponse.json({
-        message: "Profil mis à jour avec succès",
-        profile: {
-          ...data,
-          id: artisanProfile.id,
-        },
-      })
-    } catch (dbError) {
-      console.error("Erreur lors des opérations en base de données:", dbError)
+      return NextResponse.json(profileData)
+    } catch (prismaError) {
+      console.error("Erreur Prisma lors de la mise à jour du profil:", prismaError)
       return NextResponse.json(
-        { error: "Erreur lors de la mise à jour du profil en base de données" },
+        { error: "Erreur lors de la mise à jour en base de données" },
         { status: 500 }
       )
     }

@@ -176,7 +176,7 @@ export default function ArtisanSelectionDialog({
     }
   }
 
-  const uniqueSpecialties = [...new Set(artisans.map(a => a.speciality))]
+  const uniqueSpecialties = Array.from(new Set(artisans.map(a => a.speciality)))
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -195,13 +195,15 @@ export default function ArtisanSelectionDialog({
           {/* Filtres */}
           <div className="flex gap-4 items-center">
             <div className="flex-1">
-              <Input
-                placeholder="Rechercher un artisan..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
-                icon={<Search className="h-4 w-4" />}
-              />
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
+                <Input
+                  placeholder="Rechercher un artisan..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50 pl-10"
+                />
+              </div>
             </div>
             <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
               <SelectTrigger className="w-48 bg-white/5 border-[#FCDA89]/20 text-white">
