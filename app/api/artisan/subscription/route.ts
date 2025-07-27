@@ -85,10 +85,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Récupérer les détails Stripe si disponibles
-    let stripeDetails = null
+    let stripeDetails: any = null
     if (user.subscription.stripeSubscriptionId) {
       try {
-        stripeDetails = await getStripeSubscriptionDetails(user.subscription.stripeSubscriptionId)
+        stripeDetails = await getStripeSubscriptionDetails(user.subscription.stripeSubscriptionId) as any
       } catch (error) {
         console.error("❌ Erreur Stripe:", error)
       }
@@ -259,7 +259,7 @@ export async function POST(request: NextRequest) {
         type: 'subscription',
       },
       14 // Période d'essai de 14 jours
-    )
+    ) as any // Assertion de type pour contourner les problèmes TypeScript avec Stripe
 
     // Créer l'abonnement en base de données
     const artisanSubscription = await prisma.artisanSubscription.create({

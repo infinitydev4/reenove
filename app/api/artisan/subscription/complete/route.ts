@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         subscriptionPlanId: subscriptionPlanId,
       },
-    })
+    }) as any // Assertion de type pour contourner les problèmes TypeScript avec Stripe
 
     // Créer l'abonnement en base de données avec protection contre les race conditions
     let artisanSubscription
@@ -176,12 +176,12 @@ export async function POST(request: NextRequest) {
         planName: subscriptionPlan.name,
         price: subscriptionPlan.price,
         status: artisanSubscription.status,
-        stripeSubscriptionId: artisanSubscription.stripeSubscriptionId,
+        stripeSubscriptionId: artisanSubscription.stripeSubscriptionId || stripeSubscription.id,
         currentPeriodStart: artisanSubscription.currentPeriodStart,
         currentPeriodEnd: artisanSubscription.currentPeriodEnd,
         trialStart: artisanSubscription.trialStart,
         trialEnd: artisanSubscription.trialEnd,
-        features: subscriptionPlan.features,
+        features: (subscriptionPlan.features as string[]) || [],
         maxProjects: subscriptionPlan.maxProjects,
         maxRadius: subscriptionPlan.maxRadius,
         commissionRate: subscriptionPlan.commissionRate,
@@ -197,7 +197,14 @@ export async function POST(request: NextRequest) {
         paymentMethod: 'Carte bancaire',
       }
 
-      await sendArtisanWelcomeEmail(user, subscriptionData, invoiceData)
+      // Préparer l'objet utilisateur pour l'email
+      const emailUser = {
+        name: user.name || user.email?.split('@')[0] || 'Artisan',
+        email: user.email!,
+        firstName: user.name || undefined
+      }
+
+      await sendArtisanWelcomeEmail(emailUser, subscriptionData, invoiceData)
       console.log(`📧 Email de bienvenue envoyé à ${user.email}`)
     } catch (emailError) {
       console.error('Erreur lors de l\'envoi de l\'email de bienvenue:', emailError)
