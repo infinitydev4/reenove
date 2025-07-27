@@ -61,6 +61,22 @@ enum UrgencyLevel {
   URGENT // Dans les 7 jours
 }
 
+enum ExpressBookingStatus {
+  PENDING // En attente de confirmation
+  CONFIRMED // Confirmée
+  IN_PROGRESS // En cours
+  COMPLETED // Terminée
+  CANCELLED // Annulée
+  NO_SHOW // Client absent
+}
+
+enum TimeSlot {
+  MORNING_8_12 // 8h-12h
+  AFTERNOON_14_18 // 14h-18h
+  EVENING_18_20 // 18h-20h
+  ALL_DAY // Toute la journée
+}
+
 enum PreferredTime {
   ANY
   MORNING
@@ -80,6 +96,35 @@ enum ArtisanVerificationStatus {
   PENDING // En attente
   VERIFIED // Vérifié
   REJECTED // Rejeté
+}
+
+enum PaymentStatus {
+  PENDING // En attente
+  PROCESSING // En cours de traitement  
+  SUCCEEDED // Réussi
+  FAILED // Échoué
+  CANCELLED // Annulé
+  REFUNDED // Remboursé
+}
+
+enum PaymentType {
+  EXPRESS_BOOKING // Paiement service Express
+  SUBSCRIPTION // Paiement abonnement artisan
+  PROJECT_DEPOSIT // Acompte projet
+}
+
+enum SubscriptionStatus {
+  ACTIVE // Actif
+  PAST_DUE // En retard de paiement
+  CANCELLED // Annulé
+  UNPAID // Impayé
+  INCOMPLETE // Incomplet
+}
+
+enum SubscriptionPlanType {
+  BASIC // Plan de base
+  PREMIUM // Plan premium
+  ENTERPRISE // Plan entreprise
 }
 
 model User {
@@ -115,6 +160,14 @@ model User {
   // Favoris
   favoriteArtisans UserFavorite[] @relation("ClientFavorites")
   favoritedBy      UserFavorite[] @relation("ArtisanFavorites")
+
+  // Relations Express Booking
+  expressBookings         ExpressBooking[] @relation("UserExpressBookings")
+  assignedExpressBookings ExpressBooking[] @relation("ArtisanExpressBookings")
+
+  // Relations Paiements et Abonnements
+  payments     Payment[]
+  subscription ArtisanSubscription?
 }
 
 model ArtisanProfile {
@@ -197,21 +250,30 @@ model Category {
 }
 
 model Service {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   description String?
-  slug        String   @unique
-  isActive    Boolean  @default(true)
-  order       Int      @default(0)
+  slug        String  @unique
+  isActive    Boolean @default(true)
+  order       Int     @default(0)
   icon        String?
   categoryId  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+
+  // Champs Express
+  isExpressAvailable Boolean @default(false) // Si ce service est disponible en Express
+  expressPrice       Float? // Prix fixe pour la réservation Express
+  expressDescription String? @db.Text // Description spécifique pour l'Express
+  estimatedDuration  Int? // Durée estimée en minutes
+  isPopular          Boolean @default(false) // Service populaire pour mise en avant
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
   category           Category           @relation(fields: [categoryId], references: [id])
   projects           Project[]
   artisanSpecialties ArtisanSpecialty[]
+  expressBookings    ExpressBooking[]
 
   @@unique([name, categoryId])
 }
@@ -270,6 +332,7 @@ model Project {
   quotes       Quote[]
   invitations  ProjectInvitation[]
   requirements ProjectRequirement[]
+  payments     Payment[] // Paiements liés à ce projet
 }
 
 model ProjectRequirement {
@@ -389,6 +452,136 @@ model UserFavorite {
   artisan User @relation("ArtisanFavorites", fields: [artisanId], references: [id], onDelete: Cascade)
 
   @@unique([clientId, artisanId])
+}
+
+model ExpressBooking {
+  id        String @id @default(cuid())
+  userId    String
+  serviceId String
+
+  // Détails de la réservation
+  bookingDate DateTime // Date de la prestation
+  timeSlot    TimeSlot // Créneau horaire
+  price       Float // Prix fixe au moment de la réservation
+
+  // Informations client
+  clientName  String
+  clientPhone String
+  clientEmail String
+
+  // Localisation
+  address     String
+  city        String
+  postalCode  String
+  floor       Int? // Étage si applicable
+  hasElevator Boolean? // Accès ascenseur
+
+  // Détails supplémentaires
+  notes               String? @db.Text
+  specialRequirements String? @db.Text // Exigences particulières
+
+  // Gestion du statut
+  status ExpressBookingStatus @default(PENDING)
+
+  // Gestion artisan assigné
+  assignedArtisanId String?
+  assignedAt        DateTime?
+
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  confirmedAt DateTime? // Date de confirmation
+  completedAt DateTime? // Date de fin de prestation
+
+  // Relations
+  user            User      @relation("UserExpressBookings", fields: [userId], references: [id], onDelete: Cascade)
+  service         Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  assignedArtisan User?     @relation("ArtisanExpressBookings", fields: [assignedArtisanId], references: [id])
+  payments        Payment[] // Paiements liés à cette réservation
+
+  @@index([bookingDate])
+  @@index([status])
+  @@index([assignedArtisanId])
+}
+
+// Modèles de paiement et abonnement
+model SubscriptionPlan {
+  id              String               @id @default(cuid())
+  name            String // Nom du plan (Basic, Premium, etc.)
+  description     String?              @db.Text
+  type            SubscriptionPlanType
+  price           Float // Prix mensuel en euros
+  stripeProductId String? // ID du produit Stripe
+  stripePriceId   String? // ID du prix Stripe
+  features        Json? // Caractéristiques du plan (JSON)
+  maxProjects     Int? // Nombre max de projets simultanés
+  maxRadius       Int? // Rayon d'intervention max (km)
+  commissionRate  Float? // Taux de commission (%)
+  isActive        Boolean              @default(true)
+  isPopular       Boolean              @default(false)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  // Relations
+  subscriptions ArtisanSubscription[]
+}
+
+model ArtisanSubscription {
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  subscriptionPlanId   String
+  stripeSubscriptionId String?            @unique // ID de l'abonnement Stripe
+  stripeCustomerId     String? // ID du client Stripe
+  status               SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  cancelledAt          DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  // Relations
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionPlan SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
+  payments         Payment[]
+
+  @@index([stripeSubscriptionId])
+  @@index([status])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  amount          Float // Montant en euros
+  currency        String        @default("eur")
+  status          PaymentStatus @default(PENDING)
+  type            PaymentType
+  stripePaymentId String?       @unique // ID du paiement Stripe
+  stripeInvoiceId String? // ID de la facture Stripe (pour les abonnements)
+  description     String?
+  metadata        Json? // Métadonnées additionnelles
+
+  // Relations optionnelles selon le type de paiement
+  expressBookingId      String? // Pour les paiements Express
+  artisanSubscriptionId String? // Pour les paiements d'abonnement
+  projectId             String? // Pour les acomptes projet
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  paidAt    DateTime? // Date de paiement effectif
+
+  // Relations
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expressBooking      ExpressBooking?      @relation(fields: [expressBookingId], references: [id])
+  artisanSubscription ArtisanSubscription? @relation(fields: [artisanSubscriptionId], references: [id])
+  project             Project?             @relation(fields: [projectId], references: [id])
+
+  @@index([stripePaymentId])
+  @@index([status])
+  @@index([type])
+  @@index([userId])
 }
 
 // NextAuth models

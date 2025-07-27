@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { ONBOARDING_STEPS } from "../constants"
 
 // Types
-type OnboardingStep = "profile" | "location" | "specialties" | "documents" | "confirmation"
+type OnboardingStep = "profile" | "location" | "specialties" | "documents" | "payment" | "confirmation"
 
 interface OnboardingContextType {
   isLoading: boolean
@@ -19,6 +19,7 @@ interface OnboardingContextType {
   updateProgress: (step: OnboardingStep) => Promise<boolean>
   currentUserData: any
   refreshProgress: () => Promise<void>
+  refreshProfile: () => Promise<void>
   silentMode: boolean
   setSilentMode: (value: boolean) => void
 }
@@ -53,6 +54,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         if (progressData?.progress?.location) completed.push("location")
         if (progressData?.progress?.specialties) completed.push("specialties")
         if (progressData?.progress?.documents) completed.push("documents")
+        if (progressData?.progress?.payment) completed.push("payment")
         if (progressData?.progress?.confirmation) completed.push("confirmation")
         
         setCompletedSteps(completed)
@@ -81,6 +83,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       
       if (profileResponse.ok) {
         const profileData = await profileResponse.json()
+
         setCurrentUserData(profileData)
         return profileData
       }
@@ -90,6 +93,11 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       return null
     }
   }, [])
+
+  // Rafraîchir le profil
+  const refreshProfile = useCallback(async () => {
+    await fetchArtisanProfile()
+  }, [fetchArtisanProfile])
 
   // Initialisation des données
   useEffect(() => {
@@ -177,6 +185,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
     updateProgress,
     currentUserData,
     refreshProgress,
+    refreshProfile,
     silentMode,
     setSilentMode
   }

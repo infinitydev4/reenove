@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Désactiver la génération statique pour les routes Express
-  experimental: {
-    staticGenerationAsyncStorage: false,
-  },
   images: {
     remotePatterns: [
       {
@@ -47,12 +43,12 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: `
               default-src 'self';
-              script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com;
+              script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.googleapis.com https://js.stripe.com;
               style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.googleapis.com;
               img-src 'self' data: https://*.googleapis.com https://*.gstatic.com https://renoveo.s3.eu-north-1.amazonaws.com https://*.s3.amazonaws.com https://*.s3.eu-west-3.amazonaws.com;
               font-src 'self' https://fonts.gstatic.com;
-              frame-src 'self' https://*.google.com https://maps.googleapis.com;
-              connect-src 'self' https://*.googleapis.com;
+              frame-src 'self' https://*.google.com https://maps.googleapis.com https://js.stripe.com;
+              connect-src 'self' https://*.googleapis.com https://api.stripe.com;
             `.replace(/\s+/g, ' ').trim()
           }
         ]

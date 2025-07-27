@@ -98,6 +98,35 @@ enum ArtisanVerificationStatus {
   REJECTED   // Rejeté
 }
 
+enum PaymentStatus {
+  PENDING       // En attente
+  PROCESSING    // En cours de traitement  
+  SUCCEEDED     // Réussi
+  FAILED        // Échoué
+  CANCELLED     // Annulé
+  REFUNDED      // Remboursé
+}
+
+enum PaymentType {
+  EXPRESS_BOOKING    // Paiement service Express
+  SUBSCRIPTION       // Paiement abonnement artisan
+  PROJECT_DEPOSIT    // Acompte projet
+}
+
+enum SubscriptionStatus {
+  ACTIVE        // Actif
+  PAST_DUE      // En retard de paiement
+  CANCELLED     // Annulé
+  UNPAID        // Impayé
+  INCOMPLETE    // Incomplet
+}
+
+enum SubscriptionPlanType {
+  BASIC         // Plan de base
+  PREMIUM       // Plan premium
+  ENTERPRISE    // Plan entreprise
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -135,6 +164,10 @@ model User {
   // Relations Express Booking
   expressBookings ExpressBooking[] @relation("UserExpressBookings")
   assignedExpressBookings ExpressBooking[] @relation("ArtisanExpressBookings")
+  
+  // Relations Paiements et Abonnements
+  payments Payment[]
+  subscription ArtisanSubscription?
 }
 
 model ArtisanProfile {
@@ -299,6 +332,7 @@ model Project {
   quotes          Quote[]
   invitations     ProjectInvitation[]
   requirements    ProjectRequirement[]
+  payments        Payment[]        // Paiements liés à ce projet
 }
 
 model ProjectRequirement {
@@ -460,13 +494,94 @@ model ExpressBooking {
   completedAt DateTime?             // Date de fin de prestation
   
   // Relations
-  user            User    @relation("UserExpressBookings", fields: [userId], references: [id], onDelete: Cascade)
-  service         Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
-  assignedArtisan User?   @relation("ArtisanExpressBookings", fields: [assignedArtisanId], references: [id])
+  user            User      @relation("UserExpressBookings", fields: [userId], references: [id], onDelete: Cascade)
+  service         Service   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  assignedArtisan User?     @relation("ArtisanExpressBookings", fields: [assignedArtisanId], references: [id])
+  payments        Payment[] // Paiements liés à cette réservation
   
   @@index([bookingDate])
   @@index([status])
   @@index([assignedArtisanId])
+}
+
+// Modèles de paiement et abonnement
+model SubscriptionPlan {
+  id              String              @id @default(cuid())
+  name            String              // Nom du plan (Basic, Premium, etc.)
+  description     String?             @db.Text
+  type            SubscriptionPlanType
+  price           Float               // Prix mensuel en euros
+  stripeProductId String?             // ID du produit Stripe
+  stripePriceId   String?             // ID du prix Stripe
+  features        Json?               // Caractéristiques du plan (JSON)
+  maxProjects     Int?                // Nombre max de projets simultanés
+  maxRadius       Int?                // Rayon d'intervention max (km)
+  commissionRate  Float?              // Taux de commission (%)
+  isActive        Boolean             @default(true)
+  isPopular       Boolean             @default(false)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  subscriptions   ArtisanSubscription[]
+}
+
+model ArtisanSubscription {
+  id                    String              @id @default(cuid())
+  userId                String              @unique
+  subscriptionPlanId    String
+  stripeSubscriptionId  String?             @unique // ID de l'abonnement Stripe
+  stripeCustomerId      String?             // ID du client Stripe
+  status                SubscriptionStatus  @default(ACTIVE)
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean             @default(false)
+  cancelledAt           DateTime?
+  trialStart            DateTime?
+  trialEnd              DateTime?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  
+  // Relations
+  user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionPlan      SubscriptionPlan    @relation(fields: [subscriptionPlanId], references: [id])
+  payments              Payment[]
+  
+  @@index([stripeSubscriptionId])
+  @@index([status])
+}
+
+model Payment {
+  id                String           @id @default(cuid())
+  userId            String
+  amount            Float            // Montant en euros
+  currency          String           @default("eur")
+  status            PaymentStatus    @default(PENDING)
+  type              PaymentType
+  stripePaymentId   String?          @unique // ID du paiement Stripe
+  stripeInvoiceId   String?          // ID de la facture Stripe (pour les abonnements)
+  description       String?
+  metadata          Json?            // Métadonnées additionnelles
+  
+  // Relations optionnelles selon le type de paiement
+  expressBookingId      String?              // Pour les paiements Express
+  artisanSubscriptionId String?              // Pour les paiements d'abonnement
+  projectId             String?              // Pour les acomptes projet
+  
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  paidAt            DateTime?        // Date de paiement effectif
+  
+  // Relations
+  user                  User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expressBooking        ExpressBooking?          @relation(fields: [expressBookingId], references: [id])
+  artisanSubscription   ArtisanSubscription?     @relation(fields: [artisanSubscriptionId], references: [id])
+  project               Project?                 @relation(fields: [projectId], references: [id])
+  
+  @@index([stripePaymentId])
+  @@index([status])
+  @@index([type])
+  @@index([userId])
 }
 
 // NextAuth models

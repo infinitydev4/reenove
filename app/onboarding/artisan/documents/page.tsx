@@ -16,7 +16,7 @@ export default function ArtisanDocumentsPage() {
   const router = useRouter()
   const { data: session } = useSession()
   const { toast } = useToast()
-  const { isLoading, isSaving, setIsSaving, updateProgress, silentMode, setSilentMode } = useOnboarding()
+  const { isLoading, isSaving, setIsSaving, updateProgress, goToNextStep, silentMode, setSilentMode } = useOnboarding()
   const [documents, setDocuments] = useState<{ id: string; name: string; type: string; url: string }[]>([])
 
   // Charger les documents existants
@@ -81,8 +81,8 @@ export default function ArtisanDocumentsPage() {
       // Mettre à jour la progression
       await updateProgress("documents")
       
-      // Rediriger vers l'étape suivante
-      router.push("/onboarding/artisan/confirmation")
+      // Rediriger vers l'étape suivante (payment)
+      goToNextStep("documents")
     } catch (error) {
       console.error("Erreur:", error)
       setSilentMode(false)

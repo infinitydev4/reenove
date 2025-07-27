@@ -24,6 +24,32 @@ export interface ProjectEstimation {
   budget?: number
 }
 
+export interface ArtisanSubscription {
+  id: string
+  planName: string
+  price: number
+  status: string
+  stripeSubscriptionId: string
+  currentPeriodStart: Date
+  currentPeriodEnd: Date
+  trialStart?: Date | null
+  trialEnd?: Date | null
+  features: string[]
+  maxProjects?: number | null
+  maxRadius?: number | null
+  commissionRate?: number | null
+}
+
+export interface PaymentInvoice {
+  id: string
+  amount: number
+  currency: string
+  status: string
+  paidAt: Date
+  invoiceNumber?: string
+  paymentMethod: string
+}
+
 // Template d'email de bienvenue ultra moderne
 const welcomeEmailTemplate = (user: User) => `
 <!DOCTYPE html>
@@ -296,6 +322,215 @@ export async function sendWelcomeEmail(user: User) {
   }
 }
 
+// Template d'email de bienvenue artisan avec abonnement
+const artisanWelcomeEmailTemplate = (user: User, subscription: ArtisanSubscription, invoice: PaymentInvoice) => `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenue chez Reenove - Votre abonnement est activé</title>
+</head>
+<body style="margin: 0; padding: 0; background: linear-gradient(135deg, #0E261C 0%, #1a3a2e 100%); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+    <div style="max-width: 600px; margin: 0 auto; background: #0E261C;">
+        <!-- Header avec logo -->
+        <div style="background: linear-gradient(135deg, #0E261C 0%, #1a3a2e 100%); padding: 40px 20px; text-align: center; border-bottom: 2px solid #FCDA89;">
+            <img src="https://reenove.com/logow.png" alt="reenove" style="height: 60px; margin-bottom: 20px;">
+            <h1 style="color: #FCDA89; margin: 0; font-size: 28px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                🎉 Bienvenue dans la famille Reenove !
+            </h1>
+            <p style="color: rgba(255, 255, 255, 0.8); margin: 10px 0 0 0; font-size: 16px;">
+                Votre abonnement <strong style="color: #FCDA89;">${subscription.planName}</strong> est maintenant actif
+            </p>
+        </div>
+
+        <!-- Message de confirmation -->
+        <div style="padding: 40px 30px 20px; background: #0E261C;">
+            <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 16px; padding: 30px; margin-bottom: 30px; text-align: center;">
+                <div style="color: #22c55e; font-size: 48px; margin-bottom: 15px;">✅</div>
+                <h2 style="color: #22c55e; margin: 0 0 15px 0; font-size: 22px; font-weight: 600;">
+                    Félicitations ${user.firstName || user.name} ! 🚀
+                </h2>
+                <p style="color: rgba(255, 255, 255, 0.9); line-height: 1.6; margin: 0; font-size: 16px;">
+                    Votre inscription est terminée et votre abonnement est activé. Vous pouvez maintenant accéder à toutes les missions Reenove et commencer à développer votre activité !
+                </p>
+            </div>
+
+            <!-- Détails de l'abonnement -->
+            <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 16px; padding: 30px; margin-bottom: 30px;">
+                <h3 style="color: #FCDA89; margin: 0 0 20px 0; font-size: 20px; font-weight: 600; display: flex; align-items: center;">
+                    📋 Votre abonnement ${subscription.planName}
+                </h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <div style="color: rgba(252, 218, 137, 0.8); font-size: 14px; font-weight: 500; margin-bottom: 8px;">PLAN SÉLECTIONNÉ</div>
+                    <div style="color: white; font-size: 18px; font-weight: 600; margin-bottom: 5px;">${subscription.planName}</div>
+                    <div style="color: #FCDA89; font-size: 24px; font-weight: 700;">${subscription.price}€/mois</div>
+                </div>
+
+                ${subscription.trialEnd ? `
+                <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                    <div style="color: #22c55e; font-size: 16px; font-weight: 600; margin-bottom: 5px;">🎁 Période d'essai gratuite</div>
+                    <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px;">
+                        Jusqu'au ${new Date(subscription.trialEnd).toLocaleDateString('fr-FR', { 
+                          weekday: 'long', 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Avantages du plan -->
+                <div style="margin-bottom: 20px;">
+                    <div style="color: rgba(252, 218, 137, 0.8); font-size: 14px; font-weight: 500; margin-bottom: 12px;">AVANTAGES INCLUS</div>
+                    <div style="space-y: 8px;">
+                        ${subscription.features.map(feature => `
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <div style="color: #22c55e; margin-right: 10px; font-size: 16px;">✓</div>
+                            <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px;">${feature}</div>
+                        </div>
+                        `).join('')}
+                        
+                        ${subscription.maxProjects ? `
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <div style="color: #22c55e; margin-right: 10px; font-size: 16px;">✓</div>
+                            <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px;">Jusqu'à ${subscription.maxProjects} projets par mois</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${subscription.maxRadius ? `
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <div style="color: #22c55e; margin-right: 10px; font-size: 16px;">✓</div>
+                            <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px;">Rayon d'intervention : ${subscription.maxRadius} km</div>
+                        </div>
+                        ` : ''}
+                        
+                        ${subscription.commissionRate ? `
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <div style="color: #22c55e; margin-right: 10px; font-size: 16px;">✓</div>
+                            <div style="color: rgba(255, 255, 255, 0.9); font-size: 14px;">Commission réduite : ${subscription.commissionRate}%</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Période de facturation -->
+                <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 15px;">
+                    <div style="color: rgba(252, 218, 137, 0.8); font-size: 14px; font-weight: 500; margin-bottom: 8px;">PROCHAINE FACTURATION</div>
+                    <div style="color: white; font-size: 16px;">
+                        ${new Date(subscription.currentPeriodEnd).toLocaleDateString('fr-FR', { 
+                          weekday: 'long', 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facture de paiement -->
+            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 30px; margin-bottom: 30px;">
+                <h3 style="color: #FCDA89; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">
+                    🧾 Facture de paiement
+                </h3>
+                
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="color: rgba(255, 255, 255, 0.7); font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Facture n°</td>
+                        <td style="color: white; font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: right;">${invoice.invoiceNumber || invoice.id}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: rgba(255, 255, 255, 0.7); font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Date de paiement</td>
+                        <td style="color: white; font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: right;">${new Date(invoice.paidAt).toLocaleDateString('fr-FR')}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: rgba(255, 255, 255, 0.7); font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Méthode de paiement</td>
+                        <td style="color: white; font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: right;">${invoice.paymentMethod}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: rgba(255, 255, 255, 0.7); font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Statut</td>
+                        <td style="color: #22c55e; font-size: 14px; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); text-align: right; font-weight: 600;">✅ ${invoice.status}</td>
+                    </tr>
+                    <tr>
+                        <td style="color: white; font-size: 16px; padding: 12px 0 0; font-weight: 600;">Total payé</td>
+                        <td style="color: #FCDA89; font-size: 18px; padding: 12px 0 0; text-align: right; font-weight: 700;">${new Intl.NumberFormat('fr-FR').format(invoice.amount)}€</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Prochaines étapes -->
+            <div style="background: rgba(252, 218, 137, 0.1); border: 1px solid rgba(252, 218, 137, 0.2); border-radius: 16px; padding: 30px; margin-bottom: 30px;">
+                <h3 style="color: #FCDA89; margin: 0 0 20px 0; font-size: 20px; font-weight: 600;">
+                    🚀 Commencez dès maintenant
+                </h3>
+                
+                <div style="space-y: 15px;">
+                    <div style="display: flex; align-items: start; margin-bottom: 20px;">
+                        <div style="background: #FCDA89; color: #0E261C; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; margin-right: 15px; flex-shrink: 0; margin-top: 2px;">1</div>
+                        <div>
+                            <div style="color: white; font-weight: 600; margin-bottom: 5px;">Accédez à votre tableau de bord</div>
+                            <div style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">Consultez les projets disponibles dans votre région</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: start; margin-bottom: 20px;">
+                        <div style="background: #FCDA89; color: #0E261C; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; margin-right: 15px; flex-shrink: 0; margin-top: 2px;">2</div>
+                        <div>
+                            <div style="color: white; font-weight: 600; margin-bottom: 5px;">Répondez aux demandes de devis</div>
+                            <div style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">Proposez vos services aux clients Reenove</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: start; margin-bottom: 0;">
+                        <div style="background: #FCDA89; color: #0E261C; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; margin-right: 15px; flex-shrink: 0; margin-top: 2px;">3</div>
+                        <div>
+                            <div style="color: white; font-weight: 600; margin-bottom: 5px;">Développez votre activité</div>
+                            <div style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">Bénéficiez de notre réseau et de nos outils</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to action -->
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="https://reenove.com/artisan" style="background: linear-gradient(135deg, #FCDA89 0%, #f5d080 100%); color: #0E261C; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(252, 218, 137, 0.3); margin-right: 15px;">
+                    🏠 Mon tableau de bord
+                </a>
+                <a href="https://reenove.com/artisan/projets" style="background: rgba(255, 255, 255, 0.1); color: white; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; display: inline-block; border: 1px solid rgba(252, 218, 137, 0.3);">
+                    📋 Voir les projets
+                </a>
+            </div>
+
+            <!-- Support -->
+            <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; text-align: center;">
+                <h4 style="color: #FCDA89; margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">
+                    💬 Besoin d'aide ?
+                </h4>
+                <p style="color: rgba(255, 255, 255, 0.8); margin: 0 0 15px 0; font-size: 14px;">
+                    Notre équipe est là pour vous accompagner dans votre réussite
+                </p>
+                <a href="mailto:artisans@reenove.com" style="color: #FCDA89; text-decoration: none; font-weight: 500;">
+                    📧 artisans@reenove.com
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background: #0a1f15; padding: 30px 20px; text-align: center; border-top: 1px solid rgba(252, 218, 137, 0.2);">
+            <p style="color: rgba(255, 255, 255, 0.6); margin: 0 0 10px 0; font-size: 14px;">
+                Merci de rejoindre le réseau d'artisans Reenove
+            </p>
+            <p style="color: rgba(255, 255, 255, 0.4); margin: 0; font-size: 12px;">
+                © 2024 Reenove. Tous droits réservés.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+`
+
 // Fonction pour envoyer l'email de demande de devis
 export async function sendQuoteRequestEmail(user: User, project: ProjectEstimation) {
   try {
@@ -310,6 +545,24 @@ export async function sendQuoteRequestEmail(user: User, project: ProjectEstimati
     return { success: true, data }
   } catch (error) {
     console.error('Erreur lors de l\'envoi de l\'email de demande de devis:', error)
+    return { success: false, error }
+  }
+}
+
+// Fonction pour envoyer l'email de bienvenue artisan avec abonnement
+export async function sendArtisanWelcomeEmail(user: User, subscription: ArtisanSubscription, invoice: PaymentInvoice) {
+  try {
+    const data = await resend.emails.send({
+      from: 'Reenove <artisans@reenove.com>',
+      to: [user.email],
+      subject: `🎉 Bienvenue chez Reenove ! Votre abonnement ${subscription.planName} est activé`,
+      html: artisanWelcomeEmailTemplate(user, subscription, invoice),
+    })
+
+    console.log('Email de bienvenue artisan envoyé:', data)
+    return { success: true, data }
+  } catch (error) {
+    console.error('Erreur lors de l\'envoi de l\'email de bienvenue artisan:', error)
     return { success: false, error }
   }
 }

@@ -13,7 +13,8 @@ import {
   Briefcase,
   FileText,
   BarChart3,
-  Clock
+  Clock,
+  CreditCard
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -41,11 +42,12 @@ export function AdminSidebar({ isOpen, closeSidebar }: AdminSidebarProps) {
     { name: "Tableau de bord", href: "/admin", icon: LayoutDashboard },
     { name: "Utilisateurs", href: "/admin/users", icon: Users },
     { name: "Artisans", href: "/admin/artisans", icon: Wrench },
-    { name: "Projets", href: "/admin/projets", icon: FileText },
-    { name: "Services", href: "/admin/services", icon: Briefcase },
-    { name: "Réservations Express", href: "/admin/reservations-express", icon: Clock },
-    { name: "Statistiques", href: "/admin/stats", icon: BarChart3 },
-    { name: "Paramètres", href: "/admin/parametres", icon: Settings },
+      { name: "Projets", href: "/admin/projets", icon: FileText },
+  { name: "Services", href: "/admin/services", icon: Briefcase },
+  { name: "Réservations Express", href: "/admin/reservations-express", icon: Clock },
+  { name: "Abonnements", href: "/admin/abonnements", icon: CreditCard },
+  { name: "Statistiques", href: "/admin/stats", icon: BarChart3 },
+  { name: "Paramètres", href: "/admin/parametres", icon: Settings },
   ]
 
   return (

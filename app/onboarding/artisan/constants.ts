@@ -25,6 +25,12 @@ export const ONBOARDING_STEPS = [
     path: "/onboarding/artisan/documents"
   },
   {
+    id: "payment",
+    title: "Abonnement",
+    description: "Choisissez votre plan d'abonnement",
+    path: "/onboarding/artisan/payment"
+  },
+  {
     id: "confirmation",
     title: "Confirmation",
     description: "Vérifiez et confirmez vos informations",

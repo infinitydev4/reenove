@@ -23,7 +23,10 @@ import {
   Hammer,
   Paintbrush,
   Zap,
-  Check
+  Check,
+  CreditCard,
+  Star,
+  Users
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -75,6 +78,8 @@ export default function ArtisanConfirmationPage() {
     updateProgress, 
     completedSteps, 
     currentUserData,
+    refreshProgress,
+    refreshProfile,
     silentMode, 
     setSilentMode 
   } = useOnboarding()
@@ -83,6 +88,9 @@ export default function ArtisanConfirmationPage() {
   const [artisanData, setArtisanData] = useState<any>({})
   const [specialties, setSpecialties] = useState<any[]>([])
   const [documents, setDocuments] = useState<any[]>([])
+  const [subscription, setSubscription] = useState<any>(null)
+  const [subscriptionPlan, setSubscriptionPlan] = useState<any>(null)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   // Animation d'entrée et chargement des données
   useEffect(() => {
@@ -90,26 +98,44 @@ export default function ArtisanConfirmationPage() {
     
     const fetchData = async () => {
       try {
+
+        
         // Charger les spécialités
         const specialtiesResponse = await fetch("/api/artisan/specialties", { cache: 'no-store' })
+        let specialtiesData = []
         if (specialtiesResponse.ok) {
-          const specialtiesData = await specialtiesResponse.json()
+          specialtiesData = await specialtiesResponse.json()
           setSpecialties(specialtiesData || [])
         }
         
         // Charger les documents
         const documentsResponse = await fetch("/api/artisan/documents", { cache: 'no-store' })
+        let documentsData = []
         if (documentsResponse.ok) {
-          const documentsData = await documentsResponse.json()
+          documentsData = await documentsResponse.json()
           setDocuments(documentsData || [])
         }
+
+        // Charger les informations d'abonnement
+        const subscriptionResponse = await fetch("/api/artisan/subscription", { cache: 'no-store' })
+        if (subscriptionResponse.ok) {
+          const subscriptionData = await subscriptionResponse.json()
+          if (subscriptionData.subscription) {
+            setSubscription(subscriptionData.subscription)
+            setSubscriptionPlan(subscriptionData.subscriptionPlan)
+          }
+        }
         
-        // Préparer les données combinées
-        setArtisanData({
+        // Préparer les données combinées avec les données fraîchement récupérées
+        const combinedData = {
           ...currentUserData,
-          specialties: specialties || [],
-          documents: documents || []
-        })
+          specialties: specialtiesData || [],
+          documents: documentsData || []
+        }
+        
+
+        
+        setArtisanData(combinedData)
         } catch (error) {
           console.error("Erreur lors du chargement des données:", error)
         }
@@ -126,6 +152,22 @@ export default function ArtisanConfirmationPage() {
       setOnboardingComplete(true)
     }
   }, [completedSteps])
+
+  // Fonction pour rafraîchir les données du profil
+  const refreshProfileData = async () => {
+    try {
+      setIsRefreshing(true)
+      
+      // Rafraîchir les données du contexte
+      await refreshProgress()
+      await refreshProfile()
+      
+    } catch (error) {
+      console.error("Erreur lors du rafraîchissement:", error)
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
 
   const handleConfirm = async () => {
     try {
@@ -297,8 +339,15 @@ export default function ArtisanConfirmationPage() {
                         <div className="flex items-start gap-3">
                           <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                           <div>
-                            <p className="text-sm font-medium">{currentUserData?.address}</p>
-                            <p className="text-xs text-muted-foreground">{currentUserData?.postalCode} {currentUserData?.city}</p>
+                            <p className="text-sm font-medium">
+                              {currentUserData?.address || "Adresse non renseignée"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {currentUserData?.postalCode && currentUserData?.city 
+                                ? `${currentUserData.postalCode} ${currentUserData.city}`
+                                : "Ville et code postal non renseignés"
+                              }
+                            </p>
                           </div>
                         </div>
                         
@@ -308,6 +357,31 @@ export default function ArtisanConfirmationPage() {
                             <p className="text-sm">Rayon d&apos;intervention: <span className="font-medium">{currentUserData?.interventionRadius || 50} km</span></p>
                           </div>
                         </div>
+
+                        {/* Bouton de rechargement si les données sont manquantes */}
+                        {(!currentUserData?.address || !currentUserData?.city || !currentUserData?.postalCode) && (
+                          <div className="flex items-center gap-2 p-3 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-md">
+                            <Info className="h-4 w-4 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+                            <div className="flex-1">
+                              <p className="text-sm text-orange-800 dark:text-orange-200">
+                                Les données d&apos;adresse semblent manquantes.
+                              </p>
+                            </div>
+                            <Button
+                              onClick={refreshProfileData}
+                              disabled={isRefreshing}
+                              size="sm"
+                              variant="outline"
+                              className="border-orange-300 text-orange-700 hover:bg-orange-100 dark:border-orange-700 dark:text-orange-300 dark:hover:bg-orange-900/30"
+                            >
+                              {isRefreshing ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                              ) : (
+                                "Actualiser"
+                              )}
+                            </Button>
+                          </div>
+                        )}
                         
                         {currentUserData?.address && currentUserData?.city && currentUserData?.postalCode && (
                           <InterventionRadiusMap
@@ -456,6 +530,111 @@ export default function ArtisanConfirmationPage() {
                   </Card>
                 </AccordionContent>
               </AccordionItem>
+
+              {/* Section Abonnement */}
+              {(subscription && subscriptionPlan) && (
+                <AccordionItem value="subscription" className="border-b">
+                  <AccordionTrigger className="hover:no-underline py-1.5 md:py-3 px-1 md:px-2 text-xs md:text-base">
+                    <div className="flex items-center">
+                      <div className="mr-1 md:mr-2 p-1 rounded-full bg-green-100 dark:bg-green-950/30 text-green-600 dark:text-green-400">
+                        <CreditCard className="h-3 w-3 md:h-5 md:w-5" />
+                      </div>
+                      <span>Abonnement</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <Card className="border-0 shadow-none">
+                      <CardContent className="pt-2 md:pt-6 px-2 md:px-6">
+                        <div className="space-y-4">
+                          <div className="flex items-start gap-3">
+                            <CreditCard className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-sm font-medium">{subscriptionPlan.name}</p>
+                                <Badge variant="outline" className="text-xs">
+                                  {subscriptionPlan.type}
+                                </Badge>
+                                {subscriptionPlan.isPopular && (
+                                  <Badge className="text-xs bg-primary">
+                                    <Star className="h-3 w-3 mr-1" />
+                                    Populaire
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-xs text-muted-foreground mb-2">{subscriptionPlan.description}</p>
+                              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                                <span className="font-medium text-primary">
+                                  {subscriptionPlan.price}€/mois
+                                </span>
+                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                  subscription.status === 'ACTIVE' 
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300'
+                                    : subscription.status === 'PAST_DUE'
+                                    ? 'bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300'
+                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-950 dark:text-gray-300'
+                                }`}>
+                                  {subscription.status === 'ACTIVE' && 'Actif'}
+                                  {subscription.status === 'PAST_DUE' && 'En retard'}
+                                  {subscription.status === 'CANCELLED' && 'Annulé'}
+                                  {subscription.status === 'UNPAID' && 'Non payé'}
+                                  {subscription.status === 'INCOMPLETE' && 'Incomplet'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            {subscriptionPlan.features.map((feature: string, index: number) => (
+                              <div key={index} className="flex items-center gap-2">
+                                <Check className="h-3 w-3 text-green-600 flex-shrink-0" />
+                                <span className="text-xs">{feature}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {(subscriptionPlan.maxProjects || subscriptionPlan.maxRadius) && (
+                            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+                              {subscriptionPlan.maxProjects && (
+                                <div className="flex items-center gap-1">
+                                  <Users className="h-3 w-3" />
+                                  {subscriptionPlan.maxProjects} projets/mois
+                                </div>
+                              )}
+                              {subscriptionPlan.maxRadius && (
+                                <div className="flex items-center gap-1">
+                                  <MapPin className="h-3 w-3" />
+                                  Rayon: {subscriptionPlan.maxRadius} km
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {subscription.trialEndsAt && new Date(subscription.trialEndsAt) > new Date() && (
+                            <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                              <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                              <div className="text-xs text-blue-800 dark:text-blue-200">
+                                Période d&apos;essai jusqu&apos;au {new Date(subscription.trialEndsAt).toLocaleDateString('fr-FR')}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="mt-2 text-right">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-7 text-xs"
+                              onClick={() => router.push("/onboarding/artisan/payment")}
+                            >
+                              <Edit className="mr-2 h-3 w-3" />
+                              Modifier
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </AccordionContent>
+                </AccordionItem>
+              )}
             </Accordion>
           </CardContent>
         </Card>

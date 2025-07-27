@@ -22,7 +22,7 @@ export async function updateOnboardingProgress(userId: string, step: string) {
     }
 
     // Vérifier si l'étape est valide
-    if (!['profile', 'location', 'specialties', 'documents', 'confirmation'].includes(step)) {
+    if (!['profile', 'location', 'specialties', 'documents', 'payment', 'confirmation'].includes(step)) {
       throw new Error('Étape d\'onboarding invalide')
     }
 
@@ -55,6 +55,14 @@ export async function updateOnboardingProgress(userId: string, step: string) {
         })
         break
       case 'documents':
+        await prisma.artisanProfile.update({
+          where: { userId },
+          data: { 
+            onboardingCompleted: true 
+          }
+        })
+        break
+      case 'payment':
         await prisma.artisanProfile.update({
           where: { userId },
           data: { 
@@ -127,6 +135,11 @@ export async function getOnboardingProgress(userId: string) {
       where: { userId },
     })
 
+    // Récupérer l'abonnement
+    const subscription = await prisma.artisanSubscription.findUnique({
+      where: { userId },
+    })
+
     // Déterminer les étapes complétées
     const completedSteps = []
     
@@ -152,22 +165,28 @@ export async function getOnboardingProgress(userId: string) {
       completedSteps.push('documents')
     }
     
+    // Payment complété seulement si un abonnement ACTIVE existe (payé)
+    if (subscription && subscription.status === 'ACTIVE') {
+      completedSteps.push('payment')
+    }
+    
     // Confirmation complétée si onboardingCompleted est true
     if (artisanProfile.onboardingCompleted) {
       completedSteps.push('confirmation')
     }
 
-    // Retourner la progression
-    return {
-      completedSteps,
-      progress: {
-        profile: !!artisanProfile,
-        location: !!artisanProfile && !!artisanProfile.user && !!artisanProfile.user.address && !!artisanProfile.user.postalCode,
-        specialties: specialties.length > 0,
-        documents: documents.length >= 2 && 
-                  documents.some((doc: { type: string }) => doc.type === 'KBIS') && 
-                  documents.some((doc: { type: string }) => doc.type === 'INSURANCE'),
-        confirmation: artisanProfile.onboardingCompleted
+          // Retourner la progression
+      return {
+        completedSteps,
+        progress: {
+          profile: !!artisanProfile,
+          location: !!artisanProfile && !!artisanProfile.user && !!artisanProfile.user.address && !!artisanProfile.user.postalCode,
+          specialties: specialties.length > 0,
+          documents: documents.length >= 2 && 
+                    documents.some((doc: { type: string }) => doc.type === 'KBIS') && 
+                    documents.some((doc: { type: string }) => doc.type === 'INSURANCE'),
+          payment: !!subscription && subscription.status === 'ACTIVE',
+          confirmation: artisanProfile.onboardingCompleted
       },
       onboardingCompletedAt: artisanProfile.onboardingCompleted ? new Date() : null
     }
