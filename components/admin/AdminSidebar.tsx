@@ -12,7 +12,8 @@ import {
   ShieldAlert,
   Briefcase,
   FileText,
-  BarChart3
+  BarChart3,
+  Clock
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -42,6 +43,7 @@ export function AdminSidebar({ isOpen, closeSidebar }: AdminSidebarProps) {
     { name: "Artisans", href: "/admin/artisans", icon: Wrench },
     { name: "Projets", href: "/admin/projets", icon: FileText },
     { name: "Services", href: "/admin/services", icon: Briefcase },
+    { name: "Réservations Express", href: "/admin/reservations-express", icon: Clock },
     { name: "Statistiques", href: "/admin/stats", icon: BarChart3 },
     { name: "Paramètres", href: "/admin/parametres", icon: Settings },
   ]

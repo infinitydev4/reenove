@@ -42,7 +42,7 @@ export default function HeroSection() {
       <div className="container relative z-10 h-full px-4 md:px-6 flex items-center justify-center">
         <div className="max-w-2xl text-center">
           <div className="inline-block px-4 py-1 mb-4 rounded-full bg-[#FCDA89]/20 border border-[#FCDA89]/30">
-            <p className="text-[#FCDA89] text-sm font-medium">La plateforme d'artisans N°1 en France</p>
+            <p className="text-[#FCDA89] text-sm font-medium">La plateforme d&apos;artisans N°1 en France</p>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 text-white">
             Trouvez l&apos;artisan <span className="text-[#FCDA89]">idéal</span> pour votre projet
@@ -58,12 +58,12 @@ export default function HeroSection() {
                 Demander un devis gratuit
               </Link>
             </Button>
-            {/* <Button variant="outline" className="border-white/20 bg-white/10 hover:bg-white/20 text-white px-6 py-6 text-lg rounded-xl" asChild>
-              <Link href="#artisans">
-              Rejoignez notre réseau d'artisans
-                <ArrowRight className="ml-2 h-5 w-5" />
+            <Button variant="outline" className="border-[#FCDA89]/30 bg-[#FCDA89]/10 hover:bg-[#FCDA89]/20 text-[#FCDA89] px-6 py-6 text-lg rounded-xl font-semibold" asChild>
+              <Link href="/reenove-express">
+                <ArrowRight className="mr-2 h-5 w-5" />
+                Reenove Express
               </Link>
-            </Button> */}
+            </Button>
           </div>
         </div>
       </div>

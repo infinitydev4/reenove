@@ -94,6 +94,11 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
  */
 export type UserFavorite = $Result.DefaultSelection<Prisma.$UserFavoritePayload>
 /**
+ * Model ExpressBooking
+ * 
+ */
+export type ExpressBooking = $Result.DefaultSelection<Prisma.$ExpressBookingPayload>
+/**
  * Model Account
  * 
  */
@@ -181,6 +186,28 @@ export const UrgencyLevel: {
 export type UrgencyLevel = (typeof UrgencyLevel)[keyof typeof UrgencyLevel]
 
 
+export const ExpressBookingStatus: {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  NO_SHOW: 'NO_SHOW'
+};
+
+export type ExpressBookingStatus = (typeof ExpressBookingStatus)[keyof typeof ExpressBookingStatus]
+
+
+export const TimeSlot: {
+  MORNING_8_12: 'MORNING_8_12',
+  AFTERNOON_14_18: 'AFTERNOON_14_18',
+  EVENING_18_20: 'EVENING_18_20',
+  ALL_DAY: 'ALL_DAY'
+};
+
+export type TimeSlot = (typeof TimeSlot)[keyof typeof TimeSlot]
+
+
 export const PreferredTime: {
   ANY: 'ANY',
   MORNING: 'MORNING',
@@ -239,6 +266,14 @@ export const AccessibilityLevel: typeof $Enums.AccessibilityLevel
 export type UrgencyLevel = $Enums.UrgencyLevel
 
 export const UrgencyLevel: typeof $Enums.UrgencyLevel
+
+export type ExpressBookingStatus = $Enums.ExpressBookingStatus
+
+export const ExpressBookingStatus: typeof $Enums.ExpressBookingStatus
+
+export type TimeSlot = $Enums.TimeSlot
+
+export const TimeSlot: typeof $Enums.TimeSlot
 
 export type PreferredTime = $Enums.PreferredTime
 
@@ -536,6 +571,16 @@ export class PrismaClient<
     * ```
     */
   get userFavorite(): Prisma.UserFavoriteDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.expressBooking`: Exposes CRUD operations for the **ExpressBooking** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExpressBookings
+    * const expressBookings = await prisma.expressBooking.findMany()
+    * ```
+    */
+  get expressBooking(): Prisma.ExpressBookingDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.account`: Exposes CRUD operations for the **Account** model.
@@ -1022,6 +1067,7 @@ export namespace Prisma {
     ProjectInvitation: 'ProjectInvitation',
     Notification: 'Notification',
     UserFavorite: 'UserFavorite',
+    ExpressBooking: 'ExpressBooking',
     Account: 'Account',
     Session: 'Session',
     VerificationToken: 'VerificationToken'
@@ -1043,7 +1089,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "artisanProfile" | "artisanSpecialty" | "artisanDocument" | "artisanSkill" | "category" | "service" | "project" | "projectRequirement" | "projectStep" | "projectImage" | "quote" | "quoteItem" | "projectInvitation" | "notification" | "userFavorite" | "account" | "session" | "verificationToken"
+      modelProps: "user" | "artisanProfile" | "artisanSpecialty" | "artisanDocument" | "artisanSkill" | "category" | "service" | "project" | "projectRequirement" | "projectStep" | "projectImage" | "quote" | "quoteItem" | "projectInvitation" | "notification" | "userFavorite" | "expressBooking" | "account" | "session" | "verificationToken"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2231,6 +2277,80 @@ export namespace Prisma {
           }
         }
       }
+      ExpressBooking: {
+        payload: Prisma.$ExpressBookingPayload<ExtArgs>
+        fields: Prisma.ExpressBookingFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExpressBookingFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExpressBookingFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>
+          }
+          findFirst: {
+            args: Prisma.ExpressBookingFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExpressBookingFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>
+          }
+          findMany: {
+            args: Prisma.ExpressBookingFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>[]
+          }
+          create: {
+            args: Prisma.ExpressBookingCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>
+          }
+          createMany: {
+            args: Prisma.ExpressBookingCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExpressBookingCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>[]
+          }
+          delete: {
+            args: Prisma.ExpressBookingDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>
+          }
+          update: {
+            args: Prisma.ExpressBookingUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExpressBookingDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExpressBookingUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExpressBookingUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExpressBookingUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExpressBookingPayload>
+          }
+          aggregate: {
+            args: Prisma.ExpressBookingAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExpressBooking>
+          }
+          groupBy: {
+            args: Prisma.ExpressBookingGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExpressBookingGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExpressBookingCountArgs<ExtArgs>
+            result: $Utils.Optional<ExpressBookingCountAggregateOutputType> | number
+          }
+        }
+      }
       Account: {
         payload: Prisma.$AccountPayload<ExtArgs>
         fields: Prisma.AccountFieldRefs
@@ -2553,6 +2673,7 @@ export namespace Prisma {
     projectInvitation?: ProjectInvitationOmit
     notification?: NotificationOmit
     userFavorite?: UserFavoriteOmit
+    expressBooking?: ExpressBookingOmit
     account?: AccountOmit
     session?: SessionOmit
     verificationToken?: VerificationTokenOmit
@@ -2661,6 +2782,8 @@ export namespace Prisma {
     artisanDocuments: number
     favoriteArtisans: number
     favoritedBy: number
+    expressBookings: number
+    assignedExpressBookings: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2675,6 +2798,8 @@ export namespace Prisma {
     artisanDocuments?: boolean | UserCountOutputTypeCountArtisanDocumentsArgs
     favoriteArtisans?: boolean | UserCountOutputTypeCountFavoriteArtisansArgs
     favoritedBy?: boolean | UserCountOutputTypeCountFavoritedByArgs
+    expressBookings?: boolean | UserCountOutputTypeCountExpressBookingsArgs
+    assignedExpressBookings?: boolean | UserCountOutputTypeCountAssignedExpressBookingsArgs
   }
 
   // Custom InputTypes
@@ -2765,6 +2890,20 @@ export namespace Prisma {
     where?: UserFavoriteWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountExpressBookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExpressBookingWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAssignedExpressBookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExpressBookingWhereInput
+  }
+
 
   /**
    * Count Type ArtisanProfileCountOutputType
@@ -2844,11 +2983,13 @@ export namespace Prisma {
   export type ServiceCountOutputType = {
     projects: number
     artisanSpecialties: number
+    expressBookings: number
   }
 
   export type ServiceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     projects?: boolean | ServiceCountOutputTypeCountProjectsArgs
     artisanSpecialties?: boolean | ServiceCountOutputTypeCountArtisanSpecialtiesArgs
+    expressBookings?: boolean | ServiceCountOutputTypeCountExpressBookingsArgs
   }
 
   // Custom InputTypes
@@ -2874,6 +3015,13 @@ export namespace Prisma {
    */
   export type ServiceCountOutputTypeCountArtisanSpecialtiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ArtisanSpecialtyWhereInput
+  }
+
+  /**
+   * ServiceCountOutputType without action
+   */
+  export type ServiceCountOutputTypeCountExpressBookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExpressBookingWhereInput
   }
 
 
@@ -3227,6 +3375,8 @@ export namespace Prisma {
     artisanDocuments?: boolean | User$artisanDocumentsArgs<ExtArgs>
     favoriteArtisans?: boolean | User$favoriteArtisansArgs<ExtArgs>
     favoritedBy?: boolean | User$favoritedByArgs<ExtArgs>
+    expressBookings?: boolean | User$expressBookingsArgs<ExtArgs>
+    assignedExpressBookings?: boolean | User$assignedExpressBookingsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3295,6 +3445,8 @@ export namespace Prisma {
     artisanDocuments?: boolean | User$artisanDocumentsArgs<ExtArgs>
     favoriteArtisans?: boolean | User$favoriteArtisansArgs<ExtArgs>
     favoritedBy?: boolean | User$favoritedByArgs<ExtArgs>
+    expressBookings?: boolean | User$expressBookingsArgs<ExtArgs>
+    assignedExpressBookings?: boolean | User$assignedExpressBookingsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3315,6 +3467,8 @@ export namespace Prisma {
       artisanDocuments: Prisma.$ArtisanDocumentPayload<ExtArgs>[]
       favoriteArtisans: Prisma.$UserFavoritePayload<ExtArgs>[]
       favoritedBy: Prisma.$UserFavoritePayload<ExtArgs>[]
+      expressBookings: Prisma.$ExpressBookingPayload<ExtArgs>[]
+      assignedExpressBookings: Prisma.$ExpressBookingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3737,6 +3891,8 @@ export namespace Prisma {
     artisanDocuments<T extends User$artisanDocumentsArgs<ExtArgs> = {}>(args?: Subset<T, User$artisanDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanDocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     favoriteArtisans<T extends User$favoriteArtisansArgs<ExtArgs> = {}>(args?: Subset<T, User$favoriteArtisansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserFavoritePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     favoritedBy<T extends User$favoritedByArgs<ExtArgs> = {}>(args?: Subset<T, User$favoritedByArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserFavoritePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    expressBookings<T extends User$expressBookingsArgs<ExtArgs> = {}>(args?: Subset<T, User$expressBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    assignedExpressBookings<T extends User$assignedExpressBookingsArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedExpressBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4448,6 +4604,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserFavoriteScalarFieldEnum | UserFavoriteScalarFieldEnum[]
+  }
+
+  /**
+   * User.expressBookings
+   */
+  export type User$expressBookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    where?: ExpressBookingWhereInput
+    orderBy?: ExpressBookingOrderByWithRelationInput | ExpressBookingOrderByWithRelationInput[]
+    cursor?: ExpressBookingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExpressBookingScalarFieldEnum | ExpressBookingScalarFieldEnum[]
+  }
+
+  /**
+   * User.assignedExpressBookings
+   */
+  export type User$assignedExpressBookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    where?: ExpressBookingWhereInput
+    orderBy?: ExpressBookingOrderByWithRelationInput | ExpressBookingOrderByWithRelationInput[]
+    cursor?: ExpressBookingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExpressBookingScalarFieldEnum | ExpressBookingScalarFieldEnum[]
   }
 
   /**
@@ -10216,10 +10420,14 @@ export namespace Prisma {
 
   export type ServiceAvgAggregateOutputType = {
     order: number | null
+    expressPrice: number | null
+    estimatedDuration: number | null
   }
 
   export type ServiceSumAggregateOutputType = {
     order: number | null
+    expressPrice: number | null
+    estimatedDuration: number | null
   }
 
   export type ServiceMinAggregateOutputType = {
@@ -10231,6 +10439,11 @@ export namespace Prisma {
     order: number | null
     icon: string | null
     categoryId: string | null
+    isExpressAvailable: boolean | null
+    expressPrice: number | null
+    expressDescription: string | null
+    estimatedDuration: number | null
+    isPopular: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10244,6 +10457,11 @@ export namespace Prisma {
     order: number | null
     icon: string | null
     categoryId: string | null
+    isExpressAvailable: boolean | null
+    expressPrice: number | null
+    expressDescription: string | null
+    estimatedDuration: number | null
+    isPopular: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -10257,6 +10475,11 @@ export namespace Prisma {
     order: number
     icon: number
     categoryId: number
+    isExpressAvailable: number
+    expressPrice: number
+    expressDescription: number
+    estimatedDuration: number
+    isPopular: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -10265,10 +10488,14 @@ export namespace Prisma {
 
   export type ServiceAvgAggregateInputType = {
     order?: true
+    expressPrice?: true
+    estimatedDuration?: true
   }
 
   export type ServiceSumAggregateInputType = {
     order?: true
+    expressPrice?: true
+    estimatedDuration?: true
   }
 
   export type ServiceMinAggregateInputType = {
@@ -10280,6 +10507,11 @@ export namespace Prisma {
     order?: true
     icon?: true
     categoryId?: true
+    isExpressAvailable?: true
+    expressPrice?: true
+    expressDescription?: true
+    estimatedDuration?: true
+    isPopular?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10293,6 +10525,11 @@ export namespace Prisma {
     order?: true
     icon?: true
     categoryId?: true
+    isExpressAvailable?: true
+    expressPrice?: true
+    expressDescription?: true
+    estimatedDuration?: true
+    isPopular?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -10306,6 +10543,11 @@ export namespace Prisma {
     order?: true
     icon?: true
     categoryId?: true
+    isExpressAvailable?: true
+    expressPrice?: true
+    expressDescription?: true
+    estimatedDuration?: true
+    isPopular?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -10406,6 +10648,11 @@ export namespace Prisma {
     order: number
     icon: string | null
     categoryId: string
+    isExpressAvailable: boolean
+    expressPrice: number | null
+    expressDescription: string | null
+    estimatedDuration: number | null
+    isPopular: boolean
     createdAt: Date
     updatedAt: Date
     _count: ServiceCountAggregateOutputType | null
@@ -10438,11 +10685,17 @@ export namespace Prisma {
     order?: boolean
     icon?: boolean
     categoryId?: boolean
+    isExpressAvailable?: boolean
+    expressPrice?: boolean
+    expressDescription?: boolean
+    estimatedDuration?: boolean
+    isPopular?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     projects?: boolean | Service$projectsArgs<ExtArgs>
     artisanSpecialties?: boolean | Service$artisanSpecialtiesArgs<ExtArgs>
+    expressBookings?: boolean | Service$expressBookingsArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["service"]>
 
@@ -10455,6 +10708,11 @@ export namespace Prisma {
     order?: boolean
     icon?: boolean
     categoryId?: boolean
+    isExpressAvailable?: boolean
+    expressPrice?: boolean
+    expressDescription?: boolean
+    estimatedDuration?: boolean
+    isPopular?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
@@ -10469,6 +10727,11 @@ export namespace Prisma {
     order?: boolean
     icon?: boolean
     categoryId?: boolean
+    isExpressAvailable?: boolean
+    expressPrice?: boolean
+    expressDescription?: boolean
+    estimatedDuration?: boolean
+    isPopular?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     category?: boolean | CategoryDefaultArgs<ExtArgs>
@@ -10483,15 +10746,21 @@ export namespace Prisma {
     order?: boolean
     icon?: boolean
     categoryId?: boolean
+    isExpressAvailable?: boolean
+    expressPrice?: boolean
+    expressDescription?: boolean
+    estimatedDuration?: boolean
+    isPopular?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ServiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "slug" | "isActive" | "order" | "icon" | "categoryId" | "createdAt" | "updatedAt", ExtArgs["result"]["service"]>
+  export type ServiceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "slug" | "isActive" | "order" | "icon" | "categoryId" | "isExpressAvailable" | "expressPrice" | "expressDescription" | "estimatedDuration" | "isPopular" | "createdAt" | "updatedAt", ExtArgs["result"]["service"]>
   export type ServiceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | CategoryDefaultArgs<ExtArgs>
     projects?: boolean | Service$projectsArgs<ExtArgs>
     artisanSpecialties?: boolean | Service$artisanSpecialtiesArgs<ExtArgs>
+    expressBookings?: boolean | Service$expressBookingsArgs<ExtArgs>
     _count?: boolean | ServiceCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ServiceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10507,6 +10776,7 @@ export namespace Prisma {
       category: Prisma.$CategoryPayload<ExtArgs>
       projects: Prisma.$ProjectPayload<ExtArgs>[]
       artisanSpecialties: Prisma.$ArtisanSpecialtyPayload<ExtArgs>[]
+      expressBookings: Prisma.$ExpressBookingPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10517,6 +10787,11 @@ export namespace Prisma {
       order: number
       icon: string | null
       categoryId: string
+      isExpressAvailable: boolean
+      expressPrice: number | null
+      expressDescription: string | null
+      estimatedDuration: number | null
+      isPopular: boolean
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["service"]>
@@ -10916,6 +11191,7 @@ export namespace Prisma {
     category<T extends CategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CategoryDefaultArgs<ExtArgs>>): Prisma__CategoryClient<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     projects<T extends Service$projectsArgs<ExtArgs> = {}>(args?: Subset<T, Service$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     artisanSpecialties<T extends Service$artisanSpecialtiesArgs<ExtArgs> = {}>(args?: Subset<T, Service$artisanSpecialtiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtisanSpecialtyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    expressBookings<T extends Service$expressBookingsArgs<ExtArgs> = {}>(args?: Subset<T, Service$expressBookingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10953,6 +11229,11 @@ export namespace Prisma {
     readonly order: FieldRef<"Service", 'Int'>
     readonly icon: FieldRef<"Service", 'String'>
     readonly categoryId: FieldRef<"Service", 'String'>
+    readonly isExpressAvailable: FieldRef<"Service", 'Boolean'>
+    readonly expressPrice: FieldRef<"Service", 'Float'>
+    readonly expressDescription: FieldRef<"Service", 'String'>
+    readonly estimatedDuration: FieldRef<"Service", 'Int'>
+    readonly isPopular: FieldRef<"Service", 'Boolean'>
     readonly createdAt: FieldRef<"Service", 'DateTime'>
     readonly updatedAt: FieldRef<"Service", 'DateTime'>
   }
@@ -11396,6 +11677,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ArtisanSpecialtyScalarFieldEnum | ArtisanSpecialtyScalarFieldEnum[]
+  }
+
+  /**
+   * Service.expressBookings
+   */
+  export type Service$expressBookingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    where?: ExpressBookingWhereInput
+    orderBy?: ExpressBookingOrderByWithRelationInput | ExpressBookingOrderByWithRelationInput[]
+    cursor?: ExpressBookingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExpressBookingScalarFieldEnum | ExpressBookingScalarFieldEnum[]
   }
 
   /**
@@ -21930,6 +22235,1371 @@ export namespace Prisma {
 
 
   /**
+   * Model ExpressBooking
+   */
+
+  export type AggregateExpressBooking = {
+    _count: ExpressBookingCountAggregateOutputType | null
+    _avg: ExpressBookingAvgAggregateOutputType | null
+    _sum: ExpressBookingSumAggregateOutputType | null
+    _min: ExpressBookingMinAggregateOutputType | null
+    _max: ExpressBookingMaxAggregateOutputType | null
+  }
+
+  export type ExpressBookingAvgAggregateOutputType = {
+    price: number | null
+    floor: number | null
+  }
+
+  export type ExpressBookingSumAggregateOutputType = {
+    price: number | null
+    floor: number | null
+  }
+
+  export type ExpressBookingMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    serviceId: string | null
+    bookingDate: Date | null
+    timeSlot: $Enums.TimeSlot | null
+    price: number | null
+    clientName: string | null
+    clientPhone: string | null
+    clientEmail: string | null
+    address: string | null
+    city: string | null
+    postalCode: string | null
+    floor: number | null
+    hasElevator: boolean | null
+    notes: string | null
+    specialRequirements: string | null
+    status: $Enums.ExpressBookingStatus | null
+    assignedArtisanId: string | null
+    assignedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    confirmedAt: Date | null
+    completedAt: Date | null
+  }
+
+  export type ExpressBookingMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    serviceId: string | null
+    bookingDate: Date | null
+    timeSlot: $Enums.TimeSlot | null
+    price: number | null
+    clientName: string | null
+    clientPhone: string | null
+    clientEmail: string | null
+    address: string | null
+    city: string | null
+    postalCode: string | null
+    floor: number | null
+    hasElevator: boolean | null
+    notes: string | null
+    specialRequirements: string | null
+    status: $Enums.ExpressBookingStatus | null
+    assignedArtisanId: string | null
+    assignedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    confirmedAt: Date | null
+    completedAt: Date | null
+  }
+
+  export type ExpressBookingCountAggregateOutputType = {
+    id: number
+    userId: number
+    serviceId: number
+    bookingDate: number
+    timeSlot: number
+    price: number
+    clientName: number
+    clientPhone: number
+    clientEmail: number
+    address: number
+    city: number
+    postalCode: number
+    floor: number
+    hasElevator: number
+    notes: number
+    specialRequirements: number
+    status: number
+    assignedArtisanId: number
+    assignedAt: number
+    createdAt: number
+    updatedAt: number
+    confirmedAt: number
+    completedAt: number
+    _all: number
+  }
+
+
+  export type ExpressBookingAvgAggregateInputType = {
+    price?: true
+    floor?: true
+  }
+
+  export type ExpressBookingSumAggregateInputType = {
+    price?: true
+    floor?: true
+  }
+
+  export type ExpressBookingMinAggregateInputType = {
+    id?: true
+    userId?: true
+    serviceId?: true
+    bookingDate?: true
+    timeSlot?: true
+    price?: true
+    clientName?: true
+    clientPhone?: true
+    clientEmail?: true
+    address?: true
+    city?: true
+    postalCode?: true
+    floor?: true
+    hasElevator?: true
+    notes?: true
+    specialRequirements?: true
+    status?: true
+    assignedArtisanId?: true
+    assignedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    confirmedAt?: true
+    completedAt?: true
+  }
+
+  export type ExpressBookingMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    serviceId?: true
+    bookingDate?: true
+    timeSlot?: true
+    price?: true
+    clientName?: true
+    clientPhone?: true
+    clientEmail?: true
+    address?: true
+    city?: true
+    postalCode?: true
+    floor?: true
+    hasElevator?: true
+    notes?: true
+    specialRequirements?: true
+    status?: true
+    assignedArtisanId?: true
+    assignedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    confirmedAt?: true
+    completedAt?: true
+  }
+
+  export type ExpressBookingCountAggregateInputType = {
+    id?: true
+    userId?: true
+    serviceId?: true
+    bookingDate?: true
+    timeSlot?: true
+    price?: true
+    clientName?: true
+    clientPhone?: true
+    clientEmail?: true
+    address?: true
+    city?: true
+    postalCode?: true
+    floor?: true
+    hasElevator?: true
+    notes?: true
+    specialRequirements?: true
+    status?: true
+    assignedArtisanId?: true
+    assignedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    confirmedAt?: true
+    completedAt?: true
+    _all?: true
+  }
+
+  export type ExpressBookingAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExpressBooking to aggregate.
+     */
+    where?: ExpressBookingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExpressBookings to fetch.
+     */
+    orderBy?: ExpressBookingOrderByWithRelationInput | ExpressBookingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExpressBookingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExpressBookings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExpressBookings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExpressBookings
+    **/
+    _count?: true | ExpressBookingCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExpressBookingAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExpressBookingSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExpressBookingMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExpressBookingMaxAggregateInputType
+  }
+
+  export type GetExpressBookingAggregateType<T extends ExpressBookingAggregateArgs> = {
+        [P in keyof T & keyof AggregateExpressBooking]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExpressBooking[P]>
+      : GetScalarType<T[P], AggregateExpressBooking[P]>
+  }
+
+
+
+
+  export type ExpressBookingGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExpressBookingWhereInput
+    orderBy?: ExpressBookingOrderByWithAggregationInput | ExpressBookingOrderByWithAggregationInput[]
+    by: ExpressBookingScalarFieldEnum[] | ExpressBookingScalarFieldEnum
+    having?: ExpressBookingScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExpressBookingCountAggregateInputType | true
+    _avg?: ExpressBookingAvgAggregateInputType
+    _sum?: ExpressBookingSumAggregateInputType
+    _min?: ExpressBookingMinAggregateInputType
+    _max?: ExpressBookingMaxAggregateInputType
+  }
+
+  export type ExpressBookingGroupByOutputType = {
+    id: string
+    userId: string
+    serviceId: string
+    bookingDate: Date
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor: number | null
+    hasElevator: boolean | null
+    notes: string | null
+    specialRequirements: string | null
+    status: $Enums.ExpressBookingStatus
+    assignedArtisanId: string | null
+    assignedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    confirmedAt: Date | null
+    completedAt: Date | null
+    _count: ExpressBookingCountAggregateOutputType | null
+    _avg: ExpressBookingAvgAggregateOutputType | null
+    _sum: ExpressBookingSumAggregateOutputType | null
+    _min: ExpressBookingMinAggregateOutputType | null
+    _max: ExpressBookingMaxAggregateOutputType | null
+  }
+
+  type GetExpressBookingGroupByPayload<T extends ExpressBookingGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExpressBookingGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExpressBookingGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExpressBookingGroupByOutputType[P]>
+            : GetScalarType<T[P], ExpressBookingGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExpressBookingSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    serviceId?: boolean
+    bookingDate?: boolean
+    timeSlot?: boolean
+    price?: boolean
+    clientName?: boolean
+    clientPhone?: boolean
+    clientEmail?: boolean
+    address?: boolean
+    city?: boolean
+    postalCode?: boolean
+    floor?: boolean
+    hasElevator?: boolean
+    notes?: boolean
+    specialRequirements?: boolean
+    status?: boolean
+    assignedArtisanId?: boolean
+    assignedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    confirmedAt?: boolean
+    completedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    assignedArtisan?: boolean | ExpressBooking$assignedArtisanArgs<ExtArgs>
+  }, ExtArgs["result"]["expressBooking"]>
+
+  export type ExpressBookingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    serviceId?: boolean
+    bookingDate?: boolean
+    timeSlot?: boolean
+    price?: boolean
+    clientName?: boolean
+    clientPhone?: boolean
+    clientEmail?: boolean
+    address?: boolean
+    city?: boolean
+    postalCode?: boolean
+    floor?: boolean
+    hasElevator?: boolean
+    notes?: boolean
+    specialRequirements?: boolean
+    status?: boolean
+    assignedArtisanId?: boolean
+    assignedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    confirmedAt?: boolean
+    completedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    assignedArtisan?: boolean | ExpressBooking$assignedArtisanArgs<ExtArgs>
+  }, ExtArgs["result"]["expressBooking"]>
+
+  export type ExpressBookingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    serviceId?: boolean
+    bookingDate?: boolean
+    timeSlot?: boolean
+    price?: boolean
+    clientName?: boolean
+    clientPhone?: boolean
+    clientEmail?: boolean
+    address?: boolean
+    city?: boolean
+    postalCode?: boolean
+    floor?: boolean
+    hasElevator?: boolean
+    notes?: boolean
+    specialRequirements?: boolean
+    status?: boolean
+    assignedArtisanId?: boolean
+    assignedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    confirmedAt?: boolean
+    completedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    assignedArtisan?: boolean | ExpressBooking$assignedArtisanArgs<ExtArgs>
+  }, ExtArgs["result"]["expressBooking"]>
+
+  export type ExpressBookingSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    serviceId?: boolean
+    bookingDate?: boolean
+    timeSlot?: boolean
+    price?: boolean
+    clientName?: boolean
+    clientPhone?: boolean
+    clientEmail?: boolean
+    address?: boolean
+    city?: boolean
+    postalCode?: boolean
+    floor?: boolean
+    hasElevator?: boolean
+    notes?: boolean
+    specialRequirements?: boolean
+    status?: boolean
+    assignedArtisanId?: boolean
+    assignedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    confirmedAt?: boolean
+    completedAt?: boolean
+  }
+
+  export type ExpressBookingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "serviceId" | "bookingDate" | "timeSlot" | "price" | "clientName" | "clientPhone" | "clientEmail" | "address" | "city" | "postalCode" | "floor" | "hasElevator" | "notes" | "specialRequirements" | "status" | "assignedArtisanId" | "assignedAt" | "createdAt" | "updatedAt" | "confirmedAt" | "completedAt", ExtArgs["result"]["expressBooking"]>
+  export type ExpressBookingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    assignedArtisan?: boolean | ExpressBooking$assignedArtisanArgs<ExtArgs>
+  }
+  export type ExpressBookingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    assignedArtisan?: boolean | ExpressBooking$assignedArtisanArgs<ExtArgs>
+  }
+  export type ExpressBookingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    service?: boolean | ServiceDefaultArgs<ExtArgs>
+    assignedArtisan?: boolean | ExpressBooking$assignedArtisanArgs<ExtArgs>
+  }
+
+  export type $ExpressBookingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExpressBooking"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      service: Prisma.$ServicePayload<ExtArgs>
+      assignedArtisan: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      serviceId: string
+      bookingDate: Date
+      timeSlot: $Enums.TimeSlot
+      price: number
+      clientName: string
+      clientPhone: string
+      clientEmail: string
+      address: string
+      city: string
+      postalCode: string
+      floor: number | null
+      hasElevator: boolean | null
+      notes: string | null
+      specialRequirements: string | null
+      status: $Enums.ExpressBookingStatus
+      assignedArtisanId: string | null
+      assignedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+      confirmedAt: Date | null
+      completedAt: Date | null
+    }, ExtArgs["result"]["expressBooking"]>
+    composites: {}
+  }
+
+  type ExpressBookingGetPayload<S extends boolean | null | undefined | ExpressBookingDefaultArgs> = $Result.GetResult<Prisma.$ExpressBookingPayload, S>
+
+  type ExpressBookingCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExpressBookingFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExpressBookingCountAggregateInputType | true
+    }
+
+  export interface ExpressBookingDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExpressBooking'], meta: { name: 'ExpressBooking' } }
+    /**
+     * Find zero or one ExpressBooking that matches the filter.
+     * @param {ExpressBookingFindUniqueArgs} args - Arguments to find a ExpressBooking
+     * @example
+     * // Get one ExpressBooking
+     * const expressBooking = await prisma.expressBooking.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExpressBookingFindUniqueArgs>(args: SelectSubset<T, ExpressBookingFindUniqueArgs<ExtArgs>>): Prisma__ExpressBookingClient<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExpressBooking that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExpressBookingFindUniqueOrThrowArgs} args - Arguments to find a ExpressBooking
+     * @example
+     * // Get one ExpressBooking
+     * const expressBooking = await prisma.expressBooking.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExpressBookingFindUniqueOrThrowArgs>(args: SelectSubset<T, ExpressBookingFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExpressBookingClient<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExpressBooking that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExpressBookingFindFirstArgs} args - Arguments to find a ExpressBooking
+     * @example
+     * // Get one ExpressBooking
+     * const expressBooking = await prisma.expressBooking.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExpressBookingFindFirstArgs>(args?: SelectSubset<T, ExpressBookingFindFirstArgs<ExtArgs>>): Prisma__ExpressBookingClient<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExpressBooking that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExpressBookingFindFirstOrThrowArgs} args - Arguments to find a ExpressBooking
+     * @example
+     * // Get one ExpressBooking
+     * const expressBooking = await prisma.expressBooking.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExpressBookingFindFirstOrThrowArgs>(args?: SelectSubset<T, ExpressBookingFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExpressBookingClient<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExpressBookings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExpressBookingFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExpressBookings
+     * const expressBookings = await prisma.expressBooking.findMany()
+     * 
+     * // Get first 10 ExpressBookings
+     * const expressBookings = await prisma.expressBooking.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const expressBookingWithIdOnly = await prisma.expressBooking.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExpressBookingFindManyArgs>(args?: SelectSubset<T, ExpressBookingFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExpressBooking.
+     * @param {ExpressBookingCreateArgs} args - Arguments to create a ExpressBooking.
+     * @example
+     * // Create one ExpressBooking
+     * const ExpressBooking = await prisma.expressBooking.create({
+     *   data: {
+     *     // ... data to create a ExpressBooking
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExpressBookingCreateArgs>(args: SelectSubset<T, ExpressBookingCreateArgs<ExtArgs>>): Prisma__ExpressBookingClient<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExpressBookings.
+     * @param {ExpressBookingCreateManyArgs} args - Arguments to create many ExpressBookings.
+     * @example
+     * // Create many ExpressBookings
+     * const expressBooking = await prisma.expressBooking.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExpressBookingCreateManyArgs>(args?: SelectSubset<T, ExpressBookingCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExpressBookings and returns the data saved in the database.
+     * @param {ExpressBookingCreateManyAndReturnArgs} args - Arguments to create many ExpressBookings.
+     * @example
+     * // Create many ExpressBookings
+     * const expressBooking = await prisma.expressBooking.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExpressBookings and only return the `id`
+     * const expressBookingWithIdOnly = await prisma.expressBooking.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExpressBookingCreateManyAndReturnArgs>(args?: SelectSubset<T, ExpressBookingCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExpressBooking.
+     * @param {ExpressBookingDeleteArgs} args - Arguments to delete one ExpressBooking.
+     * @example
+     * // Delete one ExpressBooking
+     * const ExpressBooking = await prisma.expressBooking.delete({
+     *   where: {
+     *     // ... filter to delete one ExpressBooking
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExpressBookingDeleteArgs>(args: SelectSubset<T, ExpressBookingDeleteArgs<ExtArgs>>): Prisma__ExpressBookingClient<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExpressBooking.
+     * @param {ExpressBookingUpdateArgs} args - Arguments to update one ExpressBooking.
+     * @example
+     * // Update one ExpressBooking
+     * const expressBooking = await prisma.expressBooking.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExpressBookingUpdateArgs>(args: SelectSubset<T, ExpressBookingUpdateArgs<ExtArgs>>): Prisma__ExpressBookingClient<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExpressBookings.
+     * @param {ExpressBookingDeleteManyArgs} args - Arguments to filter ExpressBookings to delete.
+     * @example
+     * // Delete a few ExpressBookings
+     * const { count } = await prisma.expressBooking.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExpressBookingDeleteManyArgs>(args?: SelectSubset<T, ExpressBookingDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExpressBookings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExpressBookingUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExpressBookings
+     * const expressBooking = await prisma.expressBooking.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExpressBookingUpdateManyArgs>(args: SelectSubset<T, ExpressBookingUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExpressBookings and returns the data updated in the database.
+     * @param {ExpressBookingUpdateManyAndReturnArgs} args - Arguments to update many ExpressBookings.
+     * @example
+     * // Update many ExpressBookings
+     * const expressBooking = await prisma.expressBooking.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExpressBookings and only return the `id`
+     * const expressBookingWithIdOnly = await prisma.expressBooking.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExpressBookingUpdateManyAndReturnArgs>(args: SelectSubset<T, ExpressBookingUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExpressBooking.
+     * @param {ExpressBookingUpsertArgs} args - Arguments to update or create a ExpressBooking.
+     * @example
+     * // Update or create a ExpressBooking
+     * const expressBooking = await prisma.expressBooking.upsert({
+     *   create: {
+     *     // ... data to create a ExpressBooking
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExpressBooking we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExpressBookingUpsertArgs>(args: SelectSubset<T, ExpressBookingUpsertArgs<ExtArgs>>): Prisma__ExpressBookingClient<$Result.GetResult<Prisma.$ExpressBookingPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExpressBookings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExpressBookingCountArgs} args - Arguments to filter ExpressBookings to count.
+     * @example
+     * // Count the number of ExpressBookings
+     * const count = await prisma.expressBooking.count({
+     *   where: {
+     *     // ... the filter for the ExpressBookings we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExpressBookingCountArgs>(
+      args?: Subset<T, ExpressBookingCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExpressBookingCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExpressBooking.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExpressBookingAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExpressBookingAggregateArgs>(args: Subset<T, ExpressBookingAggregateArgs>): Prisma.PrismaPromise<GetExpressBookingAggregateType<T>>
+
+    /**
+     * Group by ExpressBooking.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExpressBookingGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExpressBookingGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExpressBookingGroupByArgs['orderBy'] }
+        : { orderBy?: ExpressBookingGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExpressBookingGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExpressBookingGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExpressBooking model
+   */
+  readonly fields: ExpressBookingFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExpressBooking.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExpressBookingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    service<T extends ServiceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ServiceDefaultArgs<ExtArgs>>): Prisma__ServiceClient<$Result.GetResult<Prisma.$ServicePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    assignedArtisan<T extends ExpressBooking$assignedArtisanArgs<ExtArgs> = {}>(args?: Subset<T, ExpressBooking$assignedArtisanArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExpressBooking model
+   */
+  interface ExpressBookingFieldRefs {
+    readonly id: FieldRef<"ExpressBooking", 'String'>
+    readonly userId: FieldRef<"ExpressBooking", 'String'>
+    readonly serviceId: FieldRef<"ExpressBooking", 'String'>
+    readonly bookingDate: FieldRef<"ExpressBooking", 'DateTime'>
+    readonly timeSlot: FieldRef<"ExpressBooking", 'TimeSlot'>
+    readonly price: FieldRef<"ExpressBooking", 'Float'>
+    readonly clientName: FieldRef<"ExpressBooking", 'String'>
+    readonly clientPhone: FieldRef<"ExpressBooking", 'String'>
+    readonly clientEmail: FieldRef<"ExpressBooking", 'String'>
+    readonly address: FieldRef<"ExpressBooking", 'String'>
+    readonly city: FieldRef<"ExpressBooking", 'String'>
+    readonly postalCode: FieldRef<"ExpressBooking", 'String'>
+    readonly floor: FieldRef<"ExpressBooking", 'Int'>
+    readonly hasElevator: FieldRef<"ExpressBooking", 'Boolean'>
+    readonly notes: FieldRef<"ExpressBooking", 'String'>
+    readonly specialRequirements: FieldRef<"ExpressBooking", 'String'>
+    readonly status: FieldRef<"ExpressBooking", 'ExpressBookingStatus'>
+    readonly assignedArtisanId: FieldRef<"ExpressBooking", 'String'>
+    readonly assignedAt: FieldRef<"ExpressBooking", 'DateTime'>
+    readonly createdAt: FieldRef<"ExpressBooking", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExpressBooking", 'DateTime'>
+    readonly confirmedAt: FieldRef<"ExpressBooking", 'DateTime'>
+    readonly completedAt: FieldRef<"ExpressBooking", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExpressBooking findUnique
+   */
+  export type ExpressBookingFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * Filter, which ExpressBooking to fetch.
+     */
+    where: ExpressBookingWhereUniqueInput
+  }
+
+  /**
+   * ExpressBooking findUniqueOrThrow
+   */
+  export type ExpressBookingFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * Filter, which ExpressBooking to fetch.
+     */
+    where: ExpressBookingWhereUniqueInput
+  }
+
+  /**
+   * ExpressBooking findFirst
+   */
+  export type ExpressBookingFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * Filter, which ExpressBooking to fetch.
+     */
+    where?: ExpressBookingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExpressBookings to fetch.
+     */
+    orderBy?: ExpressBookingOrderByWithRelationInput | ExpressBookingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExpressBookings.
+     */
+    cursor?: ExpressBookingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExpressBookings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExpressBookings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExpressBookings.
+     */
+    distinct?: ExpressBookingScalarFieldEnum | ExpressBookingScalarFieldEnum[]
+  }
+
+  /**
+   * ExpressBooking findFirstOrThrow
+   */
+  export type ExpressBookingFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * Filter, which ExpressBooking to fetch.
+     */
+    where?: ExpressBookingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExpressBookings to fetch.
+     */
+    orderBy?: ExpressBookingOrderByWithRelationInput | ExpressBookingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExpressBookings.
+     */
+    cursor?: ExpressBookingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExpressBookings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExpressBookings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExpressBookings.
+     */
+    distinct?: ExpressBookingScalarFieldEnum | ExpressBookingScalarFieldEnum[]
+  }
+
+  /**
+   * ExpressBooking findMany
+   */
+  export type ExpressBookingFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * Filter, which ExpressBookings to fetch.
+     */
+    where?: ExpressBookingWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExpressBookings to fetch.
+     */
+    orderBy?: ExpressBookingOrderByWithRelationInput | ExpressBookingOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExpressBookings.
+     */
+    cursor?: ExpressBookingWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExpressBookings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExpressBookings.
+     */
+    skip?: number
+    distinct?: ExpressBookingScalarFieldEnum | ExpressBookingScalarFieldEnum[]
+  }
+
+  /**
+   * ExpressBooking create
+   */
+  export type ExpressBookingCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExpressBooking.
+     */
+    data: XOR<ExpressBookingCreateInput, ExpressBookingUncheckedCreateInput>
+  }
+
+  /**
+   * ExpressBooking createMany
+   */
+  export type ExpressBookingCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExpressBookings.
+     */
+    data: ExpressBookingCreateManyInput | ExpressBookingCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExpressBooking createManyAndReturn
+   */
+  export type ExpressBookingCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExpressBookings.
+     */
+    data: ExpressBookingCreateManyInput | ExpressBookingCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExpressBooking update
+   */
+  export type ExpressBookingUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExpressBooking.
+     */
+    data: XOR<ExpressBookingUpdateInput, ExpressBookingUncheckedUpdateInput>
+    /**
+     * Choose, which ExpressBooking to update.
+     */
+    where: ExpressBookingWhereUniqueInput
+  }
+
+  /**
+   * ExpressBooking updateMany
+   */
+  export type ExpressBookingUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExpressBookings.
+     */
+    data: XOR<ExpressBookingUpdateManyMutationInput, ExpressBookingUncheckedUpdateManyInput>
+    /**
+     * Filter which ExpressBookings to update
+     */
+    where?: ExpressBookingWhereInput
+    /**
+     * Limit how many ExpressBookings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExpressBooking updateManyAndReturn
+   */
+  export type ExpressBookingUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * The data used to update ExpressBookings.
+     */
+    data: XOR<ExpressBookingUpdateManyMutationInput, ExpressBookingUncheckedUpdateManyInput>
+    /**
+     * Filter which ExpressBookings to update
+     */
+    where?: ExpressBookingWhereInput
+    /**
+     * Limit how many ExpressBookings to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExpressBooking upsert
+   */
+  export type ExpressBookingUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExpressBooking to update in case it exists.
+     */
+    where: ExpressBookingWhereUniqueInput
+    /**
+     * In case the ExpressBooking found by the `where` argument doesn't exist, create a new ExpressBooking with this data.
+     */
+    create: XOR<ExpressBookingCreateInput, ExpressBookingUncheckedCreateInput>
+    /**
+     * In case the ExpressBooking was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExpressBookingUpdateInput, ExpressBookingUncheckedUpdateInput>
+  }
+
+  /**
+   * ExpressBooking delete
+   */
+  export type ExpressBookingDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+    /**
+     * Filter which ExpressBooking to delete.
+     */
+    where: ExpressBookingWhereUniqueInput
+  }
+
+  /**
+   * ExpressBooking deleteMany
+   */
+  export type ExpressBookingDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExpressBookings to delete
+     */
+    where?: ExpressBookingWhereInput
+    /**
+     * Limit how many ExpressBookings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExpressBooking.assignedArtisan
+   */
+  export type ExpressBooking$assignedArtisanArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * ExpressBooking without action
+   */
+  export type ExpressBookingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExpressBooking
+     */
+    select?: ExpressBookingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExpressBooking
+     */
+    omit?: ExpressBookingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExpressBookingInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Account
    */
 
@@ -25243,6 +26913,11 @@ export namespace Prisma {
     order: 'order',
     icon: 'icon',
     categoryId: 'categoryId',
+    isExpressAvailable: 'isExpressAvailable',
+    expressPrice: 'expressPrice',
+    expressDescription: 'expressDescription',
+    estimatedDuration: 'estimatedDuration',
+    isPopular: 'isPopular',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -25391,6 +27066,35 @@ export namespace Prisma {
   };
 
   export type UserFavoriteScalarFieldEnum = (typeof UserFavoriteScalarFieldEnum)[keyof typeof UserFavoriteScalarFieldEnum]
+
+
+  export const ExpressBookingScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    serviceId: 'serviceId',
+    bookingDate: 'bookingDate',
+    timeSlot: 'timeSlot',
+    price: 'price',
+    clientName: 'clientName',
+    clientPhone: 'clientPhone',
+    clientEmail: 'clientEmail',
+    address: 'address',
+    city: 'city',
+    postalCode: 'postalCode',
+    floor: 'floor',
+    hasElevator: 'hasElevator',
+    notes: 'notes',
+    specialRequirements: 'specialRequirements',
+    status: 'status',
+    assignedArtisanId: 'assignedArtisanId',
+    assignedAt: 'assignedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    confirmedAt: 'confirmedAt',
+    completedAt: 'completedAt'
+  };
+
+  export type ExpressBookingScalarFieldEnum = (typeof ExpressBookingScalarFieldEnum)[keyof typeof ExpressBookingScalarFieldEnum]
 
 
   export const AccountScalarFieldEnum: {
@@ -25691,6 +27395,34 @@ export namespace Prisma {
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
+
+
+  /**
+   * Reference to a field of type 'TimeSlot'
+   */
+  export type EnumTimeSlotFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimeSlot'>
+    
+
+
+  /**
+   * Reference to a field of type 'TimeSlot[]'
+   */
+  export type ListEnumTimeSlotFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TimeSlot[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExpressBookingStatus'
+   */
+  export type EnumExpressBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExpressBookingStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExpressBookingStatus[]'
+   */
+  export type ListEnumExpressBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExpressBookingStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -25726,6 +27458,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentListRelationFilter
     favoriteArtisans?: UserFavoriteListRelationFilter
     favoritedBy?: UserFavoriteListRelationFilter
+    expressBookings?: ExpressBookingListRelationFilter
+    assignedExpressBookings?: ExpressBookingListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -25755,6 +27489,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentOrderByRelationAggregateInput
     favoriteArtisans?: UserFavoriteOrderByRelationAggregateInput
     favoritedBy?: UserFavoriteOrderByRelationAggregateInput
+    expressBookings?: ExpressBookingOrderByRelationAggregateInput
+    assignedExpressBookings?: ExpressBookingOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -25787,6 +27523,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentListRelationFilter
     favoriteArtisans?: UserFavoriteListRelationFilter
     favoritedBy?: UserFavoriteListRelationFilter
+    expressBookings?: ExpressBookingListRelationFilter
+    assignedExpressBookings?: ExpressBookingListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -26227,11 +27965,17 @@ export namespace Prisma {
     order?: IntFilter<"Service"> | number
     icon?: StringNullableFilter<"Service"> | string | null
     categoryId?: StringFilter<"Service"> | string
+    isExpressAvailable?: BoolFilter<"Service"> | boolean
+    expressPrice?: FloatNullableFilter<"Service"> | number | null
+    expressDescription?: StringNullableFilter<"Service"> | string | null
+    estimatedDuration?: IntNullableFilter<"Service"> | number | null
+    isPopular?: BoolFilter<"Service"> | boolean
     createdAt?: DateTimeFilter<"Service"> | Date | string
     updatedAt?: DateTimeFilter<"Service"> | Date | string
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
     projects?: ProjectListRelationFilter
     artisanSpecialties?: ArtisanSpecialtyListRelationFilter
+    expressBookings?: ExpressBookingListRelationFilter
   }
 
   export type ServiceOrderByWithRelationInput = {
@@ -26243,11 +27987,17 @@ export namespace Prisma {
     order?: SortOrder
     icon?: SortOrderInput | SortOrder
     categoryId?: SortOrder
+    isExpressAvailable?: SortOrder
+    expressPrice?: SortOrderInput | SortOrder
+    expressDescription?: SortOrderInput | SortOrder
+    estimatedDuration?: SortOrderInput | SortOrder
+    isPopular?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     category?: CategoryOrderByWithRelationInput
     projects?: ProjectOrderByRelationAggregateInput
     artisanSpecialties?: ArtisanSpecialtyOrderByRelationAggregateInput
+    expressBookings?: ExpressBookingOrderByRelationAggregateInput
   }
 
   export type ServiceWhereUniqueInput = Prisma.AtLeast<{
@@ -26263,11 +28013,17 @@ export namespace Prisma {
     order?: IntFilter<"Service"> | number
     icon?: StringNullableFilter<"Service"> | string | null
     categoryId?: StringFilter<"Service"> | string
+    isExpressAvailable?: BoolFilter<"Service"> | boolean
+    expressPrice?: FloatNullableFilter<"Service"> | number | null
+    expressDescription?: StringNullableFilter<"Service"> | string | null
+    estimatedDuration?: IntNullableFilter<"Service"> | number | null
+    isPopular?: BoolFilter<"Service"> | boolean
     createdAt?: DateTimeFilter<"Service"> | Date | string
     updatedAt?: DateTimeFilter<"Service"> | Date | string
     category?: XOR<CategoryScalarRelationFilter, CategoryWhereInput>
     projects?: ProjectListRelationFilter
     artisanSpecialties?: ArtisanSpecialtyListRelationFilter
+    expressBookings?: ExpressBookingListRelationFilter
   }, "id" | "slug" | "name_categoryId">
 
   export type ServiceOrderByWithAggregationInput = {
@@ -26279,6 +28035,11 @@ export namespace Prisma {
     order?: SortOrder
     icon?: SortOrderInput | SortOrder
     categoryId?: SortOrder
+    isExpressAvailable?: SortOrder
+    expressPrice?: SortOrderInput | SortOrder
+    expressDescription?: SortOrderInput | SortOrder
+    estimatedDuration?: SortOrderInput | SortOrder
+    isPopular?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ServiceCountOrderByAggregateInput
@@ -26300,6 +28061,11 @@ export namespace Prisma {
     order?: IntWithAggregatesFilter<"Service"> | number
     icon?: StringNullableWithAggregatesFilter<"Service"> | string | null
     categoryId?: StringWithAggregatesFilter<"Service"> | string
+    isExpressAvailable?: BoolWithAggregatesFilter<"Service"> | boolean
+    expressPrice?: FloatNullableWithAggregatesFilter<"Service"> | number | null
+    expressDescription?: StringNullableWithAggregatesFilter<"Service"> | string | null
+    estimatedDuration?: IntNullableWithAggregatesFilter<"Service"> | number | null
+    isPopular?: BoolWithAggregatesFilter<"Service"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Service"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Service"> | Date | string
   }
@@ -27068,6 +28834,159 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"UserFavorite"> | Date | string
   }
 
+  export type ExpressBookingWhereInput = {
+    AND?: ExpressBookingWhereInput | ExpressBookingWhereInput[]
+    OR?: ExpressBookingWhereInput[]
+    NOT?: ExpressBookingWhereInput | ExpressBookingWhereInput[]
+    id?: StringFilter<"ExpressBooking"> | string
+    userId?: StringFilter<"ExpressBooking"> | string
+    serviceId?: StringFilter<"ExpressBooking"> | string
+    bookingDate?: DateTimeFilter<"ExpressBooking"> | Date | string
+    timeSlot?: EnumTimeSlotFilter<"ExpressBooking"> | $Enums.TimeSlot
+    price?: FloatFilter<"ExpressBooking"> | number
+    clientName?: StringFilter<"ExpressBooking"> | string
+    clientPhone?: StringFilter<"ExpressBooking"> | string
+    clientEmail?: StringFilter<"ExpressBooking"> | string
+    address?: StringFilter<"ExpressBooking"> | string
+    city?: StringFilter<"ExpressBooking"> | string
+    postalCode?: StringFilter<"ExpressBooking"> | string
+    floor?: IntNullableFilter<"ExpressBooking"> | number | null
+    hasElevator?: BoolNullableFilter<"ExpressBooking"> | boolean | null
+    notes?: StringNullableFilter<"ExpressBooking"> | string | null
+    specialRequirements?: StringNullableFilter<"ExpressBooking"> | string | null
+    status?: EnumExpressBookingStatusFilter<"ExpressBooking"> | $Enums.ExpressBookingStatus
+    assignedArtisanId?: StringNullableFilter<"ExpressBooking"> | string | null
+    assignedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+    createdAt?: DateTimeFilter<"ExpressBooking"> | Date | string
+    updatedAt?: DateTimeFilter<"ExpressBooking"> | Date | string
+    confirmedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+    assignedArtisan?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type ExpressBookingOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    bookingDate?: SortOrder
+    timeSlot?: SortOrder
+    price?: SortOrder
+    clientName?: SortOrder
+    clientPhone?: SortOrder
+    clientEmail?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    postalCode?: SortOrder
+    floor?: SortOrderInput | SortOrder
+    hasElevator?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    specialRequirements?: SortOrderInput | SortOrder
+    status?: SortOrder
+    assignedArtisanId?: SortOrderInput | SortOrder
+    assignedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    confirmedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    user?: UserOrderByWithRelationInput
+    service?: ServiceOrderByWithRelationInput
+    assignedArtisan?: UserOrderByWithRelationInput
+  }
+
+  export type ExpressBookingWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ExpressBookingWhereInput | ExpressBookingWhereInput[]
+    OR?: ExpressBookingWhereInput[]
+    NOT?: ExpressBookingWhereInput | ExpressBookingWhereInput[]
+    userId?: StringFilter<"ExpressBooking"> | string
+    serviceId?: StringFilter<"ExpressBooking"> | string
+    bookingDate?: DateTimeFilter<"ExpressBooking"> | Date | string
+    timeSlot?: EnumTimeSlotFilter<"ExpressBooking"> | $Enums.TimeSlot
+    price?: FloatFilter<"ExpressBooking"> | number
+    clientName?: StringFilter<"ExpressBooking"> | string
+    clientPhone?: StringFilter<"ExpressBooking"> | string
+    clientEmail?: StringFilter<"ExpressBooking"> | string
+    address?: StringFilter<"ExpressBooking"> | string
+    city?: StringFilter<"ExpressBooking"> | string
+    postalCode?: StringFilter<"ExpressBooking"> | string
+    floor?: IntNullableFilter<"ExpressBooking"> | number | null
+    hasElevator?: BoolNullableFilter<"ExpressBooking"> | boolean | null
+    notes?: StringNullableFilter<"ExpressBooking"> | string | null
+    specialRequirements?: StringNullableFilter<"ExpressBooking"> | string | null
+    status?: EnumExpressBookingStatusFilter<"ExpressBooking"> | $Enums.ExpressBookingStatus
+    assignedArtisanId?: StringNullableFilter<"ExpressBooking"> | string | null
+    assignedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+    createdAt?: DateTimeFilter<"ExpressBooking"> | Date | string
+    updatedAt?: DateTimeFilter<"ExpressBooking"> | Date | string
+    confirmedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    service?: XOR<ServiceScalarRelationFilter, ServiceWhereInput>
+    assignedArtisan?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type ExpressBookingOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    bookingDate?: SortOrder
+    timeSlot?: SortOrder
+    price?: SortOrder
+    clientName?: SortOrder
+    clientPhone?: SortOrder
+    clientEmail?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    postalCode?: SortOrder
+    floor?: SortOrderInput | SortOrder
+    hasElevator?: SortOrderInput | SortOrder
+    notes?: SortOrderInput | SortOrder
+    specialRequirements?: SortOrderInput | SortOrder
+    status?: SortOrder
+    assignedArtisanId?: SortOrderInput | SortOrder
+    assignedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    confirmedAt?: SortOrderInput | SortOrder
+    completedAt?: SortOrderInput | SortOrder
+    _count?: ExpressBookingCountOrderByAggregateInput
+    _avg?: ExpressBookingAvgOrderByAggregateInput
+    _max?: ExpressBookingMaxOrderByAggregateInput
+    _min?: ExpressBookingMinOrderByAggregateInput
+    _sum?: ExpressBookingSumOrderByAggregateInput
+  }
+
+  export type ExpressBookingScalarWhereWithAggregatesInput = {
+    AND?: ExpressBookingScalarWhereWithAggregatesInput | ExpressBookingScalarWhereWithAggregatesInput[]
+    OR?: ExpressBookingScalarWhereWithAggregatesInput[]
+    NOT?: ExpressBookingScalarWhereWithAggregatesInput | ExpressBookingScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    userId?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    serviceId?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    bookingDate?: DateTimeWithAggregatesFilter<"ExpressBooking"> | Date | string
+    timeSlot?: EnumTimeSlotWithAggregatesFilter<"ExpressBooking"> | $Enums.TimeSlot
+    price?: FloatWithAggregatesFilter<"ExpressBooking"> | number
+    clientName?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    clientPhone?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    clientEmail?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    address?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    city?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    postalCode?: StringWithAggregatesFilter<"ExpressBooking"> | string
+    floor?: IntNullableWithAggregatesFilter<"ExpressBooking"> | number | null
+    hasElevator?: BoolNullableWithAggregatesFilter<"ExpressBooking"> | boolean | null
+    notes?: StringNullableWithAggregatesFilter<"ExpressBooking"> | string | null
+    specialRequirements?: StringNullableWithAggregatesFilter<"ExpressBooking"> | string | null
+    status?: EnumExpressBookingStatusWithAggregatesFilter<"ExpressBooking"> | $Enums.ExpressBookingStatus
+    assignedArtisanId?: StringNullableWithAggregatesFilter<"ExpressBooking"> | string | null
+    assignedAt?: DateTimeNullableWithAggregatesFilter<"ExpressBooking"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ExpressBooking"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExpressBooking"> | Date | string
+    confirmedAt?: DateTimeNullableWithAggregatesFilter<"ExpressBooking"> | Date | string | null
+    completedAt?: DateTimeNullableWithAggregatesFilter<"ExpressBooking"> | Date | string | null
+  }
+
   export type AccountWhereInput = {
     AND?: AccountWhereInput | AccountWhereInput[]
     OR?: AccountWhereInput[]
@@ -27281,6 +29200,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -27310,6 +29231,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUpdateInput = {
@@ -27339,6 +29262,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -27368,6 +29293,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -27849,11 +29776,17 @@ export namespace Prisma {
     isActive?: boolean
     order?: number
     icon?: string | null
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     category: CategoryCreateNestedOneWithoutServicesInput
     projects?: ProjectCreateNestedManyWithoutServiceInput
     artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutServiceInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateInput = {
@@ -27865,10 +29798,16 @@ export namespace Prisma {
     order?: number
     icon?: string | null
     categoryId: string
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectUncheckedCreateNestedManyWithoutServiceInput
     artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutServiceInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUpdateInput = {
@@ -27879,11 +29818,17 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: CategoryUpdateOneRequiredWithoutServicesNestedInput
     projects?: ProjectUpdateManyWithoutServiceNestedInput
     artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutServiceNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateInput = {
@@ -27895,10 +29840,16 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: StringFieldUpdateOperationsInput | string
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUncheckedUpdateManyWithoutServiceNestedInput
     artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutServiceNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceCreateManyInput = {
@@ -27910,6 +29861,11 @@ export namespace Prisma {
     order?: number
     icon?: string | null
     categoryId: string
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -27922,6 +29878,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27935,6 +29896,11 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: StringFieldUpdateOperationsInput | string
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28760,6 +30726,185 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ExpressBookingCreateInput = {
+    id?: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutExpressBookingsInput
+    service: ServiceCreateNestedOneWithoutExpressBookingsInput
+    assignedArtisan?: UserCreateNestedOneWithoutAssignedExpressBookingsInput
+  }
+
+  export type ExpressBookingUncheckedCreateInput = {
+    id?: string
+    userId: string
+    serviceId: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedArtisanId?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+  }
+
+  export type ExpressBookingUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutExpressBookingsNestedInput
+    service?: ServiceUpdateOneRequiredWithoutExpressBookingsNestedInput
+    assignedArtisan?: UserUpdateOneWithoutAssignedExpressBookingsNestedInput
+  }
+
+  export type ExpressBookingUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedArtisanId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExpressBookingCreateManyInput = {
+    id?: string
+    userId: string
+    serviceId: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedArtisanId?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+  }
+
+  export type ExpressBookingUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExpressBookingUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedArtisanId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type AccountCreateInput = {
     id?: string
     type: string
@@ -29072,6 +31217,12 @@ export namespace Prisma {
     none?: UserFavoriteWhereInput
   }
 
+  export type ExpressBookingListRelationFilter = {
+    every?: ExpressBookingWhereInput
+    some?: ExpressBookingWhereInput
+    none?: ExpressBookingWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -29110,6 +31261,10 @@ export namespace Prisma {
   }
 
   export type UserFavoriteOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ExpressBookingOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -29634,12 +31789,19 @@ export namespace Prisma {
     order?: SortOrder
     icon?: SortOrder
     categoryId?: SortOrder
+    isExpressAvailable?: SortOrder
+    expressPrice?: SortOrder
+    expressDescription?: SortOrder
+    estimatedDuration?: SortOrder
+    isPopular?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type ServiceAvgOrderByAggregateInput = {
     order?: SortOrder
+    expressPrice?: SortOrder
+    estimatedDuration?: SortOrder
   }
 
   export type ServiceMaxOrderByAggregateInput = {
@@ -29651,6 +31813,11 @@ export namespace Prisma {
     order?: SortOrder
     icon?: SortOrder
     categoryId?: SortOrder
+    isExpressAvailable?: SortOrder
+    expressPrice?: SortOrder
+    expressDescription?: SortOrder
+    estimatedDuration?: SortOrder
+    isPopular?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29664,12 +31831,19 @@ export namespace Prisma {
     order?: SortOrder
     icon?: SortOrder
     categoryId?: SortOrder
+    isExpressAvailable?: SortOrder
+    expressPrice?: SortOrder
+    expressDescription?: SortOrder
+    estimatedDuration?: SortOrder
+    isPopular?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type ServiceSumOrderByAggregateInput = {
     order?: SortOrder
+    expressPrice?: SortOrder
+    estimatedDuration?: SortOrder
   }
 
   export type EnumAccessibilityLevelNullableFilter<$PrismaModel = never> = {
@@ -30347,6 +32521,133 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumTimeSlotFilter<$PrismaModel = never> = {
+    equals?: $Enums.TimeSlot | EnumTimeSlotFieldRefInput<$PrismaModel>
+    in?: $Enums.TimeSlot[] | ListEnumTimeSlotFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TimeSlot[] | ListEnumTimeSlotFieldRefInput<$PrismaModel>
+    not?: NestedEnumTimeSlotFilter<$PrismaModel> | $Enums.TimeSlot
+  }
+
+  export type EnumExpressBookingStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExpressBookingStatus | EnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExpressBookingStatus[] | ListEnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExpressBookingStatus[] | ListEnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExpressBookingStatusFilter<$PrismaModel> | $Enums.ExpressBookingStatus
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
+  export type ExpressBookingCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    bookingDate?: SortOrder
+    timeSlot?: SortOrder
+    price?: SortOrder
+    clientName?: SortOrder
+    clientPhone?: SortOrder
+    clientEmail?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    postalCode?: SortOrder
+    floor?: SortOrder
+    hasElevator?: SortOrder
+    notes?: SortOrder
+    specialRequirements?: SortOrder
+    status?: SortOrder
+    assignedArtisanId?: SortOrder
+    assignedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    confirmedAt?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type ExpressBookingAvgOrderByAggregateInput = {
+    price?: SortOrder
+    floor?: SortOrder
+  }
+
+  export type ExpressBookingMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    bookingDate?: SortOrder
+    timeSlot?: SortOrder
+    price?: SortOrder
+    clientName?: SortOrder
+    clientPhone?: SortOrder
+    clientEmail?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    postalCode?: SortOrder
+    floor?: SortOrder
+    hasElevator?: SortOrder
+    notes?: SortOrder
+    specialRequirements?: SortOrder
+    status?: SortOrder
+    assignedArtisanId?: SortOrder
+    assignedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    confirmedAt?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type ExpressBookingMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    serviceId?: SortOrder
+    bookingDate?: SortOrder
+    timeSlot?: SortOrder
+    price?: SortOrder
+    clientName?: SortOrder
+    clientPhone?: SortOrder
+    clientEmail?: SortOrder
+    address?: SortOrder
+    city?: SortOrder
+    postalCode?: SortOrder
+    floor?: SortOrder
+    hasElevator?: SortOrder
+    notes?: SortOrder
+    specialRequirements?: SortOrder
+    status?: SortOrder
+    assignedArtisanId?: SortOrder
+    assignedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    confirmedAt?: SortOrder
+    completedAt?: SortOrder
+  }
+
+  export type ExpressBookingSumOrderByAggregateInput = {
+    price?: SortOrder
+    floor?: SortOrder
+  }
+
+  export type EnumTimeSlotWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TimeSlot | EnumTimeSlotFieldRefInput<$PrismaModel>
+    in?: $Enums.TimeSlot[] | ListEnumTimeSlotFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TimeSlot[] | ListEnumTimeSlotFieldRefInput<$PrismaModel>
+    not?: NestedEnumTimeSlotWithAggregatesFilter<$PrismaModel> | $Enums.TimeSlot
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTimeSlotFilter<$PrismaModel>
+    _max?: NestedEnumTimeSlotFilter<$PrismaModel>
+  }
+
+  export type EnumExpressBookingStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExpressBookingStatus | EnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExpressBookingStatus[] | ListEnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExpressBookingStatus[] | ListEnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExpressBookingStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExpressBookingStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExpressBookingStatusFilter<$PrismaModel>
+    _max?: NestedEnumExpressBookingStatusFilter<$PrismaModel>
+  }
+
   export type AccountProviderProviderAccountIdCompoundUniqueInput = {
     provider: string
     providerAccountId: string
@@ -30532,6 +32833,20 @@ export namespace Prisma {
     connect?: UserFavoriteWhereUniqueInput | UserFavoriteWhereUniqueInput[]
   }
 
+  export type ExpressBookingCreateNestedManyWithoutUserInput = {
+    create?: XOR<ExpressBookingCreateWithoutUserInput, ExpressBookingUncheckedCreateWithoutUserInput> | ExpressBookingCreateWithoutUserInput[] | ExpressBookingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutUserInput | ExpressBookingCreateOrConnectWithoutUserInput[]
+    createMany?: ExpressBookingCreateManyUserInputEnvelope
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+  }
+
+  export type ExpressBookingCreateNestedManyWithoutAssignedArtisanInput = {
+    create?: XOR<ExpressBookingCreateWithoutAssignedArtisanInput, ExpressBookingUncheckedCreateWithoutAssignedArtisanInput> | ExpressBookingCreateWithoutAssignedArtisanInput[] | ExpressBookingUncheckedCreateWithoutAssignedArtisanInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutAssignedArtisanInput | ExpressBookingCreateOrConnectWithoutAssignedArtisanInput[]
+    createMany?: ExpressBookingCreateManyAssignedArtisanInputEnvelope
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -30613,6 +32928,20 @@ export namespace Prisma {
     connectOrCreate?: UserFavoriteCreateOrConnectWithoutArtisanInput | UserFavoriteCreateOrConnectWithoutArtisanInput[]
     createMany?: UserFavoriteCreateManyArtisanInputEnvelope
     connect?: UserFavoriteWhereUniqueInput | UserFavoriteWhereUniqueInput[]
+  }
+
+  export type ExpressBookingUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ExpressBookingCreateWithoutUserInput, ExpressBookingUncheckedCreateWithoutUserInput> | ExpressBookingCreateWithoutUserInput[] | ExpressBookingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutUserInput | ExpressBookingCreateOrConnectWithoutUserInput[]
+    createMany?: ExpressBookingCreateManyUserInputEnvelope
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+  }
+
+  export type ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput = {
+    create?: XOR<ExpressBookingCreateWithoutAssignedArtisanInput, ExpressBookingUncheckedCreateWithoutAssignedArtisanInput> | ExpressBookingCreateWithoutAssignedArtisanInput[] | ExpressBookingUncheckedCreateWithoutAssignedArtisanInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutAssignedArtisanInput | ExpressBookingCreateOrConnectWithoutAssignedArtisanInput[]
+    createMany?: ExpressBookingCreateManyAssignedArtisanInputEnvelope
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -30799,6 +33128,34 @@ export namespace Prisma {
     deleteMany?: UserFavoriteScalarWhereInput | UserFavoriteScalarWhereInput[]
   }
 
+  export type ExpressBookingUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ExpressBookingCreateWithoutUserInput, ExpressBookingUncheckedCreateWithoutUserInput> | ExpressBookingCreateWithoutUserInput[] | ExpressBookingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutUserInput | ExpressBookingCreateOrConnectWithoutUserInput[]
+    upsert?: ExpressBookingUpsertWithWhereUniqueWithoutUserInput | ExpressBookingUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ExpressBookingCreateManyUserInputEnvelope
+    set?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    disconnect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    delete?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    update?: ExpressBookingUpdateWithWhereUniqueWithoutUserInput | ExpressBookingUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ExpressBookingUpdateManyWithWhereWithoutUserInput | ExpressBookingUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ExpressBookingScalarWhereInput | ExpressBookingScalarWhereInput[]
+  }
+
+  export type ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput = {
+    create?: XOR<ExpressBookingCreateWithoutAssignedArtisanInput, ExpressBookingUncheckedCreateWithoutAssignedArtisanInput> | ExpressBookingCreateWithoutAssignedArtisanInput[] | ExpressBookingUncheckedCreateWithoutAssignedArtisanInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutAssignedArtisanInput | ExpressBookingCreateOrConnectWithoutAssignedArtisanInput[]
+    upsert?: ExpressBookingUpsertWithWhereUniqueWithoutAssignedArtisanInput | ExpressBookingUpsertWithWhereUniqueWithoutAssignedArtisanInput[]
+    createMany?: ExpressBookingCreateManyAssignedArtisanInputEnvelope
+    set?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    disconnect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    delete?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    update?: ExpressBookingUpdateWithWhereUniqueWithoutAssignedArtisanInput | ExpressBookingUpdateWithWhereUniqueWithoutAssignedArtisanInput[]
+    updateMany?: ExpressBookingUpdateManyWithWhereWithoutAssignedArtisanInput | ExpressBookingUpdateManyWithWhereWithoutAssignedArtisanInput[]
+    deleteMany?: ExpressBookingScalarWhereInput | ExpressBookingScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -30961,6 +33318,34 @@ export namespace Prisma {
     update?: UserFavoriteUpdateWithWhereUniqueWithoutArtisanInput | UserFavoriteUpdateWithWhereUniqueWithoutArtisanInput[]
     updateMany?: UserFavoriteUpdateManyWithWhereWithoutArtisanInput | UserFavoriteUpdateManyWithWhereWithoutArtisanInput[]
     deleteMany?: UserFavoriteScalarWhereInput | UserFavoriteScalarWhereInput[]
+  }
+
+  export type ExpressBookingUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ExpressBookingCreateWithoutUserInput, ExpressBookingUncheckedCreateWithoutUserInput> | ExpressBookingCreateWithoutUserInput[] | ExpressBookingUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutUserInput | ExpressBookingCreateOrConnectWithoutUserInput[]
+    upsert?: ExpressBookingUpsertWithWhereUniqueWithoutUserInput | ExpressBookingUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ExpressBookingCreateManyUserInputEnvelope
+    set?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    disconnect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    delete?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    update?: ExpressBookingUpdateWithWhereUniqueWithoutUserInput | ExpressBookingUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ExpressBookingUpdateManyWithWhereWithoutUserInput | ExpressBookingUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ExpressBookingScalarWhereInput | ExpressBookingScalarWhereInput[]
+  }
+
+  export type ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput = {
+    create?: XOR<ExpressBookingCreateWithoutAssignedArtisanInput, ExpressBookingUncheckedCreateWithoutAssignedArtisanInput> | ExpressBookingCreateWithoutAssignedArtisanInput[] | ExpressBookingUncheckedCreateWithoutAssignedArtisanInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutAssignedArtisanInput | ExpressBookingCreateOrConnectWithoutAssignedArtisanInput[]
+    upsert?: ExpressBookingUpsertWithWhereUniqueWithoutAssignedArtisanInput | ExpressBookingUpsertWithWhereUniqueWithoutAssignedArtisanInput[]
+    createMany?: ExpressBookingCreateManyAssignedArtisanInputEnvelope
+    set?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    disconnect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    delete?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    update?: ExpressBookingUpdateWithWhereUniqueWithoutAssignedArtisanInput | ExpressBookingUpdateWithWhereUniqueWithoutAssignedArtisanInput[]
+    updateMany?: ExpressBookingUpdateManyWithWhereWithoutAssignedArtisanInput | ExpressBookingUpdateManyWithWhereWithoutAssignedArtisanInput[]
+    deleteMany?: ExpressBookingScalarWhereInput | ExpressBookingScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutArtisanProfileInput = {
@@ -31215,6 +33600,13 @@ export namespace Prisma {
     connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
   }
 
+  export type ExpressBookingCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ExpressBookingCreateWithoutServiceInput, ExpressBookingUncheckedCreateWithoutServiceInput> | ExpressBookingCreateWithoutServiceInput[] | ExpressBookingUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutServiceInput | ExpressBookingCreateOrConnectWithoutServiceInput[]
+    createMany?: ExpressBookingCreateManyServiceInputEnvelope
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+  }
+
   export type ProjectUncheckedCreateNestedManyWithoutServiceInput = {
     create?: XOR<ProjectCreateWithoutServiceInput, ProjectUncheckedCreateWithoutServiceInput> | ProjectCreateWithoutServiceInput[] | ProjectUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutServiceInput | ProjectCreateOrConnectWithoutServiceInput[]
@@ -31227,6 +33619,13 @@ export namespace Prisma {
     connectOrCreate?: ArtisanSpecialtyCreateOrConnectWithoutServiceInput | ArtisanSpecialtyCreateOrConnectWithoutServiceInput[]
     createMany?: ArtisanSpecialtyCreateManyServiceInputEnvelope
     connect?: ArtisanSpecialtyWhereUniqueInput | ArtisanSpecialtyWhereUniqueInput[]
+  }
+
+  export type ExpressBookingUncheckedCreateNestedManyWithoutServiceInput = {
+    create?: XOR<ExpressBookingCreateWithoutServiceInput, ExpressBookingUncheckedCreateWithoutServiceInput> | ExpressBookingCreateWithoutServiceInput[] | ExpressBookingUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutServiceInput | ExpressBookingCreateOrConnectWithoutServiceInput[]
+    createMany?: ExpressBookingCreateManyServiceInputEnvelope
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
   }
 
   export type CategoryUpdateOneRequiredWithoutServicesNestedInput = {
@@ -31265,6 +33664,20 @@ export namespace Prisma {
     deleteMany?: ArtisanSpecialtyScalarWhereInput | ArtisanSpecialtyScalarWhereInput[]
   }
 
+  export type ExpressBookingUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ExpressBookingCreateWithoutServiceInput, ExpressBookingUncheckedCreateWithoutServiceInput> | ExpressBookingCreateWithoutServiceInput[] | ExpressBookingUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutServiceInput | ExpressBookingCreateOrConnectWithoutServiceInput[]
+    upsert?: ExpressBookingUpsertWithWhereUniqueWithoutServiceInput | ExpressBookingUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ExpressBookingCreateManyServiceInputEnvelope
+    set?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    disconnect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    delete?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    update?: ExpressBookingUpdateWithWhereUniqueWithoutServiceInput | ExpressBookingUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ExpressBookingUpdateManyWithWhereWithoutServiceInput | ExpressBookingUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ExpressBookingScalarWhereInput | ExpressBookingScalarWhereInput[]
+  }
+
   export type ProjectUncheckedUpdateManyWithoutServiceNestedInput = {
     create?: XOR<ProjectCreateWithoutServiceInput, ProjectUncheckedCreateWithoutServiceInput> | ProjectCreateWithoutServiceInput[] | ProjectUncheckedCreateWithoutServiceInput[]
     connectOrCreate?: ProjectCreateOrConnectWithoutServiceInput | ProjectCreateOrConnectWithoutServiceInput[]
@@ -31291,6 +33704,20 @@ export namespace Prisma {
     update?: ArtisanSpecialtyUpdateWithWhereUniqueWithoutServiceInput | ArtisanSpecialtyUpdateWithWhereUniqueWithoutServiceInput[]
     updateMany?: ArtisanSpecialtyUpdateManyWithWhereWithoutServiceInput | ArtisanSpecialtyUpdateManyWithWhereWithoutServiceInput[]
     deleteMany?: ArtisanSpecialtyScalarWhereInput | ArtisanSpecialtyScalarWhereInput[]
+  }
+
+  export type ExpressBookingUncheckedUpdateManyWithoutServiceNestedInput = {
+    create?: XOR<ExpressBookingCreateWithoutServiceInput, ExpressBookingUncheckedCreateWithoutServiceInput> | ExpressBookingCreateWithoutServiceInput[] | ExpressBookingUncheckedCreateWithoutServiceInput[]
+    connectOrCreate?: ExpressBookingCreateOrConnectWithoutServiceInput | ExpressBookingCreateOrConnectWithoutServiceInput[]
+    upsert?: ExpressBookingUpsertWithWhereUniqueWithoutServiceInput | ExpressBookingUpsertWithWhereUniqueWithoutServiceInput[]
+    createMany?: ExpressBookingCreateManyServiceInputEnvelope
+    set?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    disconnect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    delete?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    connect?: ExpressBookingWhereUniqueInput | ExpressBookingWhereUniqueInput[]
+    update?: ExpressBookingUpdateWithWhereUniqueWithoutServiceInput | ExpressBookingUpdateWithWhereUniqueWithoutServiceInput[]
+    updateMany?: ExpressBookingUpdateManyWithWhereWithoutServiceInput | ExpressBookingUpdateManyWithWhereWithoutServiceInput[]
+    deleteMany?: ExpressBookingScalarWhereInput | ExpressBookingScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutProjectsInput = {
@@ -31795,6 +34222,58 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutFavoritedByInput, UserUpdateWithoutFavoritedByInput>, UserUncheckedUpdateWithoutFavoritedByInput>
   }
 
+  export type UserCreateNestedOneWithoutExpressBookingsInput = {
+    create?: XOR<UserCreateWithoutExpressBookingsInput, UserUncheckedCreateWithoutExpressBookingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExpressBookingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ServiceCreateNestedOneWithoutExpressBookingsInput = {
+    create?: XOR<ServiceCreateWithoutExpressBookingsInput, ServiceUncheckedCreateWithoutExpressBookingsInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutExpressBookingsInput
+    connect?: ServiceWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutAssignedExpressBookingsInput = {
+    create?: XOR<UserCreateWithoutAssignedExpressBookingsInput, UserUncheckedCreateWithoutAssignedExpressBookingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssignedExpressBookingsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumTimeSlotFieldUpdateOperationsInput = {
+    set?: $Enums.TimeSlot
+  }
+
+  export type EnumExpressBookingStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ExpressBookingStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutExpressBookingsNestedInput = {
+    create?: XOR<UserCreateWithoutExpressBookingsInput, UserUncheckedCreateWithoutExpressBookingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExpressBookingsInput
+    upsert?: UserUpsertWithoutExpressBookingsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExpressBookingsInput, UserUpdateWithoutExpressBookingsInput>, UserUncheckedUpdateWithoutExpressBookingsInput>
+  }
+
+  export type ServiceUpdateOneRequiredWithoutExpressBookingsNestedInput = {
+    create?: XOR<ServiceCreateWithoutExpressBookingsInput, ServiceUncheckedCreateWithoutExpressBookingsInput>
+    connectOrCreate?: ServiceCreateOrConnectWithoutExpressBookingsInput
+    upsert?: ServiceUpsertWithoutExpressBookingsInput
+    connect?: ServiceWhereUniqueInput
+    update?: XOR<XOR<ServiceUpdateToOneWithWhereWithoutExpressBookingsInput, ServiceUpdateWithoutExpressBookingsInput>, ServiceUncheckedUpdateWithoutExpressBookingsInput>
+  }
+
+  export type UserUpdateOneWithoutAssignedExpressBookingsNestedInput = {
+    create?: XOR<UserCreateWithoutAssignedExpressBookingsInput, UserUncheckedCreateWithoutAssignedExpressBookingsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAssignedExpressBookingsInput
+    upsert?: UserUpsertWithoutAssignedExpressBookingsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAssignedExpressBookingsInput, UserUpdateWithoutAssignedExpressBookingsInput>, UserUncheckedUpdateWithoutAssignedExpressBookingsInput>
+  }
+
   export type UserCreateNestedOneWithoutAccountsInput = {
     create?: XOR<UserCreateWithoutAccountsInput, UserUncheckedCreateWithoutAccountsInput>
     connectOrCreate?: UserCreateOrConnectWithoutAccountsInput
@@ -32262,6 +34741,40 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
+  export type NestedEnumTimeSlotFilter<$PrismaModel = never> = {
+    equals?: $Enums.TimeSlot | EnumTimeSlotFieldRefInput<$PrismaModel>
+    in?: $Enums.TimeSlot[] | ListEnumTimeSlotFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TimeSlot[] | ListEnumTimeSlotFieldRefInput<$PrismaModel>
+    not?: NestedEnumTimeSlotFilter<$PrismaModel> | $Enums.TimeSlot
+  }
+
+  export type NestedEnumExpressBookingStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExpressBookingStatus | EnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExpressBookingStatus[] | ListEnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExpressBookingStatus[] | ListEnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExpressBookingStatusFilter<$PrismaModel> | $Enums.ExpressBookingStatus
+  }
+
+  export type NestedEnumTimeSlotWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TimeSlot | EnumTimeSlotFieldRefInput<$PrismaModel>
+    in?: $Enums.TimeSlot[] | ListEnumTimeSlotFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TimeSlot[] | ListEnumTimeSlotFieldRefInput<$PrismaModel>
+    not?: NestedEnumTimeSlotWithAggregatesFilter<$PrismaModel> | $Enums.TimeSlot
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTimeSlotFilter<$PrismaModel>
+    _max?: NestedEnumTimeSlotFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExpressBookingStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExpressBookingStatus | EnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExpressBookingStatus[] | ListEnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExpressBookingStatus[] | ListEnumExpressBookingStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExpressBookingStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExpressBookingStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExpressBookingStatusFilter<$PrismaModel>
+    _max?: NestedEnumExpressBookingStatusFilter<$PrismaModel>
+  }
+
   export type AccountCreateWithoutUserInput = {
     id?: string
     type: string
@@ -32693,6 +35206,126 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ExpressBookingCreateWithoutUserInput = {
+    id?: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+    service: ServiceCreateNestedOneWithoutExpressBookingsInput
+    assignedArtisan?: UserCreateNestedOneWithoutAssignedExpressBookingsInput
+  }
+
+  export type ExpressBookingUncheckedCreateWithoutUserInput = {
+    id?: string
+    serviceId: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedArtisanId?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+  }
+
+  export type ExpressBookingCreateOrConnectWithoutUserInput = {
+    where: ExpressBookingWhereUniqueInput
+    create: XOR<ExpressBookingCreateWithoutUserInput, ExpressBookingUncheckedCreateWithoutUserInput>
+  }
+
+  export type ExpressBookingCreateManyUserInputEnvelope = {
+    data: ExpressBookingCreateManyUserInput | ExpressBookingCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ExpressBookingCreateWithoutAssignedArtisanInput = {
+    id?: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutExpressBookingsInput
+    service: ServiceCreateNestedOneWithoutExpressBookingsInput
+  }
+
+  export type ExpressBookingUncheckedCreateWithoutAssignedArtisanInput = {
+    id?: string
+    userId: string
+    serviceId: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+  }
+
+  export type ExpressBookingCreateOrConnectWithoutAssignedArtisanInput = {
+    where: ExpressBookingWhereUniqueInput
+    create: XOR<ExpressBookingCreateWithoutAssignedArtisanInput, ExpressBookingUncheckedCreateWithoutAssignedArtisanInput>
+  }
+
+  export type ExpressBookingCreateManyAssignedArtisanInputEnvelope = {
+    data: ExpressBookingCreateManyAssignedArtisanInput | ExpressBookingCreateManyAssignedArtisanInput[]
+    skipDuplicates?: boolean
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
@@ -33064,6 +35697,67 @@ export namespace Prisma {
     data: XOR<UserFavoriteUpdateManyMutationInput, UserFavoriteUncheckedUpdateManyWithoutArtisanInput>
   }
 
+  export type ExpressBookingUpsertWithWhereUniqueWithoutUserInput = {
+    where: ExpressBookingWhereUniqueInput
+    update: XOR<ExpressBookingUpdateWithoutUserInput, ExpressBookingUncheckedUpdateWithoutUserInput>
+    create: XOR<ExpressBookingCreateWithoutUserInput, ExpressBookingUncheckedCreateWithoutUserInput>
+  }
+
+  export type ExpressBookingUpdateWithWhereUniqueWithoutUserInput = {
+    where: ExpressBookingWhereUniqueInput
+    data: XOR<ExpressBookingUpdateWithoutUserInput, ExpressBookingUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ExpressBookingUpdateManyWithWhereWithoutUserInput = {
+    where: ExpressBookingScalarWhereInput
+    data: XOR<ExpressBookingUpdateManyMutationInput, ExpressBookingUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ExpressBookingScalarWhereInput = {
+    AND?: ExpressBookingScalarWhereInput | ExpressBookingScalarWhereInput[]
+    OR?: ExpressBookingScalarWhereInput[]
+    NOT?: ExpressBookingScalarWhereInput | ExpressBookingScalarWhereInput[]
+    id?: StringFilter<"ExpressBooking"> | string
+    userId?: StringFilter<"ExpressBooking"> | string
+    serviceId?: StringFilter<"ExpressBooking"> | string
+    bookingDate?: DateTimeFilter<"ExpressBooking"> | Date | string
+    timeSlot?: EnumTimeSlotFilter<"ExpressBooking"> | $Enums.TimeSlot
+    price?: FloatFilter<"ExpressBooking"> | number
+    clientName?: StringFilter<"ExpressBooking"> | string
+    clientPhone?: StringFilter<"ExpressBooking"> | string
+    clientEmail?: StringFilter<"ExpressBooking"> | string
+    address?: StringFilter<"ExpressBooking"> | string
+    city?: StringFilter<"ExpressBooking"> | string
+    postalCode?: StringFilter<"ExpressBooking"> | string
+    floor?: IntNullableFilter<"ExpressBooking"> | number | null
+    hasElevator?: BoolNullableFilter<"ExpressBooking"> | boolean | null
+    notes?: StringNullableFilter<"ExpressBooking"> | string | null
+    specialRequirements?: StringNullableFilter<"ExpressBooking"> | string | null
+    status?: EnumExpressBookingStatusFilter<"ExpressBooking"> | $Enums.ExpressBookingStatus
+    assignedArtisanId?: StringNullableFilter<"ExpressBooking"> | string | null
+    assignedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+    createdAt?: DateTimeFilter<"ExpressBooking"> | Date | string
+    updatedAt?: DateTimeFilter<"ExpressBooking"> | Date | string
+    confirmedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+    completedAt?: DateTimeNullableFilter<"ExpressBooking"> | Date | string | null
+  }
+
+  export type ExpressBookingUpsertWithWhereUniqueWithoutAssignedArtisanInput = {
+    where: ExpressBookingWhereUniqueInput
+    update: XOR<ExpressBookingUpdateWithoutAssignedArtisanInput, ExpressBookingUncheckedUpdateWithoutAssignedArtisanInput>
+    create: XOR<ExpressBookingCreateWithoutAssignedArtisanInput, ExpressBookingUncheckedCreateWithoutAssignedArtisanInput>
+  }
+
+  export type ExpressBookingUpdateWithWhereUniqueWithoutAssignedArtisanInput = {
+    where: ExpressBookingWhereUniqueInput
+    data: XOR<ExpressBookingUpdateWithoutAssignedArtisanInput, ExpressBookingUncheckedUpdateWithoutAssignedArtisanInput>
+  }
+
+  export type ExpressBookingUpdateManyWithWhereWithoutAssignedArtisanInput = {
+    where: ExpressBookingScalarWhereInput
+    data: XOR<ExpressBookingUpdateManyMutationInput, ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanInput>
+  }
+
   export type UserCreateWithoutArtisanProfileInput = {
     id?: string
     name?: string | null
@@ -33090,6 +35784,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutArtisanProfileInput = {
@@ -33118,6 +35814,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutArtisanProfileInput = {
@@ -33186,6 +35884,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutArtisanProfileInput = {
@@ -33214,6 +35914,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type ArtisanSkillUpsertWithWhereUniqueWithoutArtisanProfileInput = {
@@ -33269,6 +35971,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutArtisanSpecialtiesInput = {
@@ -33297,6 +36001,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutArtisanSpecialtiesInput = {
@@ -33312,10 +36018,16 @@ export namespace Prisma {
     isActive?: boolean
     order?: number
     icon?: string | null
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     category: CategoryCreateNestedOneWithoutServicesInput
     projects?: ProjectCreateNestedManyWithoutServiceInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutArtisanSpecialtiesInput = {
@@ -33327,9 +36039,15 @@ export namespace Prisma {
     order?: number
     icon?: string | null
     categoryId: string
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectUncheckedCreateNestedManyWithoutServiceInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutArtisanSpecialtiesInput = {
@@ -33374,6 +36092,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutArtisanSpecialtiesInput = {
@@ -33402,6 +36122,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type ServiceUpsertWithoutArtisanSpecialtiesInput = {
@@ -33423,10 +36145,16 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: CategoryUpdateOneRequiredWithoutServicesNestedInput
     projects?: ProjectUpdateManyWithoutServiceNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutArtisanSpecialtiesInput = {
@@ -33438,9 +36166,15 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: StringFieldUpdateOperationsInput | string
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUncheckedUpdateManyWithoutServiceNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type UserCreateWithoutArtisanDocumentsInput = {
@@ -33469,6 +36203,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutArtisanDocumentsInput = {
@@ -33497,6 +36233,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutArtisanDocumentsInput = {
@@ -33541,6 +36279,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutArtisanDocumentsInput = {
@@ -33569,6 +36309,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type ArtisanProfileCreateWithoutSkillsInput = {
@@ -33671,10 +36413,16 @@ export namespace Prisma {
     isActive?: boolean
     order?: number
     icon?: string | null
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectCreateNestedManyWithoutServiceInput
     artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutServiceInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutCategoryInput = {
@@ -33685,10 +36433,16 @@ export namespace Prisma {
     isActive?: boolean
     order?: number
     icon?: string | null
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectUncheckedCreateNestedManyWithoutServiceInput
     artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutServiceInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutCategoryInput = {
@@ -33811,6 +36565,11 @@ export namespace Prisma {
     order?: IntFilter<"Service"> | number
     icon?: StringNullableFilter<"Service"> | string | null
     categoryId?: StringFilter<"Service"> | string
+    isExpressAvailable?: BoolFilter<"Service"> | boolean
+    expressPrice?: FloatNullableFilter<"Service"> | number | null
+    expressDescription?: StringNullableFilter<"Service"> | string | null
+    estimatedDuration?: IntNullableFilter<"Service"> | number | null
+    isPopular?: BoolFilter<"Service"> | boolean
     createdAt?: DateTimeFilter<"Service"> | Date | string
     updatedAt?: DateTimeFilter<"Service"> | Date | string
   }
@@ -33968,6 +36727,66 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ExpressBookingCreateWithoutServiceInput = {
+    id?: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+    user: UserCreateNestedOneWithoutExpressBookingsInput
+    assignedArtisan?: UserCreateNestedOneWithoutAssignedExpressBookingsInput
+  }
+
+  export type ExpressBookingUncheckedCreateWithoutServiceInput = {
+    id?: string
+    userId: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedArtisanId?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+  }
+
+  export type ExpressBookingCreateOrConnectWithoutServiceInput = {
+    where: ExpressBookingWhereUniqueInput
+    create: XOR<ExpressBookingCreateWithoutServiceInput, ExpressBookingUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ExpressBookingCreateManyServiceInputEnvelope = {
+    data: ExpressBookingCreateManyServiceInput | ExpressBookingCreateManyServiceInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CategoryUpsertWithoutServicesInput = {
     update: XOR<CategoryUpdateWithoutServicesInput, CategoryUncheckedUpdateWithoutServicesInput>
     create: XOR<CategoryCreateWithoutServicesInput, CategoryUncheckedCreateWithoutServicesInput>
@@ -34037,6 +36856,22 @@ export namespace Prisma {
     data: XOR<ArtisanSpecialtyUpdateManyMutationInput, ArtisanSpecialtyUncheckedUpdateManyWithoutServiceInput>
   }
 
+  export type ExpressBookingUpsertWithWhereUniqueWithoutServiceInput = {
+    where: ExpressBookingWhereUniqueInput
+    update: XOR<ExpressBookingUpdateWithoutServiceInput, ExpressBookingUncheckedUpdateWithoutServiceInput>
+    create: XOR<ExpressBookingCreateWithoutServiceInput, ExpressBookingUncheckedCreateWithoutServiceInput>
+  }
+
+  export type ExpressBookingUpdateWithWhereUniqueWithoutServiceInput = {
+    where: ExpressBookingWhereUniqueInput
+    data: XOR<ExpressBookingUpdateWithoutServiceInput, ExpressBookingUncheckedUpdateWithoutServiceInput>
+  }
+
+  export type ExpressBookingUpdateManyWithWhereWithoutServiceInput = {
+    where: ExpressBookingScalarWhereInput
+    data: XOR<ExpressBookingUpdateManyMutationInput, ExpressBookingUncheckedUpdateManyWithoutServiceInput>
+  }
+
   export type UserCreateWithoutProjectsInput = {
     id?: string
     name?: string | null
@@ -34063,6 +36898,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
@@ -34091,6 +36928,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -34137,10 +36976,16 @@ export namespace Prisma {
     isActive?: boolean
     order?: number
     icon?: string | null
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     category: CategoryCreateNestedOneWithoutServicesInput
     artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutServiceInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceUncheckedCreateWithoutProjectsInput = {
@@ -34152,9 +36997,15 @@ export namespace Prisma {
     order?: number
     icon?: string | null
     categoryId: string
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
     artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutServiceInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutServiceInput
   }
 
   export type ServiceCreateOrConnectWithoutProjectsInput = {
@@ -34355,6 +37206,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
@@ -34383,6 +37236,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type CategoryUpsertWithoutProjectsInput = {
@@ -34441,10 +37296,16 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: CategoryUpdateOneRequiredWithoutServicesNestedInput
     artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutServiceNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutProjectsInput = {
@@ -34456,9 +37317,15 @@ export namespace Prisma {
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: StringFieldUpdateOperationsInput | string
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutServiceNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ProjectStepUpsertWithWhereUniqueWithoutProjectInput = {
@@ -35163,6 +38030,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutQuotesInput = {
@@ -35191,6 +38060,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutQuotesInput = {
@@ -35224,6 +38095,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutReceivedQuotesInput = {
@@ -35252,6 +38125,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutReceivedQuotesInput = {
@@ -35405,6 +38280,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutQuotesInput = {
@@ -35433,6 +38310,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUpsertWithoutReceivedQuotesInput = {
@@ -35472,6 +38351,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReceivedQuotesInput = {
@@ -35500,6 +38381,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type QuoteItemUpsertWithWhereUniqueWithoutQuoteInput = {
@@ -35717,6 +38600,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutProjectInvitationsInput = {
@@ -35745,6 +38630,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutProjectInvitationsInput = {
@@ -35872,6 +38759,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectInvitationsInput = {
@@ -35900,6 +38789,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserCreateWithoutNotificationsInput = {
@@ -35928,6 +38819,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -35956,6 +38849,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -36000,6 +38895,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -36028,6 +38925,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserCreateWithoutFavoriteArtisansInput = {
@@ -36056,6 +38955,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutFavoriteArtisansInput = {
@@ -36084,6 +38985,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutFavoriteArtisansInput = {
@@ -36117,6 +39020,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutFavoritedByInput = {
@@ -36145,6 +39050,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutFavoritedByInput = {
@@ -36189,6 +39096,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFavoriteArtisansInput = {
@@ -36217,6 +39126,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUpsertWithoutFavoritedByInput = {
@@ -36256,6 +39167,8 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFavoritedByInput = {
@@ -36284,6 +39197,376 @@ export namespace Prisma {
     artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
+  }
+
+  export type UserCreateWithoutExpressBookingsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    quotes?: QuoteCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
+    favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
+    favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
+  }
+
+  export type UserUncheckedCreateWithoutExpressBookingsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    quotes?: QuoteUncheckedCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
+    favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
+    favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
+  }
+
+  export type UserCreateOrConnectWithoutExpressBookingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutExpressBookingsInput, UserUncheckedCreateWithoutExpressBookingsInput>
+  }
+
+  export type ServiceCreateWithoutExpressBookingsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    isActive?: boolean
+    order?: number
+    icon?: string | null
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    category: CategoryCreateNestedOneWithoutServicesInput
+    projects?: ProjectCreateNestedManyWithoutServiceInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceUncheckedCreateWithoutExpressBookingsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    slug: string
+    isActive?: boolean
+    order?: number
+    icon?: string | null
+    categoryId: string
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projects?: ProjectUncheckedCreateNestedManyWithoutServiceInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutServiceInput
+  }
+
+  export type ServiceCreateOrConnectWithoutExpressBookingsInput = {
+    where: ServiceWhereUniqueInput
+    create: XOR<ServiceCreateWithoutExpressBookingsInput, ServiceUncheckedCreateWithoutExpressBookingsInput>
+  }
+
+  export type UserCreateWithoutAssignedExpressBookingsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
+    quotes?: QuoteCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteCreateNestedManyWithoutClientInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
+    favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
+    favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAssignedExpressBookingsInput = {
+    id?: string
+    name?: string | null
+    email?: string | null
+    emailVerified?: Date | string | null
+    password?: string | null
+    image?: string | null
+    role?: $Enums.Role
+    phone?: string | null
+    address?: string | null
+    city?: string | null
+    postalCode?: string | null
+    bio?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
+    quotes?: QuoteUncheckedCreateNestedManyWithoutProviderInput
+    receivedQuotes?: QuoteUncheckedCreateNestedManyWithoutClientInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    projectInvitations?: ProjectInvitationUncheckedCreateNestedManyWithoutUserInput
+    artisanProfile?: ArtisanProfileUncheckedCreateNestedOneWithoutUserInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedCreateNestedManyWithoutUserInput
+    artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
+    favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
+    favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAssignedExpressBookingsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAssignedExpressBookingsInput, UserUncheckedCreateWithoutAssignedExpressBookingsInput>
+  }
+
+  export type UserUpsertWithoutExpressBookingsInput = {
+    update: XOR<UserUpdateWithoutExpressBookingsInput, UserUncheckedUpdateWithoutExpressBookingsInput>
+    create: XOR<UserCreateWithoutExpressBookingsInput, UserUncheckedCreateWithoutExpressBookingsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutExpressBookingsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutExpressBookingsInput, UserUncheckedUpdateWithoutExpressBookingsInput>
+  }
+
+  export type UserUpdateWithoutExpressBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
+    favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
+    favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutExpressBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUncheckedUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
+    favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
+    favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
+  }
+
+  export type ServiceUpsertWithoutExpressBookingsInput = {
+    update: XOR<ServiceUpdateWithoutExpressBookingsInput, ServiceUncheckedUpdateWithoutExpressBookingsInput>
+    create: XOR<ServiceCreateWithoutExpressBookingsInput, ServiceUncheckedCreateWithoutExpressBookingsInput>
+    where?: ServiceWhereInput
+  }
+
+  export type ServiceUpdateToOneWithWhereWithoutExpressBookingsInput = {
+    where?: ServiceWhereInput
+    data: XOR<ServiceUpdateWithoutExpressBookingsInput, ServiceUncheckedUpdateWithoutExpressBookingsInput>
+  }
+
+  export type ServiceUpdateWithoutExpressBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: CategoryUpdateOneRequiredWithoutServicesNestedInput
+    projects?: ProjectUpdateManyWithoutServiceNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutServiceNestedInput
+  }
+
+  export type ServiceUncheckedUpdateWithoutExpressBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    slug?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    order?: IntFieldUpdateOperationsInput | number
+    icon?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: StringFieldUpdateOperationsInput | string
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projects?: ProjectUncheckedUpdateManyWithoutServiceNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutServiceNestedInput
+  }
+
+  export type UserUpsertWithoutAssignedExpressBookingsInput = {
+    update: XOR<UserUpdateWithoutAssignedExpressBookingsInput, UserUncheckedUpdateWithoutAssignedExpressBookingsInput>
+    create: XOR<UserCreateWithoutAssignedExpressBookingsInput, UserUncheckedCreateWithoutAssignedExpressBookingsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAssignedExpressBookingsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAssignedExpressBookingsInput, UserUncheckedUpdateWithoutAssignedExpressBookingsInput>
+  }
+
+  export type UserUpdateWithoutAssignedExpressBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
+    favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
+    favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAssignedExpressBookingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    emailVerified?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    postalCode?: NullableStringFieldUpdateOperationsInput | string | null
+    bio?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
+    quotes?: QuoteUncheckedUpdateManyWithoutProviderNestedInput
+    receivedQuotes?: QuoteUncheckedUpdateManyWithoutClientNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    projectInvitations?: ProjectInvitationUncheckedUpdateManyWithoutUserNestedInput
+    artisanProfile?: ArtisanProfileUncheckedUpdateOneWithoutUserNestedInput
+    artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutUserNestedInput
+    artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
+    favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
+    favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -36312,6 +39595,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -36340,6 +39625,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -36384,6 +39671,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -36412,6 +39701,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -36440,6 +39731,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -36468,6 +39761,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedCreateNestedManyWithoutUserInput
     favoriteArtisans?: UserFavoriteUncheckedCreateNestedManyWithoutClientInput
     favoritedBy?: UserFavoriteUncheckedCreateNestedManyWithoutArtisanInput
+    expressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutUserInput
+    assignedExpressBookings?: ExpressBookingUncheckedCreateNestedManyWithoutAssignedArtisanInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -36512,6 +39807,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -36540,6 +39837,8 @@ export namespace Prisma {
     artisanDocuments?: ArtisanDocumentUncheckedUpdateManyWithoutUserNestedInput
     favoriteArtisans?: UserFavoriteUncheckedUpdateManyWithoutClientNestedInput
     favoritedBy?: UserFavoriteUncheckedUpdateManyWithoutArtisanNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutUserNestedInput
+    assignedExpressBookings?: ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanNestedInput
   }
 
   export type AccountCreateManyUserInput = {
@@ -36672,6 +39971,56 @@ export namespace Prisma {
     id?: string
     clientId: string
     createdAt?: Date | string
+  }
+
+  export type ExpressBookingCreateManyUserInput = {
+    id?: string
+    serviceId: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedArtisanId?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+  }
+
+  export type ExpressBookingCreateManyAssignedArtisanInput = {
+    id?: string
+    userId: string
+    serviceId: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
   }
 
   export type AccountUpdateWithoutUserInput = {
@@ -37084,6 +40433,156 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ExpressBookingUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    service?: ServiceUpdateOneRequiredWithoutExpressBookingsNestedInput
+    assignedArtisan?: UserUpdateOneWithoutAssignedExpressBookingsNestedInput
+  }
+
+  export type ExpressBookingUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedArtisanId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExpressBookingUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedArtisanId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExpressBookingUpdateWithoutAssignedArtisanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutExpressBookingsNestedInput
+    service?: ServiceUpdateOneRequiredWithoutExpressBookingsNestedInput
+  }
+
+  export type ExpressBookingUncheckedUpdateWithoutAssignedArtisanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExpressBookingUncheckedUpdateManyWithoutAssignedArtisanInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    serviceId?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
   export type ArtisanSkillCreateManyArtisanProfileInput = {
     id?: string
     name: string
@@ -37120,6 +40619,11 @@ export namespace Prisma {
     isActive?: boolean
     order?: number
     icon?: string | null
+    isExpressAvailable?: boolean
+    expressPrice?: number | null
+    expressDescription?: string | null
+    estimatedDuration?: number | null
+    isPopular?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -37163,10 +40667,16 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUpdateManyWithoutServiceNestedInput
     artisanSpecialties?: ArtisanSpecialtyUpdateManyWithoutServiceNestedInput
+    expressBookings?: ExpressBookingUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateWithoutCategoryInput = {
@@ -37177,10 +40687,16 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUncheckedUpdateManyWithoutServiceNestedInput
     artisanSpecialties?: ArtisanSpecialtyUncheckedUpdateManyWithoutServiceNestedInput
+    expressBookings?: ExpressBookingUncheckedUpdateManyWithoutServiceNestedInput
   }
 
   export type ServiceUncheckedUpdateManyWithoutCategoryInput = {
@@ -37191,6 +40707,11 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     order?: IntFieldUpdateOperationsInput | number
     icon?: NullableStringFieldUpdateOperationsInput | string | null
+    isExpressAvailable?: BoolFieldUpdateOperationsInput | boolean
+    expressPrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    expressDescription?: NullableStringFieldUpdateOperationsInput | string | null
+    estimatedDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    isPopular?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -37336,6 +40857,31 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type ExpressBookingCreateManyServiceInput = {
+    id?: string
+    userId: string
+    bookingDate: Date | string
+    timeSlot: $Enums.TimeSlot
+    price: number
+    clientName: string
+    clientPhone: string
+    clientEmail: string
+    address: string
+    city: string
+    postalCode: string
+    floor?: number | null
+    hasElevator?: boolean | null
+    notes?: string | null
+    specialRequirements?: string | null
+    status?: $Enums.ExpressBookingStatus
+    assignedArtisanId?: string | null
+    assignedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    confirmedAt?: Date | string | null
+    completedAt?: Date | string | null
+  }
+
   export type ProjectUpdateWithoutServiceInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
@@ -37458,6 +41004,81 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     isPrimary?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExpressBookingUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    user?: UserUpdateOneRequiredWithoutExpressBookingsNestedInput
+    assignedArtisan?: UserUpdateOneWithoutAssignedExpressBookingsNestedInput
+  }
+
+  export type ExpressBookingUncheckedUpdateWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedArtisanId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ExpressBookingUncheckedUpdateManyWithoutServiceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    bookingDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    timeSlot?: EnumTimeSlotFieldUpdateOperationsInput | $Enums.TimeSlot
+    price?: FloatFieldUpdateOperationsInput | number
+    clientName?: StringFieldUpdateOperationsInput | string
+    clientPhone?: StringFieldUpdateOperationsInput | string
+    clientEmail?: StringFieldUpdateOperationsInput | string
+    address?: StringFieldUpdateOperationsInput | string
+    city?: StringFieldUpdateOperationsInput | string
+    postalCode?: StringFieldUpdateOperationsInput | string
+    floor?: NullableIntFieldUpdateOperationsInput | number | null
+    hasElevator?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    specialRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumExpressBookingStatusFieldUpdateOperationsInput | $Enums.ExpressBookingStatus
+    assignedArtisanId?: NullableStringFieldUpdateOperationsInput | string | null
+    assignedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type ProjectStepCreateManyProjectInput = {

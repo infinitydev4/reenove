@@ -24,12 +24,39 @@ export async function GET(request: NextRequest) {
     const categoryId = url.searchParams.get("categoryId");
     const page = parseInt(url.searchParams.get("page") || "1");
     const limit = parseInt(url.searchParams.get("limit") || "10");
+    const search = url.searchParams.get("search");
+    const expressOnly = url.searchParams.get("expressOnly");
+    const isActive = url.searchParams.get("isActive");
     
     // Pagination: calculer le nombre d'éléments à sauter
     const skip = (page - 1) * limit;
     
-    // Construire la requête avec filtre de catégorie si spécifié
-    const whereClause = categoryId ? { categoryId } : {};
+    // Construire la requête avec filtres
+    const whereClause: any = {};
+    
+    // Filtre de catégorie
+    if (categoryId && categoryId !== "all") {
+      whereClause.categoryId = categoryId;
+    }
+    
+    // Filtre de recherche
+    if (search && search.trim()) {
+      whereClause.OR = [
+        { name: { contains: search.trim(), mode: "insensitive" } },
+        { description: { contains: search.trim(), mode: "insensitive" } },
+        { expressDescription: { contains: search.trim(), mode: "insensitive" } },
+      ];
+    }
+    
+    // Filtre Express
+    if (expressOnly !== null) {
+      whereClause.isExpressAvailable = expressOnly === "true";
+    }
+    
+    // Filtre statut actif
+    if (isActive !== null) {
+      whereClause.isActive = isActive === "true";
+    }
     
     // Requête pour obtenir les services avec pagination
     const [services, total] = await Promise.all([
@@ -79,7 +106,17 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, categoryId, icon } = body;
+    const { 
+      name, 
+      description, 
+      categoryId, 
+      icon,
+      isExpressAvailable,
+      expressPrice,
+      expressDescription,
+      estimatedDuration,
+      isPopular
+    } = body;
 
     if (!name || !categoryId) {
       return NextResponse.json(
@@ -127,7 +164,13 @@ export async function POST(request: NextRequest) {
         categoryId,
         icon: icon || null,
         isActive: true,
-        order: 0
+        order: 0,
+        // Champs Express
+        isExpressAvailable: isExpressAvailable || false,
+        expressPrice: expressPrice || null,
+        expressDescription: expressDescription || null,
+        estimatedDuration: estimatedDuration || null,
+        isPopular: isPopular || false,
       },
     });
 
@@ -141,192 +184,5 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT mettre à jour un service
-export async function PUT(request: NextRequest) {
-  try {
-    // Vérifier l'authentification de l'administrateur
-    const session = await getServerSession(authOptions);
-    
-    if (!await isAdmin(session)) {
-      return NextResponse.json(
-        { error: "Non autorisé" },
-        { status: 401 }
-      );
-    }
-
-    const body = await request.json();
-    const { id, name, description, categoryId, icon, isActive, order } = body;
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "L'ID du service est requis" },
-        { status: 400 }
-      );
-    }
-    
-    // Vérifier si le service existe
-    const service = await prisma.service.findUnique({
-      where: { id }
-    });
-    
-    if (!service) {
-      return NextResponse.json(
-        { error: "Service non trouvé" },
-        { status: 404 }
-      );
-    }
-
-    // Préparer les données à mettre à jour
-    const updateData: {
-      name?: string;
-      slug?: string;
-      description?: string | null;
-      categoryId?: string;
-      icon?: string | null;
-      isActive?: boolean;
-      order?: number;
-    } = {};
-
-    if (name) {
-      // Vérifier si le nouveau nom existe déjà pour un autre service dans la même catégorie
-      if (name !== service.name) {
-        const checkCategoryId = categoryId || service.categoryId;
-        
-        const existingService = await prisma.service.findFirst({
-          where: {
-            name: { equals: name, mode: "insensitive" },
-            categoryId: checkCategoryId,
-            id: { not: id }
-          }
-        });
-        
-        if (existingService) {
-          return NextResponse.json(
-            { error: "Un service avec ce nom existe déjà dans cette catégorie" },
-            { status: 409 }
-          );
-        }
-      }
-      
-      updateData.name = name;
-      updateData.slug = slugify(name);
-    }
-
-    if (description !== undefined) {
-      updateData.description = description;
-    }
-
-    if (categoryId) {
-      // Vérifier si la catégorie existe
-      const category = await prisma.category.findUnique({
-        where: { id: categoryId },
-      });
-
-      if (!category) {
-        return NextResponse.json(
-          { error: "Catégorie non trouvée" },
-          { status: 404 }
-        );
-      }
-
-      updateData.categoryId = categoryId;
-    }
-
-    if (icon !== undefined) {
-      updateData.icon = icon;
-    }
-    
-    if (isActive !== undefined) {
-      updateData.isActive = isActive;
-    }
-    
-    if (order !== undefined) {
-      updateData.order = order;
-    }
-
-    // Mettre à jour le service
-    const updatedService = await prisma.service.update({
-      where: { id },
-      data: updateData,
-      include: {
-        category: true,
-      },
-    });
-
-    return NextResponse.json(updatedService);
-  } catch (error) {
-    console.error("Erreur lors de la mise à jour du service:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la mise à jour du service" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE supprimer un service
-export async function DELETE(request: NextRequest) {
-  try {
-    // Vérifier l'authentification de l'administrateur
-    const session = await getServerSession(authOptions);
-    
-    if (!await isAdmin(session)) {
-      return NextResponse.json(
-        { error: "Non autorisé" },
-        { status: 401 }
-      );
-    }
-
-    const url = new URL(request.url);
-    const id = url.searchParams.get("id");
-
-    if (!id) {
-      return NextResponse.json(
-        { error: "L'ID du service est requis" },
-        { status: 400 }
-      );
-    }
-    
-    // Vérifier si le service existe
-    const service = await prisma.service.findUnique({
-      where: { id }
-    });
-    
-    if (!service) {
-      return NextResponse.json(
-        { error: "Service non trouvé" },
-        { status: 404 }
-      );
-    }
-    
-    // Vérifier si le service est utilisé dans des projets
-    const projectCount = await prisma.project.count({
-      where: { serviceId: id }
-    });
-    
-    if (projectCount > 0) {
-      return NextResponse.json(
-        { 
-          error: "Ce service est utilisé dans des projets existants. Vous ne pouvez pas le supprimer.",
-          projectCount
-        },
-        { status: 409 }
-      );
-    }
-
-    // Supprimer le service
-    await prisma.service.delete({
-      where: { id },
-    });
-
-    return NextResponse.json(
-      { message: "Service supprimé avec succès" },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error("Erreur lors de la suppression du service:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la suppression du service" },
-      { status: 500 }
-    );
-  }
-} 
+// Note: Les fonctions PUT et DELETE ont été déplacées vers /api/admin/services/[id]/route.ts
+// pour une meilleure organisation des routes RESTful 

@@ -13,7 +13,9 @@ import {
   Check, 
   AlertCircle,
   PencilLine,
-  Filter
+  Filter,
+  Search,
+  Zap
 } from "lucide-react"
 import { 
   Card, 
@@ -52,9 +54,13 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
+import { Checkbox } from "@/components/ui/checkbox"
 import { IconPicker } from '@/components/ui/icon-picker'
 import { cn } from '@/lib/utils'
 import Link from "next/link"
+import Image from "next/image"
+import ImageUploader from '@/components/admin/ImageUploader'
+import { FilterDrawer, FilterGroup } from '@/components/admin/FilterDrawer'
 
 // Types et interfaces
 interface Service {
@@ -65,6 +71,12 @@ interface Service {
   categoryId: string
   category: Category
   isActive: boolean
+  // Champs Express
+  isExpressAvailable?: boolean
+  expressPrice?: number | null
+  expressDescription?: string | null
+  estimatedDuration?: number | null
+  isPopular?: boolean
   createdAt: string
   updatedAt: string
 }
@@ -85,6 +97,16 @@ const formSchema = z.object({
     message: 'Une catégorie est requise',
   }),
   icon: z.string().optional(),
+  // Champs Express
+  isExpressAvailable: z.boolean().optional(),
+  expressPrice: z.number().min(0, {
+    message: 'Le prix doit être positif',
+  }).optional(),
+  expressDescription: z.string().optional(),
+  estimatedDuration: z.number().int().min(15, {
+    message: 'La durée doit être d\'au moins 15 minutes',
+  }).optional(),
+  isPopular: z.boolean().optional(),
 })
 
 type ServiceFormValues = z.infer<typeof formSchema>
@@ -101,6 +123,17 @@ export default function AdminServicesPage() {
   const [formOpen, setFormOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string>("all")
   
+  // Recherche et filtres
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string | null>>({
+    expressStatus: null,
+    activeStatus: null,
+    category: null,
+  })
+  
+  // Gestion de l'image
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null)
+  
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
   const [totalServices, setTotalServices] = useState(0)
@@ -114,6 +147,11 @@ export default function AdminServicesPage() {
       description: '',
       categoryId: '',
       icon: '',
+      isExpressAvailable: false,
+      expressPrice: undefined,
+      expressDescription: '',
+      estimatedDuration: undefined,
+      isPopular: false,
     },
   })
 
@@ -133,15 +171,38 @@ export default function AdminServicesPage() {
   }
 
   // Récupération des services avec pagination
-  const fetchServices = async (categoryId?: string, page: number = 1) => {
+  const fetchServices = async (categoryId?: string, page: number = 1, search?: string, filters?: Record<string, string | null>) => {
     setLoading(true)
     try {
       // Construire l'URL avec les paramètres de pagination
       let url = '/api/admin/services?'
-      if (categoryId && categoryId !== "all") {
-        url += `categoryId=${categoryId}&`
+      
+      // Paramètres de pagination
+      url += `page=${page}&limit=${itemsPerPage}&`
+      
+      // Filtre de catégorie
+      const categoryFilter = filters?.category || categoryId
+      if (categoryFilter && categoryFilter !== "all") {
+        url += `categoryId=${categoryFilter}&`
       }
-      url += `page=${page}&limit=${itemsPerPage}`
+      
+      // Recherche
+      if (search && search.trim()) {
+        url += `search=${encodeURIComponent(search.trim())}&`
+      }
+      
+      // Filtre Express
+      if (filters?.expressStatus) {
+        url += `expressOnly=${filters.expressStatus === 'express'}&`
+      }
+      
+      // Filtre statut actif
+      if (filters?.activeStatus) {
+        url += `isActive=${filters.activeStatus === 'active'}&`
+      }
+      
+      // Nettoyer l'URL
+      url = url.replace(/&$/, '')
       
       const response = await fetch(url)
       if (!response.ok) throw new Error('Erreur lors du chargement des services')
@@ -165,14 +226,25 @@ export default function AdminServicesPage() {
   useEffect(() => {
     Promise.all([
       fetchCategories(),
-      fetchServices(selectedCategory, currentPage)
+      fetchServices(selectedCategory, currentPage, searchQuery, selectedFilters)
     ]);
   }, [])
 
-  // Mise à jour des services lorsque la catégorie sélectionnée change
+  // Mise à jour des services lorsque les filtres changent
   useEffect(() => {
-    fetchServices(selectedCategory, 1) // Reset to page 1 when category changes
-  }, [selectedCategory])
+    fetchServices(selectedCategory, 1, searchQuery, selectedFilters) // Reset to page 1 when filters change
+  }, [selectedCategory, searchQuery, selectedFilters])
+
+  // Debounce pour la recherche
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery !== "") {
+        fetchServices(selectedCategory, 1, searchQuery, selectedFilters)
+      }
+    }, 500)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery])
 
   // Réinitialisation du formulaire lors de l'édition
   useEffect(() => {
@@ -182,8 +254,16 @@ export default function AdminServicesPage() {
         description: editingService.description || '',
         categoryId: editingService.categoryId,
         icon: editingService.icon || '',
+        isExpressAvailable: editingService.isExpressAvailable || false,
+        expressPrice: editingService.expressPrice || undefined,
+        expressDescription: editingService.expressDescription || '',
+        estimatedDuration: editingService.estimatedDuration || undefined,
+        isPopular: editingService.isPopular || false,
       })
+      setCurrentImageUrl(editingService.icon || null)
       setFormOpen(true)
+    } else {
+      setCurrentImageUrl(null)
     }
   }, [editingService, form])
 
@@ -225,11 +305,17 @@ export default function AdminServicesPage() {
         description: '',
         categoryId: '',
         icon: '',
+        isExpressAvailable: false,
+        expressPrice: undefined,
+        expressDescription: '',
+        estimatedDuration: undefined,
+        isPopular: false,
       })
       
+      setCurrentImageUrl(null)
       setEditingService(null)
       setFormOpen(false)
-      fetchServices(selectedCategory)
+      fetchServices(selectedCategory, currentPage, searchQuery, selectedFilters)
     } catch (error: any) {
       console.error('Erreur:', error)
       toast({
@@ -249,11 +335,17 @@ export default function AdminServicesPage() {
 
   const handleCancelEdit = () => {
     setEditingService(null)
+    setCurrentImageUrl(null)
     form.reset({
       name: '',
       description: '',
       categoryId: '',
       icon: '',
+      isExpressAvailable: false,
+      expressPrice: undefined,
+      expressDescription: '',
+      estimatedDuration: undefined,
+      isPopular: false,
     })
     setFormOpen(false)
   }
@@ -262,7 +354,7 @@ export default function AdminServicesPage() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) return
     
     try {
-      const response = await fetch(`/api/admin/services?id=${id}`, {
+      const response = await fetch(`/api/admin/services/${id}`, {
         method: 'DELETE',
       })
       
@@ -276,7 +368,7 @@ export default function AdminServicesPage() {
         description: "Service supprimé avec succès",
       })
       
-      fetchServices(selectedCategory)
+      fetchServices(selectedCategory, currentPage, searchQuery, selectedFilters)
     } catch (error: any) {
       console.error('Erreur:', error)
       toast({
@@ -291,21 +383,81 @@ export default function AdminServicesPage() {
   const handleNextPage = () => {
     const nextPage = currentPage + 1
     setCurrentPage(nextPage)
-    fetchServices(selectedCategory, nextPage)
+    fetchServices(selectedCategory, nextPage, searchQuery, selectedFilters)
   }
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
       const prevPage = currentPage - 1
       setCurrentPage(prevPage)
-      fetchServices(selectedCategory, prevPage)
+      fetchServices(selectedCategory, prevPage, searchQuery, selectedFilters)
     }
   }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
-    fetchServices(selectedCategory, page)
+    fetchServices(selectedCategory, page, searchQuery, selectedFilters)
   }
+
+  // Gestion de l'image
+  const handleImageUploaded = (imageUrl: string) => {
+    setCurrentImageUrl(imageUrl)
+    form.setValue('icon', imageUrl)
+  }
+
+  const handleImageRemoved = () => {
+    setCurrentImageUrl(null)
+    form.setValue('icon', '')
+  }
+
+  // Gestion des filtres
+  const handleFilterChange = (groupId: string, value: string | null) => {
+    setSelectedFilters(prev => ({
+      ...prev,
+      [groupId]: value
+    }))
+    setCurrentPage(1) // Reset à la page 1 lors du changement de filtre
+  }
+
+  const handleResetFilters = () => {
+    setSelectedFilters({
+      expressStatus: null,
+      activeStatus: null,
+      category: null,
+    })
+    setSearchQuery("")
+    setSelectedCategory("all")
+    setCurrentPage(1)
+  }
+
+  // Configuration des filtres
+  const filterGroups: FilterGroup[] = [
+    {
+      id: 'expressStatus',
+      title: 'Services Express',
+      options: [
+        { id: 'express', label: 'Services Express', value: 'express' },
+        { id: 'standard', label: 'Services Standard', value: 'standard' },
+      ]
+    },
+    {
+      id: 'activeStatus',
+      title: 'Statut',
+      options: [
+        { id: 'active', label: 'Services Actifs', value: 'active' },
+        { id: 'inactive', label: 'Services Inactifs', value: 'inactive' },
+      ]
+    },
+    {
+      id: 'category',
+      title: 'Catégorie',
+      options: categories.map(category => ({
+        id: category.id,
+        label: category.name,
+        value: category.id
+      }))
+    }
+  ]
 
   // Calcul des pages à afficher
   const totalPages = Math.ceil(totalServices / itemsPerPage)
@@ -347,13 +499,18 @@ export default function AdminServicesPage() {
                   description: '',
                   categoryId: '',
                   icon: '',
+                  isExpressAvailable: false,
+                  expressPrice: undefined,
+                  expressDescription: '',
+                  estimatedDuration: undefined,
+                  isPopular: false,
                 });
               }}>
                 <Plus className="mr-2 h-4 w-4" />
                 Ajouter un service
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-[#0E261C] border-[#FCDA89]/20">
+            <DialogContent className="bg-[#0E261C] border-[#FCDA89]/20 max-w-4xl">
               <DialogHeader>
                 <DialogTitle className="text-white">
                   {editingService ? 'Modifier un service' : 'Ajouter un service'}
@@ -419,6 +576,101 @@ export default function AdminServicesPage() {
                     onChange={(value) => form.setValue('icon', value)}
                   />
                 </div>
+
+                {/* Upload d'image */}
+                <ImageUploader
+                  label="Image du service"
+                  currentImageUrl={currentImageUrl}
+                  onImageUploaded={handleImageUploaded}
+                  onImageRemoved={handleImageRemoved}
+                  endpoint="/api/admin/services/upload-image"
+                  entityId={editingService?.id}
+                  acceptedTypes={["image/jpeg", "image/jpg", "image/png", "image/webp"]}
+                  maxSizeMB={5}
+                  disabled={submitting}
+                />
+
+                {/* Section Reenove Express */}
+                <div className="border-t border-[#FCDA89]/20 pt-4 space-y-4">
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-white font-medium">Configuration Reenove Express</h3>
+                    <Badge variant="outline" className="text-xs bg-[#FCDA89]/10 text-[#FCDA89] border-[#FCDA89]/30">
+                      Premium
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="isExpressAvailable"
+                      checked={form.watch('isExpressAvailable')}
+                      onCheckedChange={(checked) => form.setValue('isExpressAvailable', checked === true)}
+                      className="border-[#FCDA89]/20 data-[state=checked]:bg-[#FCDA89] data-[state=checked]:text-[#0E261C]"
+                    />
+                    <Label htmlFor="isExpressAvailable" className="text-white">
+                      Disponible en Express (prix fixe)
+                    </Label>
+                  </div>
+
+                  {form.watch('isExpressAvailable') && (
+                    <>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="expressPrice" className="text-white">Prix Express (€)</Label>
+                          <Input
+                            id="expressPrice"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            placeholder="Ex: 89.99"
+                            className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
+                            {...form.register('expressPrice', { valueAsNumber: true })}
+                          />
+                          {form.formState.errors.expressPrice && (
+                            <p className="text-sm text-red-400">{form.formState.errors.expressPrice.message}</p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="estimatedDuration" className="text-white">Durée estimée (min)</Label>
+                          <Input
+                            id="estimatedDuration"
+                            type="number"
+                            min="15"
+                            step="15"
+                            placeholder="Ex: 60"
+                            className="bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
+                            {...form.register('estimatedDuration', { valueAsNumber: true })}
+                          />
+                          {form.formState.errors.estimatedDuration && (
+                            <p className="text-sm text-red-400">{form.formState.errors.estimatedDuration.message}</p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="expressDescription" className="text-white">Description Express</Label>
+                        <Textarea
+                          id="expressDescription"
+                          placeholder="Description spécifique pour le service Express (ex: Diagnostic rapide en 30 minutes)"
+                          className="resize-none h-20 bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
+                          {...form.register('expressDescription')}
+                        />
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="isPopular"
+                          checked={form.watch('isPopular')}
+                          onCheckedChange={(checked) => form.setValue('isPopular', checked === true)}
+                          className="border-[#FCDA89]/20 data-[state=checked]:bg-[#FCDA89] data-[state=checked]:text-[#0E261C]"
+                        />
+                        <Label htmlFor="isPopular" className="text-white">
+                          Service populaire (mis en avant)
+                        </Label>
+                      </div>
+                    </>
+                  )}
+                </div>
                 
                 <DialogFooter className="pt-4">
                   <Button variant="outline" type="button" onClick={handleCancelEdit} className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
@@ -460,37 +712,71 @@ export default function AdminServicesPage() {
         </div>
       )}
 
+      {/* Barre de recherche et filtres */}
+      <Card className="bg-white/5 border-[#FCDA89]/20">
+        <CardContent className="p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            {/* Barre de recherche */}
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50" />
+                <Input
+                  placeholder="Rechercher par nom, description..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-white/5 border-[#FCDA89]/20 text-white placeholder:text-white/50"
+                />
+              </div>
+            </div>
+            
+            {/* Filtres */}
+            <div className="flex items-center gap-2">
+              <FilterDrawer
+                title="Filtrer les services"
+                description="Utilisez les filtres pour affiner votre recherche"
+                side="right"
+                trigger={
+                  <Button variant="outline" className="bg-white/5 border-[#FCDA89]/20 text-white hover:bg-[#FCDA89]/10">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Filtres
+                    {Object.values(selectedFilters).some(v => v) && (
+                      <Badge className="ml-2 bg-[#FCDA89] text-[#0E261C] text-xs">
+                        {Object.values(selectedFilters).filter(v => v).length}
+                      </Badge>
+                    )}
+                  </Button>
+                }
+                filterGroups={filterGroups}
+                selectedFilters={selectedFilters}
+                onFilterChange={handleFilterChange}
+                onResetFilters={handleResetFilters}
+              />
+              
+              {/* Bouton reset rapide */}
+              {(searchQuery || Object.values(selectedFilters).some(v => v)) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleResetFilters}
+                  className="text-white/70 hover:text-white hover:bg-white/10"
+                >
+                  Effacer tout
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+        <CardHeader>
           <div>
             <CardTitle className="text-white">Liste des services</CardTitle>
             <CardDescription className="text-white/70">
-              {selectedCategory 
-                ? `Services de la catégorie: ${categories.find(c => c.id === selectedCategory)?.name || selectedCategory}`
-                : 'Tous les services disponibles'}
+              {totalServices} service{totalServices > 1 ? 's' : ''} trouvé{totalServices > 1 ? 's' : ''}
+              {searchQuery && ` pour "${searchQuery}"`}
+              {Object.values(selectedFilters).some(v => v) && ` avec filtres actifs`}
             </CardDescription>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Select 
-              value={selectedCategory} 
-              onValueChange={setSelectedCategory}
-            >
-              <SelectTrigger className="w-[200px] bg-white/5 border-[#FCDA89]/20 text-white">
-                <SelectValue placeholder="Filtrer par catégorie" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes les catégories</SelectItem>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button variant="outline" className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10" onClick={() => fetchServices(selectedCategory)}>
-              <Filter className="h-4 w-4 mr-2" />
-              Filtrer
-            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -503,6 +789,7 @@ export default function AdminServicesPage() {
               <Table>
                               <TableHeader>
                 <TableRow className="border-white/10">
+                  <TableHead className="text-white/70">Image</TableHead>
                   <TableHead className="text-white/70">Nom</TableHead>
                   <TableHead className="text-white/70">Catégorie</TableHead>
                   <TableHead className="text-white/70">Description</TableHead>
@@ -513,7 +800,34 @@ export default function AdminServicesPage() {
                 <TableBody>
                   {services.map((service) => (
                     <TableRow key={service.id} className="border-white/10 hover:bg-white/5">
-                      <TableCell className="font-medium text-white">{service.name}</TableCell>
+                      <TableCell>
+                        <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center">
+                          {service.icon && service.icon.startsWith('http') ? (
+                            <Image
+                              src={service.icon}
+                              alt={`Image de ${service.name}`}
+                              fill
+                              className="object-cover"
+                              sizes="48px"
+                            />
+                          ) : (
+                            <div className="text-white/50 text-sm">
+                              {service.icon || 'N/A'}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium text-white">
+                        <div className="flex items-center gap-2">
+                          <span>{service.name}</span>
+                          {service.isExpressAvailable && (
+                            <Badge className="bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30 text-xs px-1.5 py-0.5">
+                              <Zap className="h-3 w-3 mr-1" />
+                              Express
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="bg-[#FCDA89]/20 text-[#FCDA89] border-[#FCDA89]/30">
                           {service.category.name}
