@@ -74,61 +74,84 @@ export async function GET() {
 // POST - Mettre à jour le profil de l'artisan
 export async function POST(request: NextRequest) {
   try {
+    console.log("🚀 Début de la requête POST /api/artisan/profile")
+    
     const session = await getServerSession(authOptions)
+    console.log("📋 Session récupérée:", { userId: session?.user?.id, email: session?.user?.email })
     
     if (!session || !session.user) {
+      console.error("❌ Session non trouvée ou utilisateur manquant")
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 })
     }
 
     const userId = session.user.id
+    console.log("👤 UserId:", userId)
     
-    // Récupérer les données du FormData
-    const formData = await request.formData()
+    // Récupérer les données JSON au lieu de FormData
+    const data = await request.json()
+    console.log("📥 Données brutes reçues:", data)
     
-    const name = formData.get('name')?.toString() || ''
-    const phone = formData.get('phone')?.toString() || ''
-    const address = formData.get('address')?.toString() || ''
-    const city = formData.get('city')?.toString() || ''
-    const postalCode = formData.get('postalCode')?.toString() || ''
-    const companyName = formData.get('companyName')?.toString() || ''
-    const siren = formData.get('siren')?.toString() || ''
+    const { firstName, lastName, companyName, siret, phone, yearsOfExperience } = data
+    
+    // Construire le nom complet à partir du prénom et nom
+    const fullName = [firstName, lastName].filter(Boolean).join(" ")
 
-    console.log("Données reçues pour mise à jour du profil:", {
-      name, phone, address, city, postalCode, companyName, siren
+    console.log("🔍 Données traitées pour mise à jour du profil:", {
+      firstName, lastName, fullName, phone, companyName, siret, yearsOfExperience
     })
 
     try {
+      console.log("💾 Début des opérations base de données")
+      
       // Mise à jour des données utilisateur
+      console.log("🔄 Mise à jour utilisateur avec:", {
+        userId,
+        name: fullName,
+        phone
+      })
+      
       const updatedUser = await prisma.user.update({
         where: { id: userId },
         data: {
-          name: name || undefined,
+          name: fullName || undefined,
           phone: phone || undefined,
-          address: address || undefined,
-          city: city || undefined,
-          postalCode: postalCode || undefined,
         },
       })
+      console.log("✅ Utilisateur mis à jour:", { id: updatedUser.id, name: updatedUser.name })
 
       // Création ou mise à jour du profil artisan
+      console.log("🔄 Upsert profil artisan avec:", {
+        userId,
+        companyName,
+        siret,
+        yearsOfExperience
+      })
+      
       const artisanProfile = await prisma.artisanProfile.upsert({
         where: { userId },
         create: {
           userId,
           companyName: companyName || undefined,
-          siret: siren || undefined,
+          siret: siret || undefined,
+          yearsOfExperience: yearsOfExperience || 0,
         },
         update: {
           companyName: companyName || undefined,
-          siret: siren || undefined,
+          siret: siret || undefined,
+          yearsOfExperience: yearsOfExperience || 0,
         },
       })
+      console.log("✅ Profil artisan créé/mis à jour:", { id: artisanProfile.id, companyName: artisanProfile.companyName })
 
       // Marquer l'étape profil comme complétée dans l'onboarding
+      console.log("🔄 Mise à jour progression onboarding")
       await updateOnboardingProgress(userId, "profile")
+      console.log("✅ Progression onboarding mise à jour")
 
       // Retourner le profil mis à jour
       const profileData = {
+        firstName,
+        lastName,
         name: updatedUser.name,
         email: updatedUser.email,
         phone: updatedUser.phone,
@@ -136,19 +159,25 @@ export async function POST(request: NextRequest) {
         city: updatedUser.city,
         postalCode: updatedUser.postalCode,
         companyName: artisanProfile.companyName,
-        siren: artisanProfile.siret,
+        siret: artisanProfile.siret,
+        yearsOfExperience: artisanProfile.yearsOfExperience,
       }
 
+      console.log("📤 Données de réponse:", profileData)
+      console.log("✅ Requête POST /api/artisan/profile terminée avec succès")
+      
       return NextResponse.json(profileData)
     } catch (prismaError) {
-      console.error("Erreur Prisma lors de la mise à jour du profil:", prismaError)
+      console.error("❌ Erreur Prisma lors de la mise à jour du profil:", prismaError)
+      console.error("Stack trace Prisma:", (prismaError as Error)?.stack)
       return NextResponse.json(
         { error: "Erreur lors de la mise à jour en base de données" },
         { status: 500 }
       )
     }
   } catch (error) {
-    console.error("Erreur lors de la mise à jour du profil:", error)
+    console.error("❌ Erreur générale lors de la mise à jour du profil:", error)
+    console.error("Stack trace générale:", (error as Error)?.stack)
     return NextResponse.json(
       { error: "Erreur lors de la mise à jour du profil" },
       { status: 500 }
