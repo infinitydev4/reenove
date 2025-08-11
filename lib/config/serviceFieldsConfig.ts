@@ -33,10 +33,19 @@ export interface ServiceFieldsConfig {
 export const ALWAYS_REQUIRED_FIELDS = [
   'project_category',
   'service_type', 
-  'project_description',
+  'project_description'
   // Les champs spécifiques à la catégorie (room_type, current_state) sont insérés ici via getRequiredFieldsForCategory
-  'photos_uploaded',  // Photos pour analyse GPT Vision
-  'project_location'  // Localisation en dernier (plus administratif)
+  // project_location sera ajouté en dernier dans l'ordre complet
+]
+
+// Ordre complet incluant les champs optionnels
+export const COMPLETE_FIELDS_ORDER = [
+  'project_category',
+  'service_type', 
+  'project_description',
+  // Les champs spécifiques à la catégorie sont insérés ici
+  'photos_uploaded',  // Photos optionnelles pour analyse GPT Vision
+  'project_location'
 ]
 
 // Champs requis selon la catégorie
@@ -49,8 +58,7 @@ export const CATEGORY_REQUIRED_FIELDS: Record<string, string[]> = {
   'Salle de bain': ['surface_area', 'current_state'],
   'Portes et fenêtres': ['room_type', 'materials_preferences'],
   'Jardinage': ['surface_area'],
-  'Rénovation générale': ['surface_area', 'room_type', 'current_state'],
-  'Autre': []
+  'Rénovation générale': ['surface_area', 'room_type', 'current_state']
 }
 
 // === CONFIGURATION DES CHAMPS ===
@@ -73,8 +81,7 @@ export const DEFAULT_FIELDS: FieldConfig[] = [
       { id: 'bathroom', label: 'Salle de bain', value: 'Salle de bain' },
       { id: 'doors_windows', label: 'Portes et fenêtres', value: 'Portes et fenêtres' },
       { id: 'gardening', label: 'Jardinage', value: 'Jardinage' },
-      { id: 'general', label: 'Rénovation générale', value: 'Rénovation générale' },
-      { id: 'other', label: 'Autre', value: 'Autre' }
+      { id: 'general', label: 'Rénovation générale', value: 'Rénovation générale' }
     ]
   },
   {
@@ -99,9 +106,9 @@ export const DEFAULT_FIELDS: FieldConfig[] = [
     id: 'photos_uploaded',
     displayName: 'Photos du projet',
     type: 'photos',
-    required: true,
-    question: 'Pouvez-vous ajouter des photos de l\'état actuel ?',
-    helpPrompt: 'Les photos m\'aident à évaluer précisément la situation',
+    required: false, // Les photos sont optionnelles
+    question: 'Pouvez-vous ajouter des photos de l\'état actuel ? (optionnel)',
+    helpPrompt: 'Les photos m\'aident à évaluer précisément la situation, mais vous pouvez continuer sans',
     examples: ['Photo de l\'état actuel', 'Vue d\'ensemble', 'Détails du problème']
   },
   {
@@ -340,6 +347,9 @@ export function validateFieldValue(field: FieldConfig, value: any): { isValid: b
 }
 
 export function getFieldsForCategory(category: string): FieldConfig[] {
+  // Normaliser la catégorie pour gérer les variations de casse
+  const normalizedCategory = category === 'rénovation générale' ? 'Rénovation générale' : category;
+  
   // Mapper les catégories aux services
   const categoryToService: Record<string, string> = {
     'Plomberie': 'plumb-repair',
@@ -348,21 +358,20 @@ export function getFieldsForCategory(category: string): FieldConfig[] {
     'Salle de bain': 'bath-renovation'
   };
   
-  const serviceId = categoryToService[category] || 'default';
+  const serviceId = categoryToService[normalizedCategory] || 'default';
   return getServiceFieldsConfig(serviceId);
 }
 
 export function getRequiredFieldsForCategory(category: string): string[] {
-  const categorySpecific = CATEGORY_REQUIRED_FIELDS[category] || [];
+  // Normaliser la catégorie pour gérer les variations de casse
+  const normalizedCategory = category === 'rénovation générale' ? 'Rénovation générale' : category;
+  const categorySpecific = CATEGORY_REQUIRED_FIELDS[normalizedCategory] || [];
   
-  // ORDRE OPTIMISÉ UX : Insérer les champs spécifiques à la catégorie AVANT photos et location
+  // ORDRE OPTIMISÉ UX : Utiliser les champs requis + les champs spécifiques à la catégorie
   const optimizedOrder = [
-    'project_category',
-    'service_type', 
-    'project_description',
-    ...categorySpecific,  // room_type, current_state, etc. ICI pour logique UX
-    'photos_uploaded',
-    'project_location'    // Localisation en dernier
+    ...ALWAYS_REQUIRED_FIELDS, // project_category, service_type, project_description
+    ...categorySpecific,       // room_type, current_state, etc. ICI pour logique UX
+    'project_location'         // Localisation en dernier (après photos optionnelles)
   ];
   
   return optimizedOrder;
@@ -386,7 +395,9 @@ export function getConditionalFields(category: string, currentValues: Record<str
 }
 
 export function isFieldRelevantForCategory(fieldId: string, category: string): boolean {
-  const fields = getFieldsForCategory(category);
+  // Normaliser la catégorie pour gérer les variations de casse
+  const normalizedCategory = category === 'rénovation générale' ? 'Rénovation générale' : category;
+  const fields = getFieldsForCategory(normalizedCategory);
   return fields.some(f => f.id === fieldId);
 }
 

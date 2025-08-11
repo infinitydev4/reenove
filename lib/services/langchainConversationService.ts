@@ -386,7 +386,7 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
       
       // Options communes pour les champs les plus fréquents
       const commonOptions = {
-        project_category: ['plomberie', 'électricité', 'menuiserie', 'peinture', 'maçonnerie', 'salle de bain', 'portes et fenêtres', 'jardinage', 'rénovation générale', 'autre'],
+        project_category: ['plomberie', 'électricité', 'menuiserie', 'peinture', 'maçonnerie', 'salle de bain', 'portes et fenêtres', 'jardinage', 'rénovation générale', 'Rénovation générale'],
         current_state: ['bon état', 'état moyen', 'mauvais état', 'endommagé', 'problèmes d\'humidité'],
         materials_preferences: ['aucune préférence', 'standard', 'haute qualité', 'économique', 'finition mate', 'finition satinée'],
         project_urgency: ['urgent', 'dans les 15 jours', 'dans les 30 jours', 'quand vous voulez'],
@@ -449,11 +449,15 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
       console.log('🚫 Focus sur champ déjà rempli:', context.currentFocus, 'Valeur:', currentValue, 'Complet:', isFieldComplete);
       
       if (isFieldComplete) {
-        if (missingRequired.length > 0) {
-          console.log('➡️ ORDRE IMPOSÉ - prochain champ requis:', missingRequired[0]);
+        // Séparer project_location des autres champs requis
+        const missingRequiredExceptLocation = missingRequired.filter(field => field !== 'project_location');
+        const isLocationMissing = missingRequired.includes('project_location');
+        
+        if (missingRequiredExceptLocation.length > 0) {
+          console.log('➡️ ORDRE IMPOSÉ - prochain champ requis:', missingRequiredExceptLocation[0]);
           return {
             action: 'ask_next',
-            target_field: missingRequired[0],
+            target_field: missingRequiredExceptLocation[0],
             reasoning: 'Suivre l\'ordre strict des champs requis'
           };
         } else if (missingConditional.length > 0) {
@@ -463,6 +467,33 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
             reasoning: 'Focus sur prochain champ conditionnel'
           };
         } else {
+          // Vérifier les champs optionnels (comme les photos) avant l'adresse
+          const category = this.projectState.project_category || 'default';
+          const completeOrder = this.getCompleteFieldsOrder(category);
+          const missingOptional = completeOrder.filter(fieldId => 
+            !this.projectState[fieldId] && 
+            fieldId === 'photos_uploaded' // Pour l'instant, seules les photos sont optionnelles
+          );
+          
+          if (missingOptional.length > 0) {
+            console.log('📸 Champ optionnel manquant détecté:', missingOptional[0]);
+            return {
+              action: 'ask_next',
+              target_field: missingOptional[0],
+              reasoning: 'Question optionnelle (photos) à poser'
+            };
+          }
+          
+          // Maintenant, vérifier project_location en dernier
+          if (isLocationMissing) {
+            console.log('📍 Localisation manquante - demander en dernier:', 'project_location');
+            return {
+              action: 'ask_next',
+              target_field: 'project_location',
+              reasoning: 'Localisation demandée après les photos'
+            };
+          }
+          
           return {
             action: 'validate',
             target_field: null,
@@ -473,11 +504,15 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
     }
 
     // LOGIQUE DÉTERMINISTE : Toujours suivre l'ordre défini des champs
-    if (missingRequired.length > 0) {
-      console.log('➡️ ORDRE IMPOSÉ - prochain champ requis dans l\'ordre:', missingRequired[0]);
+    // Séparer project_location des autres champs requis pour le traiter après les photos
+    const missingRequiredExceptLocation = missingRequired.filter(field => field !== 'project_location');
+    const isLocationMissing = missingRequired.includes('project_location');
+    
+    if (missingRequiredExceptLocation.length > 0) {
+      console.log('➡️ ORDRE IMPOSÉ - prochain champ requis dans l\'ordre:', missingRequiredExceptLocation[0]);
       return {
         action: 'ask_next',
-        target_field: missingRequired[0],
+        target_field: missingRequiredExceptLocation[0],
         reasoning: 'Suivre l\'ordre strict des champs requis'
       };
     }
@@ -487,6 +522,33 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
         action: 'ask_next',
         target_field: missingConditional[0],
         reasoning: 'Compléter les champs conditionnels'
+      };
+    }
+
+    // Vérifier les champs optionnels (comme les photos) avant l'adresse
+    const category = this.projectState.project_category || 'default';
+    const completeOrder = this.getCompleteFieldsOrder(category);
+    const missingOptional = completeOrder.filter(fieldId => 
+      !this.projectState[fieldId] && 
+      fieldId === 'photos_uploaded' // Pour l'instant, seules les photos sont optionnelles
+    );
+    
+    if (missingOptional.length > 0) {
+      console.log('📸 Champ optionnel manquant détecté (logique générale):', missingOptional[0]);
+      return {
+        action: 'ask_next',
+        target_field: missingOptional[0],
+        reasoning: 'Question optionnelle (photos) à poser'
+      };
+    }
+    
+    // Maintenant, vérifier project_location en dernier
+    if (isLocationMissing) {
+      console.log('📍 Localisation manquante - demander en dernier:', 'project_location');
+      return {
+        action: 'ask_next',
+        target_field: 'project_location',
+        reasoning: 'Localisation demandée après les photos'
       };
     }
 
@@ -544,8 +606,20 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
     const serviceType = this.projectState.service_type || '';
     
     if (!this.useAI) {
-      // Utiliser les options de la configuration si disponibles, sinon générer des suggestions
-      const options = fieldConfig.options || this.generateFieldSuggestions(fieldName, category, serviceType);
+      // Options spéciales pour les photos
+      let options = fieldConfig.options || this.generateFieldSuggestions(fieldName, category, serviceType);
+      
+      if (fieldName === 'photos_uploaded') {
+        options = [
+          { id: 'skip_photos', label: '🚫 Je n\'ai pas d\'image', value: 'Je n\'ai pas d\'image pour le moment' }
+        ];
+      }
+      
+      // Pour room_type, toujours utiliser les suggestions dynamiques contextuelles
+      if (fieldName === 'room_type') {
+        options = this.generateFieldSuggestions(fieldName, category, serviceType);
+      }
+      
       const output = fieldConfig.question || `Pouvez-vous me parler de ${fieldConfig.displayName} ?`;
       const finalOutput = options.length > 0 
         ? `${output}\n\n💡 Suggestions rapides :\nVous pouvez cliquer sur une option ci-dessous ou spécifier autre chose dans le champ de message si aucune suggestion ne correspond exactement.`
@@ -587,10 +661,7 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
           break;
           
          case 'current_state':
-          contextualPrompt = `Pour un projet de ${category} (${serviceType}), 
-          demande l'état actuel avec des exemples concrets selon le domaine.
-          Pour Électricité: "fonctionne mais vétuste", "disjoncte souvent", "aux normes"
-          Pour Plomberie: "fuit légèrement", "complètement cassé", "fonctionne bien"`;
+          contextualPrompt = this.getContextualCurrentStatePrompt(category, serviceType);
           break;
           
         case 'project_urgency':
@@ -619,7 +690,8 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
           contextualPrompt = `Pour ${category} (${serviceType}), demande des photos pour un devis précis.
           Suggère quoi photographier selon le domaine:
           Pour Électricité: "tableau actuel", "prises concernées", "vue d'ensemble"
-          Pour Plomberie: "robinet/fuite", "canalisation", "pièce complète"`;
+          Pour Plomberie: "robinet/fuite", "canalisation", "pièce complète"
+          Mentionne que c'est optionnel et qu'ils peuvent continuer sans photos si nécessaire.`;
           break;
           
         default:
@@ -645,7 +717,12 @@ Génère UNIQUEMENT la question avec exemples.`;
       const result = await this.generateAIResponse(prompt);
       
       // Utiliser les options de la configuration si disponibles, sinon générer des suggestions
-      const options = fieldConfig.options || this.generateFieldSuggestions(fieldName, category, serviceType);
+      let options = fieldConfig.options || this.generateFieldSuggestions(fieldName, category, serviceType);
+      
+      // Pour room_type, toujours utiliser les suggestions dynamiques contextuelles
+      if (fieldName === 'room_type') {
+        options = this.generateFieldSuggestions(fieldName, category, serviceType);
+      }
       
       // Ajouter l'instruction pour les options
       const finalOutput = options.length > 0 
@@ -662,7 +739,12 @@ Génère UNIQUEMENT la question avec exemples.`;
     } catch (error) {
       console.error('❌ Erreur askNextQuestion:', error);
       // Fallback - utiliser les options de la configuration si disponibles, sinon générer des suggestions
-      const options = fieldConfig.options || this.generateFieldSuggestions(fieldName, category, serviceType);
+      let options = fieldConfig.options || this.generateFieldSuggestions(fieldName, category, serviceType);
+      
+      // Pour room_type, toujours utiliser les suggestions dynamiques contextuelles
+      if (fieldName === 'room_type') {
+        options = this.generateFieldSuggestions(fieldName, category, serviceType);
+      }
       const output = fieldConfig.question || `Pouvez-vous me parler de ${fieldConfig.displayName} ?`;
       const finalOutput = options.length > 0 
         ? `${output}\n\n💡 Suggestions rapides :\nVous pouvez cliquer sur une option ci-dessous ou spécifier autre chose dans le champ de message si aucune suggestion ne correspond exactement.`
@@ -696,22 +778,11 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'bathroom', label: '🚿 Salle de bain', value: 'Salle de bain' },
         { id: 'doors_windows', label: '🚪 Portes et fenêtres', value: 'Portes et fenêtres' },
         { id: 'gardening', label: '🌱 Jardinage', value: 'Jardinage' },
-        { id: 'general', label: '🏠 Rénovation générale', value: 'Rénovation générale' },
-        { id: 'other', label: '❓ Autre', value: 'Autre' }
+        { id: 'general', label: '🏠 Rénovation générale', value: 'Rénovation générale' }
       ],
       service_type: this.getServiceTypeSuggestions(cleanCategory),
       project_description: this.getProjectDescriptionSuggestions(cleanCategory, cleanServiceType),
-      room_type: [
-        { id: 'salon', label: '🛋️ Salon', value: 'salon' },
-        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
-        { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
-        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
-        { id: 'garage', label: '🚗 Garage', value: 'garage' },
-        { id: 'bureau', label: '💼 Bureau', value: 'bureau' },
-        { id: 'couloir', label: '🚪 Couloir', value: 'couloir' },
-        { id: 'wc', label: '🚽 WC', value: 'WC' },
-        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' }
-      ],
+      room_type: this.getRoomTypeSuggestions(cleanCategory),
       surface_area: [
         { id: 'petite', label: 'Moins de 10 m²', value: 'moins de 10 m²' },
         { id: 'moyenne', label: '10-20 m²', value: '10-20 m²' },
@@ -802,6 +873,13 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'plantation', label: '🌳 Plantation d\'arbres', value: 'plantation d\'arbres' },
         { id: 'terrasse', label: '🪵 Terrasse en bois', value: 'construire terrasse bois' }
       ],
+      // Version minuscule pour compatibilité
+      'jardinage': [
+        { id: 'amenagement', label: '🌿 Aménagement paysager', value: 'aménagement paysager' },
+        { id: 'pelouse', label: '🌱 Créer une pelouse', value: 'créer une pelouse' },
+        { id: 'plantation', label: '🌳 Plantation d\'arbres', value: 'plantation d\'arbres' },
+        { id: 'terrasse', label: '🪵 Terrasse en bois', value: 'construire terrasse bois' }
+      ],
       'Rénovation générale': [
         { id: 'renovation_complete', label: '🏠 Rénovation complète', value: 'rénovation complète' },
         { id: 'agrandissement', label: '📐 Agrandissement', value: 'agrandissement maison' },
@@ -814,13 +892,13 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'agrandissement', label: '📐 Agrandissement', value: 'agrandissement maison' },
         { id: 'isolation', label: '🧱 Isolation thermique', value: 'isolation thermique' },
         { id: 'combles', label: '🏠 Aménagement combles', value: 'aménagement combles' }
-      ],
-      'Autre': [
-        { id: 'autre_service', label: '🔧 Autre service', value: 'autre type de travaux' },
-        { id: 'conseil', label: '💡 Demande de conseil', value: 'demande de conseil' },
-        { id: 'devis', label: '📋 Devis personnalisé', value: 'devis personnalisé' },
-        { id: 'expertise', label: '🔍 Expertise technique', value: 'expertise technique' }
       ]
+      // 'Autre': [
+      //   { id: 'autre_service', label: '🔧 Autre service', value: 'autre type de travaux' },
+      //   { id: 'conseil', label: '💡 Demande de conseil', value: 'demande de conseil' },
+      //   { id: 'devis', label: '📋 Devis personnalisé', value: 'devis personnalisé' },
+      //   { id: 'expertise', label: '🔍 Expertise technique', value: 'expertise technique' }
+      // ]
     };
 
     console.log('🔍 getServiceTypeSuggestions - Recherche pour catégorie:', category);
@@ -828,6 +906,124 @@ Génère UNIQUEMENT la question avec exemples.`;
     console.log('📋 Suggestions trouvées:', suggestions ? suggestions.length : 0);
     
     return suggestions || [];
+  }
+
+  // Suggestions pour les types de pièces selon la catégorie
+  private getRoomTypeSuggestions(category: string): Array<{ id: string; label: string; value: string }> {
+    const roomSuggestions: Record<string, Array<{ id: string; label: string; value: string }>> = {
+      'Plomberie': [
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+        { id: 'wc', label: '🚽 WC', value: 'WC' },
+        { id: 'garage', label: '🚗 Garage', value: 'garage' },
+        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' },
+        { id: 'exterieur', label: '🌿 Extérieur/Jardin', value: 'extérieur' }
+      ],
+      'plomberie': [
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+        { id: 'wc', label: '🚽 WC', value: 'WC' },
+        { id: 'garage', label: '🚗 Garage', value: 'garage' },
+        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' },
+        { id: 'exterieur', label: '🌿 Extérieur/Jardin', value: 'extérieur' }
+      ],
+      'Électricité': [
+        { id: 'salon', label: '🛋️ Salon', value: 'salon' },
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
+        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+        { id: 'garage', label: '🚗 Garage', value: 'garage' },
+        { id: 'bureau', label: '💼 Bureau', value: 'bureau' },
+        { id: 'couloir', label: '🚪 Couloir', value: 'couloir' },
+        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' }
+      ],
+      'Electricite': [
+        { id: 'salon', label: '🛋️ Salon', value: 'salon' },
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
+        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+        { id: 'garage', label: '🚗 Garage', value: 'garage' },
+        { id: 'bureau', label: '💼 Bureau', value: 'bureau' },
+        { id: 'couloir', label: '🚪 Couloir', value: 'couloir' },
+        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' }
+      ],
+      'Peinture': [
+        { id: 'salon', label: '🛋️ Salon', value: 'salon' },
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
+        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+        { id: 'bureau', label: '💼 Bureau', value: 'bureau' },
+        { id: 'couloir', label: '🚪 Couloir', value: 'couloir' },
+        { id: 'wc', label: '🚽 WC', value: 'WC' },
+        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' }
+      ],
+      'Menuiserie': [
+        { id: 'salon', label: '🛋️ Salon', value: 'salon' },
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
+        { id: 'bureau', label: '💼 Bureau', value: 'bureau' },
+        { id: 'couloir', label: '🚪 Couloir', value: 'couloir' },
+        { id: 'garage', label: '🚗 Garage', value: 'garage' },
+        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' }
+      ],
+      'Maçonnerie': [
+        { id: 'salon', label: '🛋️ Salon', value: 'salon' },
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
+        { id: 'garage', label: '🚗 Garage', value: 'garage' },
+        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' },
+        { id: 'exterieur', label: '🌿 Extérieur/Jardin', value: 'extérieur' }
+      ],
+      'Salle de bain': [
+        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+        { id: 'wc', label: '🚽 WC', value: 'WC' },
+        { id: 'salle_d_eau', label: '🚿 Salle d\'eau', value: 'salle d\'eau' }
+      ],
+      'Portes et fenêtres': [
+        { id: 'salon', label: '🛋️ Salon', value: 'salon' },
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
+        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+        { id: 'bureau', label: '💼 Bureau', value: 'bureau' },
+        { id: 'couloir', label: '🚪 Couloir', value: 'couloir' },
+        { id: 'entree', label: '🚪 Entrée', value: 'entrée' }
+      ],
+      'Jardinage': [
+        { id: 'jardin', label: '🌿 Jardin', value: 'jardin' },
+        { id: 'terrasse', label: '🪵 Terrasse', value: 'terrasse' },
+        { id: 'balcon', label: '🏢 Balcon', value: 'balcon' },
+        { id: 'cour', label: '🏠 Cour', value: 'cour' },
+        { id: 'exterieur', label: '🌿 Extérieur', value: 'extérieur' }
+      ],
+      'Rénovation générale': [
+        { id: 'salon', label: '🛋️ Salon', value: 'salon' },
+        { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+        { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
+        { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+        { id: 'bureau', label: '💼 Bureau', value: 'bureau' },
+        { id: 'couloir', label: '🚪 Couloir', value: 'couloir' },
+        { id: 'wc', label: '🚽 WC', value: 'WC' },
+        { id: 'garage', label: '🚗 Garage', value: 'garage' },
+        { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' }
+      ]
+    };
+
+    console.log('🏠 getRoomTypeSuggestions - Recherche pour catégorie:', category);
+    const suggestions = roomSuggestions[category];
+    console.log('🏠 Suggestions pièces trouvées:', suggestions ? suggestions.length : 0);
+    
+    // Fallback vers toutes les pièces si catégorie non trouvée
+    return suggestions || [
+      { id: 'salon', label: '🛋️ Salon', value: 'salon' },
+      { id: 'cuisine', label: '🍳 Cuisine', value: 'cuisine' },
+      { id: 'chambre', label: '🛏️ Chambre', value: 'chambre' },
+      { id: 'salle_de_bain', label: '🚿 Salle de bain', value: 'salle de bain' },
+      { id: 'garage', label: '🚗 Garage', value: 'garage' },
+      { id: 'bureau', label: '💼 Bureau', value: 'bureau' },
+      { id: 'couloir', label: '🚪 Couloir', value: 'couloir' },
+      { id: 'wc', label: '🚽 WC', value: 'WC' },
+      { id: 'cave', label: '🏠 Cave/Sous-sol', value: 'cave/sous-sol' }
+    ];
   }
 
   // Suggestions pour l'état actuel selon la catégorie
@@ -902,6 +1098,13 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'friche', label: '🌿 En friche', value: 'en friche' },
         { id: 'vierge', label: '🟫 Terrain vierge', value: 'terrain vierge' }
       ],
+      // Version minuscule pour compatibilité
+      'jardinage': [
+        { id: 'entretenu', label: '✅ Bien entretenu', value: 'bien entretenu' },
+        { id: 'a_amenager', label: '🌱 À aménager', value: 'à aménager' },
+        { id: 'friche', label: '🌿 En friche', value: 'en friche' },
+        { id: 'vierge', label: '🟫 Terrain vierge', value: 'terrain vierge' }
+      ],
       'Rénovation générale': [
         { id: 'habitable', label: '✅ Habitable', value: 'habitable' },
         { id: 'renovation_legere', label: '🔧 Rénovation légère', value: 'rénovation légère nécessaire' },
@@ -915,12 +1118,12 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'gros_travaux', label: '🏗️ Gros travaux', value: 'gros travaux nécessaires' },
         { id: 'a_refaire', label: '🔨 Tout à refaire', value: 'tout à refaire' }
       ],
-      'Autre': [
-        { id: 'bon_etat', label: '✅ En bon état', value: 'en bon état' },
-        { id: 'moyen', label: '⚠️ État moyen', value: 'état moyen' },
-        { id: 'mauvais', label: '❌ Mauvais état', value: 'mauvais état' },
-        { id: 'expertise', label: '🔍 Besoin d\'expertise', value: 'besoin d\'expertise' }
-      ]
+      // 'Autre': [
+      //   { id: 'bon_etat', label: '✅ En bon état', value: 'en bon état' },
+      //   { id: 'moyen', label: '⚠️ État moyen', value: 'état moyen' },
+      //   { id: 'mauvais', label: '❌ Mauvais état', value: 'mauvais état' },
+      //   { id: 'expertise', label: '🔍 Besoin d\'expertise', value: 'besoin d\'expertise' }
+      // ]
     };
 
     console.log('🔍 getCurrentStateSuggestions - Recherche pour catégorie:', category);
@@ -1007,6 +1210,13 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'pierre', label: '🪨 Pierre', value: 'pierre naturelle' },
         { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
       ],
+      // Version minuscule pour compatibilité
+      'jardinage': [
+        { id: 'bois', label: '🪵 Bois', value: 'bois naturel' },
+        { id: 'composite', label: '🔧 Composite', value: 'matériau composite' },
+        { id: 'pierre', label: '🪨 Pierre', value: 'pierre naturelle' },
+        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      ],
       'Rénovation générale': [
         { id: 'standard', label: '⭐ Standard', value: 'matériaux standard' },
         { id: 'qualite', label: '💎 Haute qualité', value: 'matériaux haute qualité' },
@@ -1020,12 +1230,12 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'eco', label: '🌱 Écologique', value: 'matériaux écologiques' },
         { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
       ],
-      'Autre': [
-        { id: 'standard', label: '⭐ Standard', value: 'matériaux standard' },
-        { id: 'qualite', label: '💎 Haute qualité', value: 'matériaux haute qualité' },
-        { id: 'economique', label: '💰 Économique', value: 'matériaux économiques' },
-        { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
-      ]
+      // 'Autre': [
+      //   { id: 'standard', label: '⭐ Standard', value: 'matériaux standard' },
+      //   { id: 'qualite', label: '💎 Haute qualité', value: 'matériaux haute qualité' },
+      //   { id: 'economique', label: '💰 Économique', value: 'matériaux économiques' },
+      //   { id: 'aucune', label: '🚫 Aucune préférence', value: 'aucune préférence' }
+      // ]
     };
 
     console.log('🔍 getMaterialsSuggestions - Recherche pour catégorie:', category);
@@ -1041,6 +1251,15 @@ Génère UNIQUEMENT la question avec exemples.`;
 
   // Suggestions pour la description selon la catégorie et le service
   private getProjectDescriptionSuggestions(category: string, serviceType: string): Array<{ id: string; label: string; value: string }> {
+    // Si on a un service_type spécifique, utiliser des suggestions contextuelles
+    if (serviceType && serviceType.trim() !== '') {
+      const serviceTypeSuggestions = this.getServiceTypeSpecificDescriptions(serviceType, category);
+      if (serviceTypeSuggestions.length > 0) {
+        console.log('🎯 Utilisation suggestions spécifiques pour service_type:', serviceType);
+        return serviceTypeSuggestions;
+      }
+    }
+
     const descriptionSuggestions: Record<string, Array<{ id: string; label: string; value: string }>> = {
       'Peinture': [
         { id: 'blanc', label: '🎨 Je veux du blanc', value: 'Je souhaite une peinture blanche' },
@@ -1111,6 +1330,13 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'terrasse', label: '🪵 Construire terrasse', value: 'Je veux construire une terrasse' },
         { id: 'plantation', label: '🌳 Planter des arbres', value: 'Je veux planter des arbres et arbustes' }
       ],
+      // Version minuscule pour compatibilité
+      'jardinage': [
+        { id: 'amenagement', label: '🌿 Aménager le jardin', value: 'Je veux aménager mon jardin' },
+        { id: 'pelouse', label: '🌱 Créer une pelouse', value: 'Je veux créer une belle pelouse' },
+        { id: 'terrasse', label: '🪵 Construire terrasse', value: 'Je veux construire une terrasse' },
+        { id: 'plantation', label: '🌳 Planter des arbres', value: 'Je veux planter des arbres et arbustes' }
+      ],
       'Rénovation générale': [
         { id: 'complete', label: '🏠 Rénovation complète', value: 'Je veux rénover complètement' },
         { id: 'agrandissement', label: '📐 Agrandir la maison', value: 'Je veux agrandir ma maison' },
@@ -1124,12 +1350,12 @@ Génère UNIQUEMENT la question avec exemples.`;
         { id: 'moderniser', label: '✨ Moderniser', value: 'Je veux moderniser mon habitat' },
         { id: 'isolation', label: '🧱 Améliorer isolation', value: 'Je veux améliorer l\'isolation thermique' }
       ],
-      'Autre': [
-        { id: 'conseil', label: '💡 Demande de conseil', value: 'J\'ai besoin de conseils' },
-        { id: 'devis', label: '📋 Devis personnalisé', value: 'Je veux un devis personnalisé' },
-        { id: 'expertise', label: '🔍 Expertise technique', value: 'J\'ai besoin d\'une expertise technique' },
-        { id: 'urgent', label: '🚨 Intervention urgente', value: 'J\'ai besoin d\'une intervention urgente' }
-      ]
+      // 'Autre': [
+      //   { id: 'conseil', label: '💡 Demande de conseil', value: 'J\'ai besoin de conseils' },
+      //   { id: 'devis', label: '📋 Devis personnalisé', value: 'Je veux un devis personnalisé' },
+      //   { id: 'expertise', label: '🔍 Expertise technique', value: 'J\'ai besoin d\'une expertise technique' },
+      //   { id: 'urgent', label: '🚨 Intervention urgente', value: 'J\'ai besoin d\'une intervention urgente' }
+      // ]
     };
 
     console.log('🔍 getProjectDescriptionSuggestions - Recherche pour catégorie:', category);
@@ -1137,6 +1363,391 @@ Génère UNIQUEMENT la question avec exemples.`;
     console.log('📋 Suggestions description trouvées:', suggestions ? suggestions.length : 0);
 
     return suggestions || [];
+  }
+
+  // Nouvelles suggestions contextuelles basées sur le service_type
+  private getServiceTypeSpecificDescriptions(serviceType: string, category: string): Array<{ id: string; label: string; value: string }> {
+    const cleanServiceType = serviceType.toLowerCase().trim();
+    
+    // Normaliser les variations d'accents et d'espaces
+    const normalizedServiceType = cleanServiceType
+      .replace(/é/g, 'e')
+      .replace(/è/g, 'e')
+      .replace(/ê/g, 'e')
+      .replace(/à/g, 'a')
+      .replace(/ç/g, 'c')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    // Suggestions spécifiques par type de service (avec toutes les variations)
+    const serviceSpecificSuggestions: Record<string, Array<{ id: string; label: string; value: string }>> = {
+      'rénovation complète': [
+        { id: 'complete_maison', label: '🏠 Rénover toute la maison', value: 'Je veux rénover entièrement ma maison de A à Z' },
+        { id: 'complete_appartement', label: '🏢 Rénover tout l\'appartement', value: 'Je veux rénover complètement mon appartement' },
+        { id: 'complete_etages', label: '📐 Rénover par étages', value: 'Je veux rénover étage par étage' },
+        { id: 'complete_priorites', label: '🎯 Rénover par priorités', value: 'Je veux rénover en définissant des priorités' }
+      ],
+      'renovation complete': [
+        { id: 'complete_maison', label: '🏠 Rénover toute la maison', value: 'Je veux rénover entièrement ma maison de A à Z' },
+        { id: 'complete_appartement', label: '🏢 Rénover tout l\'appartement', value: 'Je veux rénover complètement mon appartement' },
+        { id: 'complete_etages', label: '📐 Rénover par étages', value: 'Je veux rénover étage par étage' },
+        { id: 'complete_priorites', label: '🎯 Rénover par priorités', value: 'Je veux rénover en définissant des priorités' }
+      ],
+      'agrandissement maison': [
+        { id: 'extension', label: '📐 Extension de maison', value: 'Je veux faire une extension de ma maison' },
+        { id: 'combles', label: '🏠 Aménager les combles', value: 'Je veux aménager mes combles pour gagner de l\'espace' },
+        { id: 'garage', label: '🚗 Transformer le garage', value: 'Je veux transformer mon garage en pièce à vivre' },
+        { id: 'veranda', label: '🌿 Construire une véranda', value: 'Je veux construire une véranda' }
+      ],
+      'agrandissement': [
+        { id: 'extension', label: '📐 Extension de maison', value: 'Je veux faire une extension de ma maison' },
+        { id: 'combles', label: '🏠 Aménager les combles', value: 'Je veux aménager mes combles pour gagner de l\'espace' },
+        { id: 'garage', label: '🚗 Transformer le garage', value: 'Je veux transformer mon garage en pièce à vivre' },
+        { id: 'veranda', label: '🌿 Construire une véranda', value: 'Je veux construire une véranda' }
+      ],
+      'isolation thermique': [
+        { id: 'isolation_murs', label: '🧱 Isoler les murs', value: 'Je veux améliorer l\'isolation de mes murs' },
+        { id: 'isolation_combles', label: '🏠 Isoler les combles', value: 'Je veux isoler mes combles perdus' },
+        { id: 'isolation_sol', label: '⬇️ Isoler le sol', value: 'Je veux isoler le sol de ma maison' },
+        { id: 'isolation_complete', label: '🌡️ Isolation complète', value: 'Je veux une isolation thermique complète' }
+      ],
+      'isolation': [
+        { id: 'isolation_murs', label: '🧱 Isoler les murs', value: 'Je veux améliorer l\'isolation de mes murs' },
+        { id: 'isolation_combles', label: '🏠 Isoler les combles', value: 'Je veux isoler mes combles perdus' },
+        { id: 'isolation_sol', label: '⬇️ Isoler le sol', value: 'Je veux isoler le sol de ma maison' },
+        { id: 'isolation_complete', label: '🌡️ Isolation complète', value: 'Je veux une isolation thermique complète' }
+      ],
+      'aménagement combles': [
+        { id: 'combles_chambre', label: '🛏️ Créer une chambre', value: 'Je veux créer une chambre dans les combles' },
+        { id: 'combles_bureau', label: '💼 Créer un bureau', value: 'Je veux aménager un bureau sous les combles' },
+        { id: 'combles_salon', label: '🛋️ Créer un salon', value: 'Je veux créer un espace salon dans les combles' },
+        { id: 'combles_salle_jeux', label: '🎮 Créer une salle de jeux', value: 'Je veux créer une salle de jeux pour les enfants' }
+      ],
+      'amenagement combles': [
+        { id: 'combles_chambre', label: '🛏️ Créer une chambre', value: 'Je veux créer une chambre dans les combles' },
+        { id: 'combles_bureau', label: '💼 Créer un bureau', value: 'Je veux aménager un bureau sous les combles' },
+        { id: 'combles_salon', label: '🛋️ Créer un salon', value: 'Je veux créer un espace salon dans les combles' },
+        { id: 'combles_salle_jeux', label: '🎮 Créer une salle de jeux', value: 'Je veux créer une salle de jeux pour les enfants' }
+      ],
+      // Services de jardinage spécifiques
+      'créer une pelouse': [
+        { id: 'pelouse_naturelle', label: '🌱 Pelouse naturelle', value: 'Je veux une pelouse avec du gazon naturel' },
+        { id: 'pelouse_synthetique', label: '🟢 Pelouse synthétique', value: 'Je préfère une pelouse synthétique sans entretien' },
+        { id: 'pelouse_mixte', label: '🌿 Pelouse mixte', value: 'Je veux mélanger gazon naturel et zones synthétiques' },
+        { id: 'pelouse_sport', label: '⚽ Pelouse sport/jeux', value: 'Je veux une pelouse résistante pour le sport et les jeux' }
+      ],
+      'creer une pelouse': [
+        { id: 'pelouse_naturelle', label: '🌱 Pelouse naturelle', value: 'Je veux une pelouse avec du gazon naturel' },
+        { id: 'pelouse_synthetique', label: '🟢 Pelouse synthétique', value: 'Je préfère une pelouse synthétique sans entretien' },
+        { id: 'pelouse_mixte', label: '🌿 Pelouse mixte', value: 'Je veux mélanger gazon naturel et zones synthétiques' },
+        { id: 'pelouse_sport', label: '⚽ Pelouse sport/jeux', value: 'Je veux une pelouse résistante pour le sport et les jeux' }
+      ],
+      'aménagement paysager': [
+        { id: 'jardin_moderne', label: '🏡 Jardin moderne', value: 'Je veux un jardin au style moderne et épuré' },
+        { id: 'jardin_naturel', label: '🌿 Jardin naturel', value: 'Je préfère un jardin au style naturel et sauvage' },
+        { id: 'jardin_mediterraneen', label: '🌴 Jardin méditerranéen', value: 'Je veux un jardin méditerranéen avec plantes résistantes' },
+        { id: 'jardin_potager', label: '🥕 Jardin potager', value: 'Je veux créer un potager pour cultiver mes légumes' }
+      ],
+      'amenagement paysager': [
+        { id: 'jardin_moderne', label: '🏡 Jardin moderne', value: 'Je veux un jardin au style moderne et épuré' },
+        { id: 'jardin_naturel', label: '🌿 Jardin naturel', value: 'Je préfère un jardin au style naturel et sauvage' },
+        { id: 'jardin_mediterraneen', label: '🌴 Jardin méditerranéen', value: 'Je veux un jardin méditerranéen avec plantes résistantes' },
+        { id: 'jardin_potager', label: '🥕 Jardin potager', value: 'Je veux créer un potager pour cultiver mes légumes' }
+      ],
+      "plantation d'arbres": [
+        { id: 'arbres_fruitiers', label: '🍎 Arbres fruitiers', value: 'Je veux planter des arbres fruitiers (pommiers, poiriers, cerisiers)' },
+        { id: 'arbres_ornement', label: '🌳 Arbres d\'ornement', value: 'Je veux planter des arbres d\'ornement pour embellir mon jardin' },
+        { id: 'haie_vegetale', label: '🌿 Haie végétale', value: 'Je veux créer une haie avec des arbustes et arbres' },
+        { id: 'ombrage', label: '🌲 Arbres d\'ombrage', value: 'Je veux planter des arbres pour créer de l\'ombrage' }
+      ],
+      'construire terrasse bois': [
+        { id: 'terrasse_bois_naturel', label: '🪵 Terrasse bois naturel', value: 'Je veux une terrasse en bois naturel (pin, chêne, teck)' },
+        { id: 'terrasse_composite', label: '🔧 Terrasse composite', value: 'Je préfère une terrasse en bois composite sans entretien' },
+        { id: 'terrasse_surélevée', label: '📏 Terrasse surélevée', value: 'Je veux une terrasse surélevée avec garde-corps' },
+        { id: 'terrasse_plain_pied', label: '🏡 Terrasse plain-pied', value: 'Je veux une terrasse de plain-pied avec le jardin' }
+      ],
+      'terrasse en bois': [
+        { id: 'terrasse_bois_naturel', label: '🪵 Terrasse bois naturel', value: 'Je veux une terrasse en bois naturel (pin, chêne, teck)' },
+        { id: 'terrasse_composite', label: '🔧 Terrasse composite', value: 'Je préfère une terrasse en bois composite sans entretien' },
+        { id: 'terrasse_surélevée', label: '📏 Terrasse surélevée', value: 'Je veux une terrasse surélevée avec garde-corps' },
+        { id: 'terrasse_plain_pied', label: '🏡 Terrasse plain-pied', value: 'Je veux une terrasse de plain-pied avec le jardin' }
+      ],
+
+      // === PORTES ET FENÊTRES ===
+      'installer une porte': [
+        { id: 'porte_entree', label: '🚪 Porte d\'entrée blindée', value: 'Je veux installer une porte d\'entrée sécurisée' },
+        { id: 'porte_interieure', label: '🚪 Porte intérieure', value: 'Je veux installer une porte intérieure (chambre, salon)' },
+        { id: 'porte_coulissante', label: '↔️ Porte coulissante', value: 'Je veux installer une porte coulissante pour gagner de l\'espace' },
+        { id: 'porte_galandage', label: '📐 Porte à galandage', value: 'Je veux installer une porte à galandage dans le mur' }
+      ],
+      'changer les fenêtres': [
+        { id: 'fenetres_double_vitrage', label: '🪟 Fenêtres double vitrage', value: 'Je veux changer pour du double vitrage performant' },
+        { id: 'fenetres_triple_vitrage', label: '🪟 Fenêtres triple vitrage', value: 'Je veux du triple vitrage pour une isolation maximale' },
+        { id: 'fenetres_pvc', label: '🔧 Fenêtres PVC', value: 'Je veux des fenêtres PVC sans entretien' },
+        { id: 'fenetres_aluminium', label: '⚪ Fenêtres aluminium', value: 'Je veux des fenêtres aluminium modernes' }
+      ],
+      'poser des volets': [
+        { id: 'volets_roulants', label: '🎚️ Volets roulants électriques', value: 'Je veux des volets roulants automatiques' },
+        { id: 'volets_battants', label: '🚪 Volets battants', value: 'Je veux des volets battants traditionnels' },
+        { id: 'volets_persiennés', label: '📏 Volets persiennés', value: 'Je veux des volets persiennés pour l\'aération' },
+        { id: 'volets_pvc', label: '🔧 Volets PVC', value: 'Je veux des volets PVC résistants aux intempéries' }
+      ],
+      'installer porte-fenêtre': [
+        { id: 'porte_fenetre_coulissante', label: '↔️ Porte-fenêtre coulissante', value: 'Je veux une porte-fenêtre coulissante sur terrasse' },
+        { id: 'porte_fenetre_battante', label: '🚪 Porte-fenêtre battante', value: 'Je veux une porte-fenêtre battante classique' },
+        { id: 'baie_vitree', label: '🪟 Baie vitrée panoramique', value: 'Je veux une grande baie vitrée pour plus de lumière' },
+        { id: 'porte_fenetre_galandage', label: '📐 Porte-fenêtre à galandage', value: 'Je veux une porte-fenêtre escamotable dans le mur' }
+      ],
+
+      // === PLOMBERIE ===
+      'réparer un robinet': [
+        { id: 'robinet_qui_goutte', label: '💧 Robinet qui goutte', value: 'Mon robinet goutte et je veux le réparer définitivement' },
+        { id: 'robinet_grippé', label: '🔧 Robinet grippé', value: 'Mon robinet est dur à tourner et grippé' },
+        { id: 'changer_joint', label: '🔧 Changer les joints', value: 'Je veux changer les joints de mon robinet' },
+        { id: 'robinet_cassé', label: '❌ Robinet cassé', value: 'Mon robinet est cassé et ne fonctionne plus' }
+      ],
+      'reparation de robinet': [
+        { id: 'robinet_qui_goutte', label: '💧 Robinet qui goutte', value: 'Mon robinet goutte et je veux le réparer définitivement' },
+        { id: 'robinet_grippé', label: '🔧 Robinet grippé', value: 'Mon robinet est dur à tourner et grippé' },
+        { id: 'changer_joint', label: '🔧 Changer les joints', value: 'Je veux changer les joints de mon robinet' },
+        { id: 'robinet_cassé', label: '❌ Robinet cassé', value: 'Mon robinet est cassé et ne fonctionne plus' }
+      ],
+      'réparer une fuite': [
+        { id: 'fuite_canalisation', label: '🔧 Fuite de canalisation', value: 'J\'ai une fuite dans mes canalisations à réparer' },
+        { id: 'fuite_wc', label: '🚽 Fuite de WC', value: 'Mes toilettes fuient au niveau du réservoir' },
+        { id: 'fuite_chauffe_eau', label: '🔥 Fuite de chauffe-eau', value: 'Mon chauffe-eau fuit et perd de l\'eau' },
+        { id: 'fuite_douche', label: '🚿 Fuite de douche', value: 'Ma douche fuit et infiltre les murs' }
+      ],
+      'reparation de fuite': [
+        { id: 'fuite_canalisation', label: '🔧 Fuite de canalisation', value: 'J\'ai une fuite dans mes canalisations à réparer' },
+        { id: 'fuite_wc', label: '🚽 Fuite de WC', value: 'Mes toilettes fuient au niveau du réservoir' },
+        { id: 'fuite_chauffe_eau', label: '🔥 Fuite de chauffe-eau', value: 'Mon chauffe-eau fuit et perd de l\'eau' },
+        { id: 'fuite_douche', label: '🚿 Fuite de douche', value: 'Ma douche fuit et infiltre les murs' }
+      ],
+      'refaire les canalisations': [
+        { id: 'canalisations_cuivre', label: '🔶 Canalisations cuivre', value: 'Je veux refaire mes canalisations en cuivre' },
+        { id: 'canalisations_pex', label: '🔧 Canalisations PEX', value: 'Je veux installer des canalisations PEX modernes' },
+        { id: 'evacuation_eaux_usees', label: '🌊 Évacuation eaux usées', value: 'Je veux refaire l\'évacuation des eaux usées' },
+        { id: 'adoucisseur_eau', label: '💧 Système d\'adoucissement', value: 'Je veux installer un système d\'adoucissement d\'eau' }
+      ],
+      'refaire canalisations': [
+        { id: 'canalisations_cuivre', label: '🔶 Canalisations cuivre', value: 'Je veux refaire mes canalisations en cuivre' },
+        { id: 'canalisations_pex', label: '🔧 Canalisations PEX', value: 'Je veux installer des canalisations PEX modernes' },
+        { id: 'evacuation_eaux_usees', label: '🌊 Évacuation eaux usées', value: 'Je veux refaire l\'évacuation des eaux usées' },
+        { id: 'adoucisseur_eau', label: '💧 Système d\'adoucissement', value: 'Je veux installer un système d\'adoucissement d\'eau' }
+      ],
+      'installer un chauffe-eau': [
+        { id: 'chauffe_eau_electrique', label: '⚡ Chauffe-eau électrique', value: 'Je veux installer un chauffe-eau électrique' },
+        { id: 'chauffe_eau_gaz', label: '🔥 Chauffe-eau gaz', value: 'Je veux installer un chauffe-eau à gaz' },
+        { id: 'chauffe_eau_thermodynamique', label: '🌡️ Chauffe-eau thermodynamique', value: 'Je veux un chauffe-eau thermodynamique économique' },
+        { id: 'ballon_eau_chaude', label: '🔥 Ballon d\'eau chaude', value: 'Je veux installer un ballon d\'eau chaude plus grand' }
+      ],
+      'installer chauffe-eau': [
+        { id: 'chauffe_eau_electrique', label: '⚡ Chauffe-eau électrique', value: 'Je veux installer un chauffe-eau électrique' },
+        { id: 'chauffe_eau_gaz', label: '🔥 Chauffe-eau gaz', value: 'Je veux installer un chauffe-eau à gaz' },
+        { id: 'chauffe_eau_thermodynamique', label: '🌡️ Chauffe-eau thermodynamique', value: 'Je veux un chauffe-eau thermodynamique économique' },
+        { id: 'ballon_eau_chaude', label: '🔥 Ballon d\'eau chaude', value: 'Je veux installer un ballon d\'eau chaude plus grand' }
+      ],
+      'installation chauffe-eau': [
+        { id: 'chauffe_eau_electrique', label: '⚡ Chauffe-eau électrique', value: 'Je veux installer un chauffe-eau électrique' },
+        { id: 'chauffe_eau_gaz', label: '🔥 Chauffe-eau gaz', value: 'Je veux installer un chauffe-eau à gaz' },
+        { id: 'chauffe_eau_thermodynamique', label: '🌡️ Chauffe-eau thermodynamique', value: 'Je veux un chauffe-eau thermodynamique économique' },
+        { id: 'ballon_eau_chaude', label: '🔥 Ballon d\'eau chaude', value: 'Je veux installer un ballon d\'eau chaude plus grand' }
+      ],
+
+      // === ÉLECTRICITÉ ===
+      'changer le tableau électrique': [
+        { id: 'tableau_complet', label: '⚡ Tableau électrique complet', value: 'Je veux changer complètement mon tableau électrique' },
+        { id: 'mise_aux_normes_tableau', label: '📋 Mise aux normes du tableau', value: 'Je veux mettre mon tableau aux normes actuelles' },
+        { id: 'ajouter_disjoncteurs', label: '🔌 Ajouter des disjoncteurs', value: 'Je veux ajouter des disjoncteurs dans mon tableau' },
+        { id: 'tableau_connecte', label: '📱 Tableau connecté', value: 'Je veux un tableau électrique intelligent connecté' }
+      ],
+      'installer des prises': [
+        { id: 'prises_cuisine', label: '🍽️ Prises de cuisine', value: 'Je veux installer des prises dans ma cuisine' },
+        { id: 'prises_salon', label: '🛋️ Prises de salon', value: 'Je veux ajouter des prises dans le salon' },
+        { id: 'prises_usb', label: '🔌 Prises avec USB', value: 'Je veux des prises électriques avec ports USB intégrés' },
+        { id: 'prises_etanches', label: '💧 Prises étanches', value: 'Je veux des prises étanches pour salle de bain' }
+      ],
+      'ajouter des luminaires': [
+        { id: 'spots_encastres', label: '💡 Spots encastrés', value: 'Je veux installer des spots encastrés au plafond' },
+        { id: 'suspension_design', label: '✨ Suspension design', value: 'Je veux installer une belle suspension moderne' },
+        { id: 'eclairage_led', label: '💡 Éclairage LED', value: 'Je veux passer à un éclairage LED économique' },
+        { id: 'variateurs', label: '🎚️ Variateurs d\'intensité', value: 'Je veux installer des variateurs d\'intensité' }
+      ],
+      'mise aux normes électrique': [
+        { id: 'diagnostic_complet', label: '🔍 Diagnostic complet', value: 'Je veux faire un diagnostic électrique complet' },
+        { id: 'mise_aux_normes_complete', label: '📋 Mise aux normes complète', value: 'Je veux mettre toute l\'installation aux normes' },
+        { id: 'terre_protection', label: '🛡️ Mise à la terre', value: 'Je veux améliorer la mise à la terre et les protections' },
+        { id: 'disjoncteur_differentiel', label: '⚡ Disjoncteurs différentiels', value: 'Je veux installer des disjoncteurs différentiels' }
+      ],
+
+      // === PEINTURE ===
+      'repeindre les murs': [
+        { id: 'murs_salon', label: '🛋️ Murs du salon', value: 'Je veux repeindre les murs de mon salon' },
+        { id: 'murs_chambre', label: '🛏️ Murs de chambre', value: 'Je veux repeindre les murs d\'une chambre' },
+        { id: 'murs_cuisine', label: '🍽️ Murs de cuisine', value: 'Je veux repeindre les murs de ma cuisine' },
+        { id: 'murs_couloir', label: '🚪 Murs de couloir', value: 'Je veux repeindre les murs du couloir' }
+      ],
+      'peindre le plafond': [
+        { id: 'plafond_blanc', label: '⚪ Plafond blanc', value: 'Je veux peindre mon plafond en blanc classique' },
+        { id: 'plafond_couleur', label: '🎨 Plafond coloré', value: 'Je veux peindre mon plafond dans une couleur' },
+        { id: 'plafond_abime', label: '🔧 Plafond abîmé', value: 'Mon plafond est abîmé et nécessite réparation et peinture' },
+        { id: 'plafond_taches', label: '🟫 Plafond avec taches', value: 'Mon plafond a des taches à masquer' }
+      ],
+      'peindre les boiseries': [
+        { id: 'portes_interieures', label: '🚪 Portes intérieures', value: 'Je veux peindre mes portes intérieures' },
+        { id: 'plinthes_cimaises', label: '📏 Plinthes et cimaises', value: 'Je veux peindre les plinthes et cimaises' },
+        { id: 'volets_interieurs', label: '🪟 Volets intérieurs', value: 'Je veux peindre mes volets intérieurs' },
+        { id: 'escalier_bois', label: '🪜 Escalier en bois', value: 'Je veux peindre ou lasurer mon escalier en bois' }
+      ],
+      'rénovation peinture complète': [
+        { id: 'appartement_complet', label: '🏠 Appartement complet', value: 'Je veux rénover la peinture de tout mon appartement' },
+        { id: 'maison_complete', label: '🏡 Maison complète', value: 'Je veux rénover la peinture de toute ma maison' },
+        { id: 'etage_complet', label: '📐 Étage complet', value: 'Je veux rénover la peinture d\'un étage entier' },
+        { id: 'pieces_principales', label: '🏠 Pièces principales', value: 'Je veux rénover les pièces principales (salon, chambres)' }
+      ],
+
+      // === MENUISERIE ===
+      'installer un placard': [
+        { id: 'placard_sur_mesure', label: '🚪 Placard sur mesure', value: 'Je veux un placard parfaitement adapté à mon espace' },
+        { id: 'placard_coulissant', label: '↔️ Placard coulissant', value: 'Je veux installer un placard avec portes coulissantes' },
+        { id: 'dressing_walk_in', label: '👗 Dressing walk-in', value: 'Je veux créer un dressing avec accès libre' },
+        { id: 'placard_sous_pente', label: '📐 Placard sous pente', value: 'Je veux optimiser l\'espace sous les combles' }
+      ],
+      'poser du parquet': [
+        { id: 'parquet_massif', label: '🪵 Parquet massif', value: 'Je veux poser du parquet en bois massif noble' },
+        { id: 'parquet_contrecolle', label: '🔧 Parquet contrecollé', value: 'Je veux du parquet contrecollé pratique' },
+        { id: 'parquet_stratifie', label: '✨ Parquet stratifié', value: 'Je veux du parquet stratifié économique' },
+        { id: 'parquet_bambou', label: '🌿 Parquet bambou', value: 'Je veux du parquet bambou écologique' }
+      ],
+      'créer des étagères': [
+        { id: 'bibliotheque_murale', label: '📚 Bibliothèque murale', value: 'Je veux créer une bibliothèque fixée au mur' },
+        { id: 'etageres_sur_mesure', label: '📏 Étagères sur mesure', value: 'Je veux des étagères parfaitement adaptées' },
+        { id: 'etageres_invisibles', label: '👻 Étagères invisibles', value: 'Je veux des étagères avec fixations invisibles' },
+        { id: 'meuble_tv_integre', label: '📺 Meuble TV intégré', value: 'Je veux intégrer un meuble TV avec étagères' }
+      ],
+      'réparer un escalier': [
+        { id: 'escalier_grince', label: '🔧 Escalier qui grince', value: 'Mon escalier grince et je veux le réparer' },
+        { id: 'marches_abimees', label: '🪜 Marches abîmées', value: 'Les marches de mon escalier sont abîmées' },
+        { id: 'rambarde_escalier', label: '🛡️ Rambarde d\'escalier', value: 'Je veux réparer ou changer la rambarde' },
+        { id: 'escalier_vernir', label: '✨ Poncer et vernir', value: 'Je veux poncer et vernir mon escalier en bois' }
+      ],
+
+      // === MAÇONNERIE ===
+      'construire un mur': [
+        { id: 'mur_porteur', label: '🧱 Mur porteur', value: 'Je veux construire un mur porteur pour restructurer l\'espace' },
+        { id: 'mur_cloture', label: '🏠 Mur de clôture', value: 'Je veux construire un mur de clôture pour délimiter' },
+        { id: 'mur_soutenement', label: '🪨 Mur de soutènement', value: 'Je veux construire un mur de soutènement pour la terre' },
+        { id: 'muret_decoratif', label: '🌿 Muret décoratif', value: 'Je veux construire un muret décoratif dans le jardin' }
+      ],
+      'monter une cloison': [
+        { id: 'cloison_placo', label: '🧱 Cloison placo', value: 'Je veux monter une cloison en plaques de plâtre' },
+        { id: 'cloison_brique', label: '🧱 Cloison en brique', value: 'Je veux monter une cloison en briques' },
+        { id: 'cloison_beton', label: '⬜ Cloison béton cellulaire', value: 'Je veux une cloison en béton cellulaire' },
+        { id: 'cloison_verriere', label: '🪟 Cloison verrière', value: 'Je veux installer une cloison type verrière' }
+      ],
+      'couler une dalle béton': [
+        { id: 'dalle_terrasse', label: '🏡 Dalle de terrasse', value: 'Je veux couler une dalle pour faire une terrasse' },
+        { id: 'dalle_garage', label: '🚗 Dalle de garage', value: 'Je veux couler une dalle béton dans mon garage' },
+        { id: 'dalle_extension', label: '📐 Dalle d\'extension', value: 'Je veux couler une dalle pour une extension' },
+        { id: 'dalle_abri', label: '🏠 Dalle d\'abri jardin', value: 'Je veux couler une dalle pour un abri de jardin' }
+      ],
+      'rénover la façade': [
+        { id: 'enduit_facade', label: '🏠 Refaire l\'enduit', value: 'Je veux refaire l\'enduit de ma façade extérieure' },
+        { id: 'reparer_fissures', label: '🔧 Réparer les fissures', value: 'J\'ai des fissures dans ma façade à réparer' },
+        { id: 'nettoyage_facade', label: '✨ Nettoyer la façade', value: 'Je veux nettoyer et ravaler ma façade' },
+        { id: 'isolation_exterieure', label: '🧱 Isolation par l\'extérieur', value: 'Je veux isoler ma façade par l\'extérieur' }
+      ],
+
+      // === SALLE DE BAIN ===
+      'rénovation complète salle de bain': [
+        { id: 'renov_complete_moderne', label: '✨ Rénovation moderne', value: 'Je veux une rénovation complète avec design moderne' },
+        { id: 'renov_complete_classique', label: '🏛️ Rénovation classique', value: 'Je veux une rénovation complète dans un style classique' },
+        { id: 'renov_complete_pmr', label: '♿ Rénovation PMR', value: 'Je veux rénover pour l\'accessibilité PMR' },
+        { id: 'renov_complete_budget', label: '💰 Rénovation économique', value: 'Je veux rénover complètement avec un budget maîtrisé' }
+      ],
+      'installer une douche': [
+        { id: 'douche_italienne_carrelee', label: '🚿 Douche italienne carrelée', value: 'Je veux installer une douche à l\'italienne avec carrelage' },
+        { id: 'douche_cabine', label: '🚿 Cabine de douche', value: 'Je veux installer une cabine de douche complète' },
+        { id: 'remplacer_baignoire_douche', label: '🛁➡️🚿 Remplacer baignoire par douche', value: 'Je veux remplacer ma baignoire par une douche' },
+        { id: 'douche_hydromassante', label: '💆 Douche hydromassante', value: 'Je veux installer une douche avec jets hydromassants' }
+      ],
+      'changer la baignoire': [
+        { id: 'baignoire_ilot', label: '🛁 Baignoire îlot', value: 'Je veux installer une baignoire îlot design' },
+        { id: 'baignoire_encastree', label: '🛁 Baignoire encastrée', value: 'Je veux une baignoire encastrée classique' },
+        { id: 'baignoire_balneo', label: '💆 Baignoire balnéo', value: 'Je veux installer une baignoire balnéothérapie' },
+        { id: 'baignoire_douche', label: '🛁🚿 Baignoire-douche', value: 'Je veux une baignoire combinée avec douche' }
+      ],
+      'refaire le carrelage': [
+        { id: 'carrelage_mural', label: '🟫 Carrelage mural', value: 'Je veux refaire le carrelage des murs de la salle de bain' },
+        { id: 'carrelage_sol', label: '⬛ Carrelage au sol', value: 'Je veux refaire le carrelage du sol de la salle de bain' },
+        { id: 'carrelage_complet', label: '🟫 Carrelage complet', value: 'Je veux refaire tout le carrelage murs et sol' },
+        { id: 'faience_moderne', label: '✨ Faïence moderne', value: 'Je veux installer une faïence moderne et tendance' }
+      ]
+    };
+
+    console.log('🔍 Recherche suggestions pour service_type:', cleanServiceType);
+    console.log('🔍 Service type normalisé:', normalizedServiceType);
+    
+    // Chercher d'abord avec la version originale, puis avec la version normalisée
+    let suggestions = serviceSpecificSuggestions[cleanServiceType] || serviceSpecificSuggestions[normalizedServiceType];
+    
+    console.log('📋 Suggestions spécifiques trouvées:', suggestions ? suggestions.length : 0);
+    
+    return suggestions || [];
+  }
+
+  // Générer un prompt contextuel pour current_state selon le service_type
+  private getContextualCurrentStatePrompt(category: string, serviceType: string): string {
+    const cleanServiceType = serviceType.toLowerCase().trim();
+    
+    // Prompts spécifiques selon le type de service
+    if (cleanServiceType.includes('agrandissement') || cleanServiceType.includes('extension')) {
+      return `Pour un projet d'agrandissement (${serviceType}), 
+      demande l'état actuel de l'espace existant à agrandir ou de la zone concernée.
+      Exemples: "espace disponible et dégagé", "mur porteur à étudier", "terrain prêt", "nécessite démolition partielle"`;
+    }
+    
+    if (cleanServiceType.includes('isolation')) {
+      return `Pour un projet d'isolation (${serviceType}), 
+      demande l'état actuel de l'isolation existante.
+      Exemples: "pas d'isolation", "isolation vétuste", "isolation partielle", "bonne isolation mais à améliorer"`;
+    }
+    
+    if (cleanServiceType.includes('combles') || cleanServiceType.includes('aménagement')) {
+      return `Pour un projet d'aménagement (${serviceType}), 
+      demande l'état actuel de l'espace à aménager.
+      Exemples: "combles vides", "espace brut", "déjà partiellement aménagé", "à remettre aux normes"`;
+    }
+    
+    if (cleanServiceType.includes('rénovation') || cleanServiceType.includes('renovation')) {
+      return `Pour un projet de rénovation (${serviceType}), 
+      demande l'état général actuel des espaces à rénover.
+      Exemples: "bon état général", "état moyen", "vétuste", "nécessite rénovation complète"`;
+    }
+    
+    // Prompts par catégorie (fallback)
+    switch (category) {
+      case 'Électricité':
+        return `Pour un projet d'électricité (${serviceType}), 
+        demande l'état actuel de l'installation électrique.
+        Exemples: "fonctionne mais vétuste", "disjoncte souvent", "aux normes", "installation dangereuse"`;
+        
+      case 'Plomberie':
+        return `Pour un projet de plomberie (${serviceType}), 
+        demande l'état actuel des installations.
+        Exemples: "fuit légèrement", "complètement cassé", "fonctionne bien", "pression faible"`;
+        
+      case 'Peinture':
+        return `Pour un projet de peinture (${serviceType}), 
+        demande l'état actuel des surfaces à peindre.
+        Exemples: "murs en bon état", "peinture écaillée", "fissures à reboucher", "support à préparer"`;
+        
+      default:
+        return `Pour un projet de ${category} (${serviceType}), 
+        demande l'état actuel avec des exemples concrets selon le contexte du projet.
+        Adapte ta question au type de travaux demandé.`;
+    }
   }
 
   // Clarifier un champ
@@ -1258,6 +1869,18 @@ Engage une conversation naturelle pour l'aider. Tu peux explorer ses idées, ses
       return this.askNextQuestion(missingConditional[0]);
     }
     
+    // Vérifier les champs optionnels (comme les photos)
+    const category = this.projectState.project_category || 'default';
+    const completeOrder = this.getCompleteFieldsOrder(category);
+    const missingOptional = completeOrder.filter(fieldId => 
+      !this.projectState[fieldId] && 
+      fieldId === 'photos_uploaded' // Pour l'instant, seules les photos sont optionnelles
+    );
+    
+    if (missingOptional.length > 0) {
+      return this.askNextQuestion(missingOptional[0]);
+    }
+    
     return this.validateAndGenerateQuote();
   }
 
@@ -1271,10 +1894,33 @@ Engage une conversation naturelle pour l'aider. Tu peux explorer ses idées, ses
     console.log('📋 Champs requis selon config:', requiredFields);
     console.log('🗂️ État projet actuel:', Object.keys(this.projectState));
     
-    const missing = requiredFields.filter((fieldId: string) => !this.projectState[fieldId]);
+    const missing = requiredFields.filter((fieldId: string) => {
+      const hasField = !!this.projectState[fieldId];
+      const fieldValue = this.projectState[fieldId];
+      console.log(`🔍 Vérification champ "${fieldId}":`, hasField ? `✅ "${fieldValue}"` : '❌ manquant');
+      return !hasField;
+    });
     console.log('❌ Champs manquants:', missing);
     
     return missing;
+  }
+
+  // Nouvelle fonction pour obtenir l'ordre complet incluant les champs optionnels
+  private getCompleteFieldsOrder(category: string): string[] {
+    const normalizedCategory = category === 'rénovation générale' ? 'Rénovation générale' : category;
+    const categorySpecific = CATEGORY_REQUIRED_FIELDS[normalizedCategory] || [];
+    
+    // Ordre complet incluant les champs optionnels comme les photos
+    const completeOrder = [
+      'project_category',
+      'service_type', 
+      'project_description',
+      ...categorySpecific,  // room_type, current_state, etc.
+      'photos_uploaded',    // Photos optionnelles AVANT l'adresse
+      'project_location'    // Localisation en tout dernier
+    ];
+    
+    return completeOrder;
   }
 
   private getMissingConditionalFields(): string[] {
@@ -1289,6 +1935,19 @@ Engage une conversation naturelle pour l'aider. Tu peux explorer ses idées, ses
     if (missingRequired.length > 0) {
       return getServiceFieldsConfig('default').find(f => f.id === missingRequired[0]) || null;
     }
+    
+    // Vérifier les champs optionnels
+    const category = this.projectState.project_category || 'default';
+    const completeOrder = this.getCompleteFieldsOrder(category);
+    const missingOptional = completeOrder.filter(fieldId => 
+      !this.projectState[fieldId] && 
+      fieldId === 'photos_uploaded' // Pour l'instant, seules les photos sont optionnelles
+    );
+    
+    if (missingOptional.length > 0) {
+      return getServiceFieldsConfig('default').find(f => f.id === missingOptional[0]) || null;
+    }
+    
     return null;
   }
 
@@ -1347,7 +2006,26 @@ Engage une conversation naturelle pour l'aider. Tu peux explorer ses idées, ses
     // Nettoyer la valeur
     const cleanedValue = await this.cleanValue(field, mappedValue);
     
-    this.projectState[field] = cleanedValue;
+    // Gestion spéciale pour photos_uploaded quand l'utilisateur passe
+    if (field === 'photos_uploaded') {
+      const skipPhotosAnswers = [
+        'non', 'pas de photos', 'pas d\'image', 'je n\'ai pas d\'image', 
+        'je n\'ai pas de photo', 'aucune photo', 'pas maintenant', 'plus tard',
+        'je n\'ai pas', 'sans photo', 'sans image', 'skip', 'passer',
+        'je n\'ai pas d\'image pour le moment'
+      ];
+      
+      const valueString = String(cleanedValue).toLowerCase().trim();
+      if (skipPhotosAnswers.some(answer => valueString.includes(answer))) {
+        // Sauvegarder un tableau vide pour indiquer que l'utilisateur a choisi de passer
+        this.projectState[field] = [];
+        console.log('📸 Photos passées par l\'utilisateur - tableau vide sauvegardé');
+      } else {
+        this.projectState[field] = [cleanedValue];
+      }
+    } else {
+      this.projectState[field] = cleanedValue;
+    }
     
     // Sauvegarder en mémoire
     try {
@@ -1376,6 +2054,22 @@ Engage une conversation naturelle pour l'aider. Tu peux explorer ses idées, ses
 
     // Mappings spécifiques par champ
     const mappings: Record<string, Record<string, string>> = {
+      project_category: {
+        'rénovation générale': 'Rénovation générale',
+        'renovation générale': 'Rénovation générale',
+        'renovation generale': 'Rénovation générale',
+        'plomberie': 'Plomberie',
+        'électricité': 'Électricité',
+        'electricite': 'Électricité',
+        'menuiserie': 'Menuiserie',
+        'peinture': 'Peinture',
+        'maçonnerie': 'Maçonnerie',
+        'maconnerie': 'Maçonnerie',
+        'salle de bain': 'Salle de bain',
+        'portes et fenêtres': 'Portes et fenêtres',
+        'portes et fenetres': 'Portes et fenêtres',
+        'jardinage': 'Jardinage'
+      },
       current_state: {
         // Réponses positives pour humidité
         'oui': category === 'Peinture' ? 'problèmes d\'humidité' : 'nécessite des réparations',
@@ -2034,7 +2728,7 @@ CONTRAINTES IMPORTANTES :
     const sufficientAnswers: Record<string, string[]> = {
       project_category: [
         'plomberie', 'électricité', 'menuiserie', 'peinture', 'maçonnerie', 
-        'salle de bain', 'portes et fenêtres', 'jardinage', 'rénovation générale', 'autre'
+        'salle de bain', 'portes et fenêtres', 'jardinage', 'rénovation générale'
       ],
       service_type: [], // Toute réponse non vide est acceptée pour le type de service
       current_state: [
@@ -2081,8 +2775,20 @@ CONTRAINTES IMPORTANTES :
       return true;
     }
 
-    // Pour photos_uploaded, vérifier qu'on a au moins une photo
+    // Pour photos_uploaded, accepter soit des photos soit un refus explicite
     if (fieldName === 'photos_uploaded') {
+      // Réponses acceptables pour passer sans photos
+      const skipPhotosAnswers = [
+        'non', 'pas de photos', 'pas d\'image', 'je n\'ai pas d\'image', 
+        'je n\'ai pas de photo', 'aucune photo', 'pas maintenant', 'plus tard',
+        'je n\'ai pas', 'sans photo', 'sans image', 'skip', 'passer'
+      ];
+      
+      // Vérifier si l'utilisateur veut passer
+      if (skipPhotosAnswers.some(answer => trimmedValue.includes(answer))) {
+        return true;
+      }
+      
       // Si c'est un tableau, vérifier qu'il contient au moins une URL
       if (Array.isArray(this.projectState.photos_uploaded)) {
         return this.projectState.photos_uploaded.length > 0;

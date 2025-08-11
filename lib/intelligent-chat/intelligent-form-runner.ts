@@ -194,7 +194,7 @@ export class IntelligentFormRunner {
     const categories = [
       'Plomberie', 'Électricité', 'Menuiserie', 'Peinture', 
       'Maçonnerie', 'Salle de bain', 'Portes et fenêtres', 
-      'Jardinage', 'Rénovation générale', 'Autre'
+      'Jardinage', 'Rénovation générale'
     ];
     
     return categories.map(cat => ({

@@ -935,20 +935,33 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                 
                 {/* Interface spécialisée pour l'upload de photos */}
                 {(message.currentQuestion?.id === 'photos_uploaded' || message.currentQuestion === 'photos_uploaded') && (
-                  <div className="mt-4 p-3 bg-muted/20 rounded-lg border border-muted">
-                    <PhotoUpload 
-                      onPhotosUploaded={(urls) => {
-                        // Simplement mettre à jour le state sans créer de message
-                        setPhotoUrls(prev => {
-                          const newUrls = [...prev, ...urls.filter(url => !prev.includes(url))]
-                          console.log('📸 URLs des photos mises à jour:', newUrls)
-                          return newUrls
-                        })
-                      }}
-                      maxPhotos={5} // Limite totale
-                      initialPhotos={photoUrls} // Passer les photos existantes
-                      onContinue={handleContinueWithPhotos} // Fonction pour continuer
-                    />
+                  <div className="mt-4 space-y-3">
+                    <div className="p-3 bg-muted/20 rounded-lg border border-muted">
+                      <PhotoUpload 
+                        onPhotosUploaded={(urls) => {
+                          // Simplement mettre à jour le state sans créer de message
+                          setPhotoUrls(prev => {
+                            const newUrls = [...prev, ...urls.filter(url => !prev.includes(url))]
+                            console.log('📸 URLs des photos mises à jour:', newUrls)
+                            return newUrls
+                          })
+                        }}
+                        maxPhotos={5} // Limite totale
+                        initialPhotos={photoUrls} // Passer les photos existantes
+                        onContinue={handleContinueWithPhotos} // Fonction pour continuer
+                      />
+                    </div>
+                    
+                    {/* Bouton pour passer sans photos */}
+                    <div className="flex justify-center">
+                      <Button
+                        onClick={() => handleExpertMessage("Je n'ai pas d'image pour le moment")}
+                        variant="outline"
+                        className="bg-muted/10 hover:bg-muted/20 text-muted-foreground border-muted/30 hover:border-muted/50"
+                      >
+                        🚫 Je n'ai pas d'image
+                      </Button>
+                    </div>
                   </div>
                 )}
 
