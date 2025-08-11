@@ -263,7 +263,26 @@ export default function AdminCategoriesPage() {
   }
 
   const handleDeleteCategory = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) return
+    // Vérifier d'abord s'il y a des services associés
+    const category = categories.find(cat => cat.id === id);
+    let confirmMessage = 'Êtes-vous sûr de vouloir supprimer cette catégorie ?';
+    
+    // Si on a des informations sur les services, les inclure dans la confirmation
+    try {
+      const servicesResponse = await fetch(`/api/admin/services?categoryId=${id}`);
+      if (servicesResponse.ok) {
+        const servicesData = await servicesResponse.json();
+        const servicesCount = servicesData.services?.length || 0;
+        
+        if (servicesCount > 0) {
+          confirmMessage = `Êtes-vous sûr de vouloir supprimer cette catégorie ?\n\nCette action supprimera également ${servicesCount} service(s) associé(s) de manière définitive.`;
+        }
+      }
+    } catch (error) {
+      console.log('Impossible de vérifier les services associés, continuation avec la suppression simple');
+    }
+    
+    if (!confirm(confirmMessage)) return
     
     try {
       const response = await fetch(`/api/admin/categories/${id}`, {
@@ -275,9 +294,11 @@ export default function AdminCategoriesPage() {
         throw new Error(errorData.error || 'Une erreur est survenue')
       }
       
+      const result = await response.json()
+      
       toast({
         title: "Succès",
-        description: "Catégorie supprimée avec succès",
+        description: result.message || "Catégorie supprimée avec succès",
       })
       
       fetchCategories()
@@ -308,9 +329,9 @@ export default function AdminCategoriesPage() {
           </Link>
           <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Importer les données statiques
+                Importer
               </Button>
             </DialogTrigger>
             <DialogContent>
