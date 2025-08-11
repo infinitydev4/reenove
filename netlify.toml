@@ -4,28 +4,4 @@
 
 # Configuration pour Next.js sur Netlify
 [[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# Désactiver le cache pour les API Express
-[[headers]]
-  for = "/api/express/*"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-    Pragma = "no-cache"
-    Expires = "0"
-
-# Désactiver le cache pour les API d'administration Express
-[[headers]]
-  for = "/api/admin/express-bookings/*"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-    Pragma = "no-cache" 
-    Expires = "0"
-
-# Désactiver le cache pour les services admin (qui impactent Express)
-[[headers]]
-  for = "/api/admin/services/*"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-    Pragma = "no-cache"
-    Expires = "0" 
+  package = "@netlify/plugin-nextjs" 

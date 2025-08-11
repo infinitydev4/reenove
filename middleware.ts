@@ -77,8 +77,8 @@ export const config = {
   matcher: [
     /*
      * Matcher pour les routes qui nécessitent une authentification
-     * - Exclut les routes qui n'ont pas besoin d'authentification comme /api/auth
+     * - Exclut les routes API et les assets statiques
      */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|images).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|images|public).*)',
   ],
 } 
