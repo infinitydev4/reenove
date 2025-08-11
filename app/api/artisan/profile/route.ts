@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma"
 import { authOptions } from "@/lib/auth"
 import { updateOnboardingProgress } from "@/lib/onboarding"
 
+export const dynamic = 'force-dynamic'
+
 // GET - Récupérer le profil de l'artisan
 export async function GET() {
   try {

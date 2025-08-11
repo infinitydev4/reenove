@@ -4,6 +4,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { ExpressBookingStatus } from "@/lib/generated/prisma";
 
+export const dynamic = 'force-dynamic';
+
 // Vérifier les permissions d'administrateur
 async function isAdmin(session: any) {
   if (!session?.user) return false;
