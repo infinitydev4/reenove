@@ -510,8 +510,8 @@ export default function AdminServicesPage() {
                 Ajouter un service
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-[#0E261C] border-[#FCDA89]/20 max-w-4xl">
-              <DialogHeader>
+            <DialogContent className="bg-[#0E261C] border-[#FCDA89]/20 max-w-4xl max-h-[90vh] sm:max-w-2xl md:max-w-3xl lg:max-w-4xl flex flex-col">
+              <DialogHeader className="flex-shrink-0">
                 <DialogTitle className="text-white">
                   {editingService ? 'Modifier un service' : 'Ajouter un service'}
                 </DialogTitle>
@@ -522,7 +522,8 @@ export default function AdminServicesPage() {
                 </DialogDescription>
               </DialogHeader>
               
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-2">
+              <div className="flex-1 overflow-y-auto px-1">
+                <form id="service-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-2">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-white">Nom du service</Label>
                   <Input 
@@ -611,9 +612,9 @@ export default function AdminServicesPage() {
                     </Label>
                   </div>
 
-                  {form.watch('isExpressAvailable') && (
+                                        {form.watch('isExpressAvailable') && (
                     <>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="expressPrice" className="text-white">Prix Express (€)</Label>
                           <Input
@@ -671,26 +672,32 @@ export default function AdminServicesPage() {
                     </>
                   )}
                 </div>
-                
-                <DialogFooter className="pt-4">
-                  <Button variant="outline" type="button" onClick={handleCancelEdit} className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10">
-                    Annuler
-                  </Button>
-                  <Button type="submit" disabled={submitting} className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold">
-                    {submitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {editingService ? 'Mise à jour...' : 'Création...'}
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-4 w-4" />
-                        {editingService ? 'Mettre à jour' : 'Créer'}
-                      </>
-                    )}
-                  </Button>
-                </DialogFooter>
-              </form>
+                </form>
+              </div>
+              
+              <DialogFooter className="flex-shrink-0 pt-4 border-t border-[#FCDA89]/20 mt-4 flex flex-col sm:flex-row gap-2 sm:gap-0">
+                <Button variant="outline" type="button" onClick={handleCancelEdit} className="bg-white/5 border-[#FCDA89]/20 text-[#FCDA89] hover:bg-[#FCDA89]/10 w-full sm:w-auto">
+                  Annuler
+                </Button>
+                <Button 
+                  type="submit" 
+                  form="service-form"
+                  disabled={submitting} 
+                  className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold w-full sm:w-auto"
+                >
+                  {submitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {editingService ? 'Mise à jour...' : 'Création...'}
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4" />
+                      {editingService ? 'Mettre à jour' : 'Créer'}
+                    </>
+                  )}
+                </Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
