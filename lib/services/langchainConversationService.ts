@@ -23,7 +23,7 @@ export const llm = new ChatOpenAI({
   modelName: 'gpt-4o',
   temperature: 0.7,
   openAIApiKey,
-  maxTokens: 1000,
+  maxTokens: 200,
 });
 
 // Modèle GPT-3.5 pour l'extraction de données (plus rapide)
@@ -100,7 +100,7 @@ MISSION :
 
 COMPORTEMENT :
 - Reste conversationnel et naturel
-- Maximum 2-3 phrases par réponse
+- Maximum 1-2 phrases par réponse
 - Pas de formatage markdown
 - Sois encourageant et positif
 - Utilise un langage simple et accessible
@@ -283,13 +283,12 @@ export class LangChainConversationService {
     }
 
     systemPrompt += `\n\nInstructions :
-- Reste professionnel mais chaleureux
-- Utilise des phrases courtes et claires
-- Si l'utilisateur semble hésiter, propose des exemples
-- Confirme toujours la compréhension avant de passer à la suite
-- Adapte ton ton selon l'urgence ou l'importance du projet
+- Phrases très courtes (1-2 max)
+- Professionnel mais chaleureux
+- Exemples brefs si nécessaire
+- Confirme rapidement avant de continuer
 
-IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser sur les réponses de l'utilisateur.`;
+IMPORTANT : Base-toi uniquement sur les réponses utilisateur.`;
 
     return systemPrompt;
   }
@@ -390,7 +389,7 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
         current_state: ['bon état', 'état moyen', 'mauvais état', 'endommagé', 'problèmes d\'humidité'],
         materials_preferences: ['aucune préférence', 'standard', 'haute qualité', 'économique', 'finition mate', 'finition satinée'],
         project_urgency: ['urgent', 'dans les 15 jours', 'dans les 30 jours', 'quand vous voulez'],
-        surface_area: ['moins de 10 m²', '10-20 m²', '20-50 m²', 'plus de 50 m²']
+        surface_area: []
       };
       
       const fieldOptions = commonOptions[context.currentFocus as keyof typeof commonOptions];
@@ -622,7 +621,7 @@ IMPORTANT : Ne jamais inventer ou supposer des informations. Toujours se baser s
       
       const output = fieldConfig.question || `Pouvez-vous me parler de ${fieldConfig.displayName} ?`;
       const finalOutput = options.length > 0 
-        ? `${output}\n\n💡 Suggestions rapides :\nVous pouvez cliquer sur une option ci-dessous ou spécifier autre chose dans le champ de message si aucune suggestion ne correspond exactement.`
+        ? `${output}\n\n💡 Cliquez sur une option ou précisez autre chose :`
         : output;
         
       return {
@@ -706,7 +705,7 @@ ${this.getProjectDescription()}
 MISSION : Pose une question naturelle, encourageante avec des exemples concrets pour guider l'utilisateur.
 
 RÈGLES :
-- Maximum 2-3 phrases
+- Maximum 1-2 phrases courtes
 - Toujours donner des exemples pertinents
 - Ton professionnel mais chaleureux  
 - Adapté au contexte ${category}
@@ -726,7 +725,7 @@ Génère UNIQUEMENT la question avec exemples.`;
       
       // Ajouter l'instruction pour les options
       const finalOutput = options.length > 0 
-        ? `${result}\n\n💡 Suggestions rapides :\nVous pouvez cliquer sur une option ci-dessous ou spécifier autre chose dans le champ de message si aucune suggestion ne correspond exactement.`
+        ? `${result}\n\n💡 Cliquez sur une option ou précisez autre chose :`
         : result;
 
       return {
@@ -747,7 +746,7 @@ Génère UNIQUEMENT la question avec exemples.`;
       }
       const output = fieldConfig.question || `Pouvez-vous me parler de ${fieldConfig.displayName} ?`;
       const finalOutput = options.length > 0 
-        ? `${output}\n\n💡 Suggestions rapides :\nVous pouvez cliquer sur une option ci-dessous ou spécifier autre chose dans le champ de message si aucune suggestion ne correspond exactement.`
+        ? `${output}\n\n💡 Cliquez sur une option ou précisez autre chose :`
         : output;
         
       return {
@@ -783,12 +782,7 @@ Génère UNIQUEMENT la question avec exemples.`;
       service_type: this.getServiceTypeSuggestions(cleanCategory),
       project_description: this.getProjectDescriptionSuggestions(cleanCategory, cleanServiceType),
       room_type: this.getRoomTypeSuggestions(cleanCategory),
-      surface_area: [
-        { id: 'petite', label: 'Moins de 10 m²', value: 'moins de 10 m²' },
-        { id: 'moyenne', label: '10-20 m²', value: '10-20 m²' },
-        { id: 'grande', label: '20-50 m²', value: '20-50 m²' },
-        { id: 'tres_grande', label: 'Plus de 50 m²', value: 'plus de 50 m²' }
-      ],
+      surface_area: [],
       current_state: this.getCurrentStateSuggestions(cleanCategory),
       materials_preferences: this.getMaterialsSuggestions(cleanCategory),
       project_urgency: [
@@ -1759,12 +1753,11 @@ Génère UNIQUEMENT la question avec exemples.`;
       return this.askNextLogicalQuestion();
     }
 
-    const prompt = `L'utilisateur semble avoir besoin de clarification sur "${fieldConfig.displayName}".
+    const prompt = `Clarifie "${fieldConfig.displayName}" pour l'utilisateur.
 
 Sa réponse : "${userInput}"
 
-Aide-le en reformulant ou en donnant plus de contexte avec des exemples concrets si possible. Reste bref et naturel. 
-IMPORTANT : Ne repose PAS la question technique, aide plutôt à comprendre ce qui est attendu.`;
+RÈGLES : 1-2 phrases max, exemples brefs, aide à comprendre sans reposer la question.`;
 
     const response = await this.generateAIResponse(prompt);
     
@@ -1786,12 +1779,11 @@ IMPORTANT : Ne repose PAS la question technique, aide plutôt à comprendre ce q
       return this.askNextLogicalQuestion();
     }
 
-    const prompt = `L'utilisateur a besoin d'aide pour "${fieldConfig.displayName}".
+    const prompt = `Aide pour "${fieldConfig.displayName}".
 
-Contexte : ${fieldConfig.helpPrompt}
-${fieldConfig.examples ? `Exemples disponibles : ${fieldConfig.examples.join(', ')}` : ''}
+${fieldConfig.examples ? `Exemples : ${fieldConfig.examples.join(', ')}` : ''}
 
-Propose 2-3 exemples concrets et demande s'il veut que tu l'aides davantage. Reste naturel et bref.`;
+RÈGLES : 1-2 phrases, exemples concrets, question d'aide courte.`;
 
     const response = await this.generateAIResponse(prompt);
     
@@ -1839,12 +1831,12 @@ Propose 2-3 exemples concrets et demande s'il veut que tu l'aides davantage. Res
   private async engageFreeConversation(userInput: string): Promise<FormRunnerResult> {
     this.conversationState.conversationMode = 'free';
     
-    const prompt = `L'utilisateur veut discuter librement. 
+    const prompt = `Conversation libre avec l'utilisateur.
 
-Son message : "${userInput}"
-Contexte projet : ${this.getProjectDescription()}
+Message : "${userInput}"
+Contexte : ${this.getProjectDescription()}
 
-Engage une conversation naturelle pour l'aider. Tu peux explorer ses idées, ses doutes, ses ambitions. Reste bref et encourageant.`;
+RÈGLES : 1-2 phrases, naturel, encourageant, bref.`;
 
     const response = await this.generateAIResponse(prompt);
     
@@ -2744,12 +2736,10 @@ CONTRAINTES IMPORTANTES :
         'peinture lessivable', 'finition mate', 'finition satinée'
       ],
       project_description: [], // Toute description non vide est considérée comme suffisante
-      surface_area: [
-        'moins de 10 m²', '10-20 m²', '20-50 m²', 'plus de 50 m²'
-      ],
       room_type: [
         'salon', 'cuisine', 'chambre', 'salle de bain', 'garage', 'bureau', 'couloir', 'WC', 'cave/sous-sol'
       ],
+      surface_area: [],
       access_constraints: [
         'aucune contrainte', 'escalier étroit', 'ascenseur nécessaire', 'non'
       ],
