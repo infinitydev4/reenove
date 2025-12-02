@@ -76,7 +76,13 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
   const [isComplete, setIsComplete] = useState(false)
   const [estimatedPrice, setEstimatedPrice] = useState<{ min: number, max: number, factors?: string[] } | null>(null)
   const [showHomeConfirm, setShowHomeConfirm] = useState(false)
-  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(() => {
+    // Restaurer la session depuis sessionStorage si disponible (persist après hot reload)
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('chat-session-id') || null
+    }
+    return null
+  })
   
   // États spécifiques pour photos et adresse
   const [photoUrls, setPhotoUrls] = useState<string[]>([])
@@ -95,9 +101,20 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
   
   // Protection contre les requêtes simultanées
   const isProcessingRef = useRef(false)
+  
+  // Track du dernier message pour éviter les duplications après hot reload
+  const lastProcessedMessageRef = useRef<string | null>(null)
 
   // Initialiser la conversation experte
   useEffect(() => {
+    // PROTECTION 1: Vérifier si déjà des messages (hot reload)
+    if (messages.length > 0) {
+      console.log('🔥 Hot reload détecté - messages déjà présents, skip init')
+      isInitializedRef.current = true
+      return
+    }
+    
+    // PROTECTION 2: Init une seule fois
     if (!isInitializedRef.current) {
       isInitializedRef.current = true
       initializeExpertChat()
@@ -218,6 +235,10 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
       // Récupérer l'ID de session depuis la réponse JSON (nouvelle méthode)
       if (data.sessionId) {
         setSessionId(data.sessionId)
+        // Persister la session pour survivre au hot reload
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('chat-session-id', data.sessionId)
+        }
       }
       
       // Ajouter le message d'accueil expert
@@ -328,6 +349,10 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
       // Récupérer l'ID de session depuis la réponse JSON si ce n'est pas déjà fait
       if (data.sessionId && !sessionId) {
         setSessionId(data.sessionId)
+        // Persister la session pour survivre au hot reload
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('chat-session-id', data.sessionId)
+        }
       }
       
       // Mettre à jour les états
