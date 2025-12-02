@@ -383,18 +383,33 @@ IMPORTANT : Base-toi uniquement sur les réponses utilisateur.`;
       return 'complete_answer';
     }
 
-    // NOUVEAU: Vérification déterministe AVANT l'IA
-    // Si l'input correspond exactement aux options communes, c'est forcément "complete_answer"
-    if (context.currentFocus) {
-      const inputLower = input.trim().toLowerCase();
+    const inputLower = input.trim().toLowerCase();
+
+    // PROTECTION 1: Si la réponse est une phrase courte et descriptive (> 3 mots), c'est une réponse
+    const wordCount = input.trim().split(/\s+/).length;
+    if (wordCount >= 2 && wordCount <= 15 && context.currentFocus) {
+      // Si c'est une description ou une réponse factuelle (pas une question)
+      const isQuestion = input.includes('?') || inputLower.startsWith('comment') || inputLower.startsWith('quoi') || inputLower.startsWith('pourquoi');
+      const isHelpRequest = inputLower.includes('aide') || inputLower.includes('exemple') || inputLower.includes('sais pas') || inputLower.includes('aucune idée');
       
+      if (!isQuestion && !isHelpRequest) {
+        console.log('✅ Réponse descriptive détectée (', wordCount, 'mots):', input);
+        this.conversationState.lastIntent = 'complete_answer';
+        return 'complete_answer';
+      }
+    }
+
+    // PROTECTION 2: Vérification déterministe pour les options communes
+    if (context.currentFocus) {
       // Options communes pour les champs les plus fréquents
       const commonOptions = {
         project_category: ['plomberie', 'électricité', 'menuiserie', 'peinture', 'maçonnerie', 'salle de bain', 'portes et fenêtres', 'jardinage', 'rénovation générale', 'Rénovation générale'],
         current_state: ['bon état', 'état moyen', 'mauvais état', 'endommagé', 'problèmes d\'humidité'],
         materials_preferences: ['aucune préférence', 'standard', 'haute qualité', 'économique', 'finition mate', 'finition satinée'],
         project_urgency: ['urgent', 'dans les 15 jours', 'dans les 30 jours', 'quand vous voulez'],
-        surface_area: []
+        surface_area: [],
+        // Ajouter des patterns pour project_description
+        project_description: ['fuite', 'robinet', 'changer', 'installer', 'réparer', 'rénover', 'problème', 'douche', 'chauffage']
       };
       
       const fieldOptions = commonOptions[context.currentFocus as keyof typeof commonOptions];
