@@ -133,6 +133,16 @@ export default function Navbar() {
             FAQ
           </button>
           <Link
+            href="/about"
+            className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+              isActive("/about")
+                ? "text-[#FCDA89] font-medium"
+                : "text-white/80 hover:text-[#FCDA89]"
+            }`}
+          >
+            À propos
+          </Link>
+          <Link
             href="/contact"
             className={`px-3 py-2 text-sm rounded-lg transition-colors ${
               isActive("/contact")
@@ -244,6 +254,17 @@ export default function Navbar() {
                 >
                   FAQ
                 </button>
+                <Link
+                  href="/about"
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    isActive("/about")
+                      ? "text-[#FCDA89] font-medium bg-white/5"
+                      : "text-white/80 hover:text-[#FCDA89] hover:bg-white/5"
+                  }`}
+                  onClick={closeDrawer}
+                >
+                  À propos
+                </Link>
                 <Link
                   href="/contact"
                   className={`px-3 py-2 text-sm rounded-lg transition-colors ${

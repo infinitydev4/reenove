@@ -100,6 +100,11 @@ export function Footer() {
             <h3 className="font-bold text-white mb-4">À propos</h3>
             <ul className="space-y-3">
               <li>
+                <Link href="/about" className="text-white/70 hover:text-[#FCDA89] transition-colors">
+                  Qui sommes-nous
+                </Link>
+              </li>
+              <li>
                 <button onClick={() => scrollToSection("why-reenove")} className="text-white/70 hover:text-[#FCDA89] transition-colors text-left">
                   Pourquoi Reenove
                 </button>
