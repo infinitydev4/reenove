@@ -90,9 +90,15 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [authStep, setAuthStep] = useState<"none" | "register">("none")
 
+  // Protection contre la double initialisation (React Strict Mode)
+  const isInitializedRef = useRef(false)
+
   // Initialiser la conversation experte
   useEffect(() => {
-    initializeExpertChat()
+    if (!isInitializedRef.current) {
+      isInitializedRef.current = true
+      initializeExpertChat()
+    }
   }, [])
 
   // Faire défiler vers le bas à chaque nouveau message (dans le conteneur seulement)
@@ -926,6 +932,7 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
                         variant="outline"
                         className="justify-start text-left h-auto py-2 px-3 hover:bg-primary/10 hover:text-primary transition-colors"
                         onClick={() => handleExpertMessage(option.value)}
+                        disabled={isLoading}
                       >
                         {option.label}
                       </Button>
