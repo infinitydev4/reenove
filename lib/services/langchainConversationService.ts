@@ -10,6 +10,11 @@ import {
 import { ChainValues } from '@langchain/core/utils/types';
 import { getServiceFieldsConfig, getNextRequiredField, FieldConfig, getRequiredFieldsForCategory, CATEGORY_REQUIRED_FIELDS } from '@/lib/config/serviceFieldsConfig';
 import { getImageAsBase64 } from '@/lib/s3';
+import { 
+  findClosestPricing, 
+  extractSurfaceValue, 
+  getComplexityMultiplier 
+} from '@/lib/config/pricingConfig';
 
 // Configuration OpenAI
 const openAIApiKey = process.env.OPENAI_API_KEY || '';
@@ -2251,26 +2256,86 @@ Réponds UNIQUEMENT avec le contenu extrait.`;
   }
 
   private async generatePriceEstimation(): Promise<EstimatedPrice> {
-    // Logique d'estimation basique pour l'instant
-    const category = this.projectState.project_category?.toLowerCase() || '';
-    const description = this.projectState.project_description?.toLowerCase() || '';
+    const category = this.projectState.project_category || '';
+    const serviceType = this.projectState.service_type || '';
+    const description = this.projectState.project_description || '';
+    const surfaceArea = this.projectState.surface_area;
     
-    let basePrice = 500;
+    console.log('💰 === GÉNÉRATION ESTIMATION PRIX ===');
+    console.log('📂 Catégorie:', category);
+    console.log('🔧 Type de service:', serviceType);
+    console.log('📐 Surface:', surfaceArea);
+    console.log('📝 Description:', description.substring(0, 100));
     
-    if (category.includes('plomberie') || description.includes('plomberie')) {
-      basePrice = 300;
-    } else if (category.includes('électricité') || description.includes('électricité')) {
-      basePrice = 400;
-    } else if (category.includes('peinture') || description.includes('peinture')) {
-      basePrice = 600;
-    } else if (category.includes('menuiserie') || description.includes('menuiserie')) {
-      basePrice = 800;
+    // Trouver le pricing correspondant dans notre configuration
+    const pricing = findClosestPricing(category, serviceType);
+    
+    if (!pricing) {
+      console.warn('⚠️ Aucun pricing trouvé dans la config, utilisation fallback');
+      return {
+        min: 300,
+        max: 800,
+        factors: ['Complexité du projet', 'Matériaux nécessaires', 'Temps de réalisation']
+      };
     }
     
+    console.log('✅ Pricing trouvé:', pricing.baseRanges[0].description);
+    
+    let min = 0;
+    let max = 0;
+    
+    // CAS 1: Si on a une surface ET que le pricing utilise un multiplicateur de surface
+    if (surfaceArea && pricing.surfaceMultiplier) {
+      const surface = extractSurfaceValue(surfaceArea);
+      
+      if (surface && surface > 0) {
+        // Utiliser le premier range pour le calcul de base
+        const baseRange = pricing.baseRanges[0];
+        min = Math.floor(baseRange.min * surface);
+        max = Math.ceil(baseRange.max * surface);
+        
+        console.log(`📐 Calcul basé sur surface: ${surface}m² × ${baseRange.min}-${baseRange.max}€/m² = ${min}-${max}€`);
+      }
+    }
+    
+    // CAS 2: Si pas de surface ou pas de multiplicateur, utiliser les prix unitaires
+    if (min === 0 && max === 0) {
+      // Choisir le range le plus approprié (prendre le premier par défaut)
+      const range = pricing.baseRanges[0];
+      min = range.min;
+      max = range.max;
+      
+      console.log(`🔧 Calcul unitaire: ${min}-${max}€ (${range.unit})`);
+      
+      // Ajuster selon la complexité détectée dans la description
+      const complexityMultiplier = getComplexityMultiplier(description);
+      
+      if (complexityMultiplier !== 1.0) {
+        min = Math.floor(min * complexityMultiplier);
+        max = Math.ceil(max * complexityMultiplier);
+        console.log(`🎚️ Ajustement complexité (×${complexityMultiplier.toFixed(2)}): ${min}-${max}€`);
+      }
+    }
+    
+    // S'assurer que les prix respectent le minimum du métier
+    if (pricing.minJobPrice) {
+      min = Math.max(pricing.minJobPrice, min);
+      max = Math.max(min + 100, max);
+      console.log(`✅ Prix minimum métier appliqué: ${pricing.minJobPrice}€`);
+    }
+    
+    // S'assurer que min < max et que les valeurs sont raisonnables
+    min = Math.max(100, Math.floor(min));
+    max = Math.max(min + 100, Math.ceil(max));
+    
+    console.log(`💰 ESTIMATION FINALE: ${min}€ - ${max}€`);
+    console.log('📋 Facteurs:', pricing.factors);
+    console.log('💰 === FIN GÉNÉRATION ESTIMATION ===');
+    
     return {
-      min: Math.floor(basePrice * 0.7),
-      max: Math.ceil(basePrice * 1.5),
-      factors: ['Complexité du projet', 'Matériaux nécessaires', 'Temps de réalisation']
+      min,
+      max,
+      factors: pricing.factors
     };
   }
 
