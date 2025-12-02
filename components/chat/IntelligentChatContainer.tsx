@@ -92,6 +92,9 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
 
   // Protection contre la double initialisation (React Strict Mode)
   const isInitializedRef = useRef(false)
+  
+  // Protection contre les requêtes simultanées
+  const isProcessingRef = useRef(false)
 
   // Initialiser la conversation experte
   useEffect(() => {
@@ -252,14 +255,23 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
   // Gérer les messages utilisateur avec l'expert IA
   const handleExpertMessage = async (message: string = inputValue, photos?: string[]) => {
     if (!message.trim() || isLoading) return
+    
+    // Protection anti-race condition : bloquer immédiatement
+    if (isProcessingRef.current) {
+      console.log('⚠️ Requête ignorée - traitement en cours');
+      return;
+    }
+    isProcessingRef.current = true
 
     // Gestion spéciale pour les options d'authentification et navigation
     if (message === "login" || message === "register") {
+      isProcessingRef.current = false
       handleAuthOption(message)
       return
     }
     
     if (message === "continue-client") {
+      isProcessingRef.current = false
       // Rediriger vers l'espace client
       router.push("/client")
       return
@@ -361,6 +373,7 @@ export default function IntelligentChatContainer({ onSaveProject }: IntelligentC
       setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
+      isProcessingRef.current = false
     }
   }
 
