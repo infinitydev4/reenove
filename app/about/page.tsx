@@ -385,8 +385,8 @@ export default function AboutPage() {
                     </Link>
                   </Button>
                   <Button variant="outline" className="border-[#FCDA89]/30 bg-[#FCDA89]/10 hover:bg-[#FCDA89]/20 text-[#FCDA89] px-8 py-6 text-lg rounded-xl font-semibold" asChild>
-                    <Link href="/artisans">
-                      Découvrir nos artisans
+                    <Link href="/reenove-express">
+                      Reenove Express
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
