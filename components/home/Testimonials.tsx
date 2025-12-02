@@ -21,6 +21,13 @@ export default function Testimonials() {
 
   useEffect(() => {
     fetchTestimonials()
+    
+    // Rafraîchir les témoignages toutes les 30 secondes
+    const interval = setInterval(() => {
+      fetchTestimonials()
+    }, 30000) // 30 secondes
+    
+    return () => clearInterval(interval)
   }, [])
 
   const fetchTestimonials = async () => {
