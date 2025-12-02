@@ -1,19 +1,34 @@
 "use client"
 
-import { useState, useEffect } from "react"
-
-// Forcer le rendu dynamique pour éviter le cache en production
-export const dynamic = 'force-dynamic'
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import Navbar from "@/components/navbar"
+import { Footer } from "@/components/Footer"
+import BottomNavbar from "@/components/bottom-navbar"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowRight, Clock, Euro, Star, Zap, ChevronDown, ChevronUp, ImageIcon, Search, Filter } from "lucide-react"
+import { 
+  ArrowRight, 
+  Clock, 
+  Euro, 
+  Star, 
+  Zap, 
+  Search, 
+  X,
+  Sparkles,
+  Shield,
+  CheckCircle2,
+  ImageIcon,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react"
 import { cn } from "@/lib/utils"
+
+// Forcer le rendu dynamique
+export const dynamic = 'force-dynamic'
 
 interface ExpressService {
   id: string
@@ -48,64 +63,64 @@ export default function ReenoveExpressPage() {
   const [servicesByCategory, setServicesByCategory] = useState<ServicesByCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [activeCategory, setActiveCategory] = useState<string>('all')
+  const categoriesRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
 
   useEffect(() => {
     fetchExpressServices()
-    
-    // Revalidation périodique en production pour éviter les problèmes de cache
-    const interval = setInterval(() => {
-      fetchExpressServices()
-    }, 60000) // Refetch toutes les 60 secondes
-    
-    return () => clearInterval(interval)
   }, [])
+
+  // Vérifier le scroll des catégories
+  useEffect(() => {
+    const checkScroll = () => {
+      if (categoriesRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = categoriesRef.current
+        setCanScrollLeft(scrollLeft > 0)
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10)
+      }
+    }
+    
+    checkScroll()
+    categoriesRef.current?.addEventListener('scroll', checkScroll)
+    window.addEventListener('resize', checkScroll)
+    
+    return () => {
+      categoriesRef.current?.removeEventListener('scroll', checkScroll)
+      window.removeEventListener('resize', checkScroll)
+    }
+  }, [servicesByCategory])
+
+  const scrollCategories = (direction: 'left' | 'right') => {
+    if (categoriesRef.current) {
+      const scrollAmount = 200
+      categoriesRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      })
+    }
+  }
 
   const fetchExpressServices = async () => {
     try {
-      // Ajouter des headers anti-cache pour éviter les problèmes en production
       const response = await fetch('/api/express/services', {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
         }
       })
-      if (!response.ok) {
-        throw new Error('Erreur lors du chargement des services Express')
-      }
+      if (!response.ok) throw new Error('Erreur lors du chargement')
       
       const data = await response.json()
       setServices(data.services || [])
       setServicesByCategory(data.servicesByCategory || [])
-      
-      // Expand categories with popular services by default
-      const categoriesWithPopular = data.servicesByCategory
-        .filter((cat: ServicesByCategory) => 
-          cat.services.some(service => service.isPopular)
-        )
-        .map((cat: ServicesByCategory) => cat.category.id)
-      
-      setExpandedCategories(new Set(categoriesWithPopular))
-      
     } catch (err: any) {
       setError(err.message || 'Une erreur est survenue')
     } finally {
       setLoading(false)
     }
-  }
-
-  const toggleCategory = (categoryId: string) => {
-    const newExpanded = new Set(expandedCategories)
-    if (newExpanded.has(categoryId)) {
-      newExpanded.delete(categoryId)
-    } else {
-      newExpanded.add(categoryId)
-    }
-    setExpandedCategories(newExpanded)
   }
 
   const handleServiceSelect = (serviceId: string) => {
@@ -116,19 +131,19 @@ export default function ReenoveExpressPage() {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
+      minimumFractionDigits: 0,
     }).format(price)
   }
 
   const formatDuration = (minutes?: number) => {
-    if (!minutes) return 'Durée variable'
-    if (minutes < 60) return `${minutes} min`
+    if (!minutes) return '~1h'
+    if (minutes < 60) return `${minutes}min`
     const hours = Math.floor(minutes / 60)
     const remainingMinutes = minutes % 60
     if (remainingMinutes === 0) return `${hours}h`
-    return `${hours}h${remainingMinutes.toString().padStart(2, '0')}`
+    return `${hours}h${remainingMinutes}`
   }
 
-  // Mapping des noms d'icônes Lucide vers des emojis
   const getEmojiFromIcon = (iconName?: string) => {
     const iconMap: Record<string, string> = {
       'Bath': '🛁',
@@ -145,430 +160,408 @@ export default function ReenoveExpressPage() {
     return iconMap[iconName || ''] || '🔧'
   }
 
-  // Obtenir la liste unique des catégories
-  const categories = Array.from(
-    new Set(services.map(service => service.category.id))
-  ).map(categoryId => {
-    const service = services.find(s => s.category.id === categoryId)
-    return service?.category
-  }).filter((category): category is NonNullable<typeof category> => Boolean(category))
-
-
-
-  // Filtrer les services basés sur le terme de recherche et la catégorie
+  // Filtrer les services
   const filteredServices = services.filter(service => {
-    // Filtre par terme de recherche
-    const matchesSearch = !searchTerm || (() => {
-      const searchLower = searchTerm.toLowerCase()
-      return (
-        service.name.toLowerCase().includes(searchLower) ||
-        (service.description && service.description.toLowerCase().includes(searchLower)) ||
-        (service.expressDescription && service.expressDescription.toLowerCase().includes(searchLower)) ||
-        service.category.name.toLowerCase().includes(searchLower)
-      )
-    })()
-
-    // Filtre par catégorie
-    const matchesCategory = selectedCategory === 'all' || service.category.id === selectedCategory
-
+    const matchesSearch = !searchTerm || 
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.expressDescription?.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesCategory = activeCategory === 'all' || service.category.id === activeCategory
+    
     return matchesSearch && matchesCategory
   })
 
-  // Filtrer les services par catégorie avec recherche
-  const filteredServicesByCategory = servicesByCategory.map(categoryGroup => ({
-    ...categoryGroup,
-    services: categoryGroup.services.filter(service => {
-      // Filtre par terme de recherche
-      const matchesSearch = !searchTerm || (() => {
-        const searchLower = searchTerm.toLowerCase()
-        return (
-          service.name.toLowerCase().includes(searchLower) ||
-          (service.description && service.description.toLowerCase().includes(searchLower)) ||
-          (service.expressDescription && service.expressDescription.toLowerCase().includes(searchLower))
-        )
-      })()
-
-      // Filtre par catégorie
-      const matchesCategory = selectedCategory === 'all' || service.category.id === selectedCategory
-
-      return matchesSearch && matchesCategory
-    })
-  })).filter(categoryGroup => categoryGroup.services.length > 0)
+  // Services populaires
+  const popularServices = filteredServices.filter(s => s.isPopular).slice(0, 6)
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0E261C] to-[#1a3d2e] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FCDA89] mx-auto mb-4"></div>
-          <p className="text-white/70">Chargement des services Express...</p>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center bg-[#0E261C]">
+          <div className="text-center">
+            <div className="relative w-16 h-16 mx-auto mb-4">
+              <div className="absolute inset-0 rounded-full border-4 border-[#FCDA89]/20"></div>
+              <div className="absolute inset-0 rounded-full border-4 border-[#FCDA89] border-t-transparent animate-spin"></div>
+              <Zap className="absolute inset-0 m-auto w-6 h-6 text-[#FCDA89]" />
+            </div>
+            <p className="text-white/70">Chargement des services...</p>
+          </div>
         </div>
+        <Footer />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0E261C] to-[#1a3d2e] flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-400 mb-4">{error}</p>
-          <Button onClick={fetchExpressServices} variant="outline" className="border-[#FCDA89]/30 text-[#FCDA89]">
-            Réessayer
-          </Button>
+      <div className="flex flex-col min-h-screen">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center bg-[#0E261C]">
+          <div className="text-center">
+            <p className="text-red-400 mb-4">{error}</p>
+            <Button onClick={fetchExpressServices} className="bg-[#FCDA89] text-[#0E261C]">
+              Réessayer
+            </Button>
+          </div>
         </div>
+        <Footer />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0E261C] to-[#1a3d2e]">
-      {/* Hero Section */}
-      <section className="relative py-20 px-4">
-        <div className="container mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FCDA89]/20 border border-[#FCDA89]/30 mb-6">
-            <Zap className="h-4 w-4 text-[#FCDA89]" />
-            <span className="text-[#FCDA89] text-sm font-medium">Service Express</span>
+    <div className="flex flex-col min-h-screen bg-[#0E261C]">
+      <Navbar />
+      
+      <main className="flex-1">
+        {/* Hero Section - Compact */}
+        <section className="relative py-12 md:py-16 overflow-hidden">
+          {/* Background */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#FCDA89]/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-[#FCDA89]/5 rounded-full blur-3xl"></div>
           </div>
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
-            Reenove <span className="text-[#FCDA89]">Express</span>
-          </h1>
-          
-          <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-            Interventions rapides à prix fixe. Réservez en ligne et recevez une confirmation immédiate.
-          </p>
+          <div className="container relative z-10 px-4 md:px-6 mx-auto">
+            <div className="max-w-3xl mx-auto text-center">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FCDA89]/10 border border-[#FCDA89]/20 mb-6">
+                <Zap className="w-4 h-4 text-[#FCDA89]" />
+                <span className="text-[#FCDA89] text-sm font-medium">Intervention rapide • Prix fixe</span>
+              </div>
+              
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+                Reenove <span className="text-[#FCDA89]">Express</span>
+              </h1>
+              
+              <p className="text-lg text-white/70 mb-8 max-w-xl mx-auto">
+                Réservez en 2 minutes, recevez une confirmation immédiate
+              </p>
 
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            <div className="flex items-center gap-2 text-white/70">
-              <Clock className="h-5 w-5 text-[#FCDA89]" />
-              <span>Intervention rapide</span>
-            </div>
-            <div className="flex items-center gap-2 text-white/70">
-              <Euro className="h-5 w-5 text-[#FCDA89]" />
-              <span>Prix fixe transparent</span>
-            </div>
-            <div className="flex items-center gap-2 text-white/70">
-              <Star className="h-5 w-5 text-[#FCDA89]" />
-              <span>Artisans qualifiés</span>
-            </div>
-          </div>
+              {/* Avantages en ligne */}
+              <div className="flex flex-wrap justify-center gap-6 mb-8">
+                <div className="flex items-center gap-2 text-white/80">
+                  <div className="p-1.5 rounded-full bg-[#FCDA89]/10">
+                    <Clock className="w-4 h-4 text-[#FCDA89]" />
+                  </div>
+                  <span className="text-sm">Intervention 24-48h</span>
+                </div>
+                <div className="flex items-center gap-2 text-white/80">
+                  <div className="p-1.5 rounded-full bg-[#FCDA89]/10">
+                    <Euro className="w-4 h-4 text-[#FCDA89]" />
+                  </div>
+                  <span className="text-sm">Prix tout compris</span>
+                </div>
+                <div className="flex items-center gap-2 text-white/80">
+                  <div className="p-1.5 rounded-full bg-[#FCDA89]/10">
+                    <Shield className="w-4 h-4 text-[#FCDA89]" />
+                  </div>
+                  <span className="text-sm">Artisans vérifiés</span>
+                </div>
+              </div>
 
-          {/* Barre de recherche et filtres */}
-          <div className="max-w-2xl mx-auto mt-8 space-y-4">
-            <div className="flex flex-col md:flex-row gap-4">
               {/* Barre de recherche */}
-              <div className="flex-1">
+              <div className="max-w-md mx-auto">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white/50" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
                   <Input
                     type="text"
                     placeholder="Rechercher un service..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-white/10 border-[#FCDA89]/30 text-white placeholder:text-white/50 focus:border-[#FCDA89] focus:ring-[#FCDA89] rounded-xl h-12"
+                    className="w-full pl-12 pr-10 py-6 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-2xl focus:border-[#FCDA89]/50 focus:ring-[#FCDA89]/20"
                   />
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-white/10 transition-colors"
+                    >
+                      <X className="w-4 h-4 text-white/40" />
+                    </button>
+                  )}
                 </div>
               </div>
-
-              {/* Sélecteur de catégorie */}
-              <div className="md:w-64">
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="bg-white/10 border-[#FCDA89]/30 text-white h-12 rounded-xl">
-                    <div className="flex items-center gap-2">
-                      <Filter className="h-4 w-4 text-white/50" />
-                      <SelectValue placeholder="Toutes les catégories" />
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="bg-[#0E261C] border-[#FCDA89]/20 rounded-xl">
-                    <SelectItem value="all" className="text-white hover:bg-white/10 focus:bg-white/10">
-                      Toutes les catégories
-                    </SelectItem>
-                    {categories.map((category) => (
-                      <SelectItem 
-                        key={category.id} 
-                        value={category.id} 
-                        className="text-white hover:bg-white/10 focus:bg-white/10"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm">{getEmojiFromIcon(category.icon)}</span>
-                          {category.name}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Indicateur de résultats */}
-            {(searchTerm || selectedCategory !== 'all') && (
-              <div className="text-center">
-                <p className="text-white/60 text-sm">
-                  {filteredServices.length} service{filteredServices.length > 1 ? 's' : ''} 
-                  {searchTerm && ` pour "${searchTerm}"`}
-                  {selectedCategory !== 'all' && (
-                    <>
-                      {' '}dans{' '}
-                      <span className="text-[#FCDA89]">
-                        {categories.find(cat => cat.id === selectedCategory)?.name}
-                      </span>
-                    </>
-                  )}
-                </p>
-                
-                {/* Bouton pour réinitialiser les filtres */}
-                {(searchTerm || selectedCategory !== 'all') && (
-                  <Button
-                    onClick={() => {
-                      setSearchTerm('')
-                      setSelectedCategory('all')
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    className="mt-2 text-white/70 hover:text-white hover:bg-white/10"
-                  >
-                    Effacer tous les filtres
-                  </Button>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Services populaires */}
-      {filteredServices.some(service => service.isPopular) && (
-        <section className="py-12 px-4">
-          <div className="container mx-auto">
-            <h2 className="text-2xl font-bold text-white mb-8 text-center">
-              🔥 Services les plus demandés
-                          {(searchTerm || selectedCategory !== 'all') && (
-              <span className="text-base font-normal text-white/70 block mt-2">
-                {searchTerm && `Résultats pour "${searchTerm}"`}
-                {searchTerm && selectedCategory !== 'all' && ' - '}
-                {selectedCategory !== 'all' && (
-                  <span className="text-[#FCDA89]">
-                    {categories.find(cat => cat.id === selectedCategory)?.name}
-                  </span>
-                )}
-              </span>
-            )}
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-              {filteredServices
-                .filter(service => service.isPopular)
-                .map((service) => (
-                  <Card 
-                    key={service.id} 
-                    className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm hover:bg-white/10 transition-all duration-300 cursor-pointer group relative overflow-hidden"
-                    onClick={() => handleServiceSelect(service.id)}
-                  >
-                    <div className="absolute top-3 right-3 z-10">
-                      <Badge className="bg-[#FCDA89] text-[#0E261C] font-semibold">
-                        Populaire
-                      </Badge>
-                    </div>
-                    
-                    {/* Image du service */}
-                    {service.icon ? (
-                      <div className="relative h-48 w-full overflow-hidden">
-                        <Image
-                          src={service.icon}
-                          alt={service.name}
-                          fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-300"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      </div>
-                    ) : (
-                      <div className="h-48 w-full bg-white/5 flex items-center justify-center">
-                        <ImageIcon className="h-12 w-12 text-white/30" />
-                      </div>
-                    )}
-                    
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-white text-lg group-hover:text-[#FCDA89] transition-colors">
-                        {service.name}
-                      </CardTitle>
-                      <CardDescription className="text-white/70">
-                        {service.expressDescription || service.description}
-                      </CardDescription>
-                    </CardHeader>
-                    
-                    <CardContent>
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="text-2xl font-bold text-[#FCDA89]">
-                          {formatPrice(service.price)}
-                        </div>
-                        <div className="flex items-center gap-1 text-white/60 text-sm">
-                          <Clock className="h-4 w-4" />
-                          {formatDuration(service.estimatedDuration)}
-                        </div>
-                      </div>
-                      
-                      <Button 
-                        className="w-full bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold group-hover:scale-105 transition-transform"
-                      >
-                        Réserver maintenant
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
             </div>
           </div>
         </section>
-      )}
 
-      {/* Tous les services par catégorie */}
-      <section className="py-12 px-4">
-        <div className="container mx-auto">
-          <h2 className="text-2xl font-bold text-white mb-8 text-center">
-            Tous nos services Express
-            {(searchTerm || selectedCategory !== 'all') && (
-              <span className="text-base font-normal text-white/70 block mt-2">
-                {filteredServicesByCategory.length} catégorie{filteredServicesByCategory.length > 1 ? 's' : ''} avec des résultats
-                {searchTerm && ` pour "${searchTerm}"`}
-                {selectedCategory !== 'all' && (
-                  <>
-                    {' '}dans{' '}
-                    <span className="text-[#FCDA89]">
-                      {categories.find(cat => cat.id === selectedCategory)?.name}
-                    </span>
-                  </>
-                )}
-              </span>
-            )}
-          </h2>
-          
-          {filteredServicesByCategory.length === 0 && searchTerm ? (
-            <div className="text-center py-12">
-              <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold text-white mb-2">Aucun service trouvé</h3>
-                             <p className="text-white/70 mb-4">
-                 Aucun service ne correspond à votre recherche &quot;{searchTerm}&quot;
-               </p>
-              <Button 
-                onClick={() => setSearchTerm('')}
-                variant="outline"
-                className="border-[#FCDA89]/30 text-[#FCDA89]"
+        {/* Categories Navigation - Sticky */}
+        <section className="sticky top-[73px] z-30 bg-[#0E261C]/95 backdrop-blur-md border-y border-white/5 py-4">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="relative">
+              {/* Scroll buttons */}
+              {canScrollLeft && (
+                <button
+                  onClick={() => scrollCategories('left')}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-[#0E261C] border border-white/10 shadow-lg hover:bg-white/5 transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4 text-white" />
+                </button>
+              )}
+              {canScrollRight && (
+                <button
+                  onClick={() => scrollCategories('right')}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-[#0E261C] border border-white/10 shadow-lg hover:bg-white/5 transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4 text-white" />
+                </button>
+              )}
+              
+              {/* Categories scroll container */}
+              <div 
+                ref={categoriesRef}
+                className="flex gap-2 overflow-x-auto scrollbar-hide px-8 md:px-0 md:justify-center"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
-                Effacer la recherche
+                <button
+                  onClick={() => setActiveCategory('all')}
+                  className={cn(
+                    "flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200",
+                    activeCategory === 'all'
+                      ? "bg-[#FCDA89] text-[#0E261C]"
+                      : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" />
+                    Tous
+                  </span>
+                </button>
+                
+                {servicesByCategory.map((cat) => (
+                  <button
+                    key={cat.category.id}
+                    onClick={() => setActiveCategory(cat.category.id)}
+                    className={cn(
+                      "flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200",
+                      activeCategory === cat.category.id
+                        ? "bg-[#FCDA89] text-[#0E261C]"
+                        : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10"
+                    )}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>{getEmojiFromIcon(cat.category.icon)}</span>
+                      {cat.category.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Results info */}
+        {(searchTerm || activeCategory !== 'all') && (
+          <div className="container px-4 md:px-6 mx-auto py-4">
+            <div className="flex items-center justify-between">
+              <p className="text-white/60 text-sm">
+                {filteredServices.length} service{filteredServices.length > 1 ? 's' : ''} trouvé{filteredServices.length > 1 ? 's' : ''}
+                {searchTerm && <span className="text-white/40"> pour &quot;{searchTerm}&quot;</span>}
+              </p>
+              {(searchTerm || activeCategory !== 'all') && (
+                <button
+                  onClick={() => { setSearchTerm(''); setActiveCategory('all') }}
+                  className="text-[#FCDA89] text-sm hover:underline"
+                >
+                  Effacer les filtres
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Popular Services - Only show if no filter and has popular */}
+        {!searchTerm && activeCategory === 'all' && popularServices.length > 0 && (
+          <section className="py-8 md:py-12">
+            <div className="container px-4 md:px-6 mx-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-xl bg-orange-500/10">
+                  <Star className="w-5 h-5 text-orange-400" />
+                </div>
+                <h2 className="text-xl font-bold text-white">Les plus demandés</h2>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {popularServices.map((service) => (
+                  <ServiceCard 
+                    key={service.id} 
+                    service={service} 
+                    onSelect={handleServiceSelect}
+                    formatPrice={formatPrice}
+                    formatDuration={formatDuration}
+                    isPopular
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* All Services Grid */}
+        <section className="py-8 md:py-12">
+          <div className="container px-4 md:px-6 mx-auto">
+            {!searchTerm && activeCategory === 'all' && popularServices.length > 0 && (
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-xl bg-[#FCDA89]/10">
+                  <Zap className="w-5 h-5 text-[#FCDA89]" />
+                </div>
+                <h2 className="text-xl font-bold text-white">Tous les services</h2>
+              </div>
+            )}
+            
+            {filteredServices.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
+                  <Search className="w-8 h-8 text-white/30" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-2">Aucun service trouvé</h3>
+                <p className="text-white/60 mb-6">
+                  Essayez avec d&apos;autres termes ou explorez nos catégories
+                </p>
+                <Button 
+                  onClick={() => { setSearchTerm(''); setActiveCategory('all') }}
+                  className="bg-[#FCDA89] text-[#0E261C] hover:bg-[#FCDA89]/90"
+                >
+                  Voir tous les services
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {filteredServices
+                  .filter(s => searchTerm || activeCategory !== 'all' || !s.isPopular)
+                  .map((service) => (
+                    <ServiceCard 
+                      key={service.id} 
+                      service={service} 
+                      onSelect={handleServiceSelect}
+                      formatPrice={formatPrice}
+                      formatDuration={formatDuration}
+                    />
+                  ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="py-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FCDA89]/5 via-transparent to-[#FCDA89]/5"></div>
+          
+          <div className="container px-4 md:px-6 mx-auto relative z-10">
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-4">
+                <CheckCircle2 className="w-4 h-4 text-[#FCDA89]" />
+                <span className="text-white/70 text-sm">Projet sur mesure</span>
+              </div>
+              
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                Besoin d&apos;un devis personnalisé ?
+              </h2>
+              <p className="text-white/60 mb-8">
+                Notre IA analyse votre projet et vous propose les meilleurs artisans
+              </p>
+              
+              <Button 
+                className="bg-[#FCDA89] hover:bg-[#FCDA89]/90 text-[#0E261C] font-semibold px-8 py-6 text-lg rounded-xl"
+                asChild
+              >
+                <Link href="/create-project-ai">
+                  Demander un devis gratuit
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
               </Button>
             </div>
-          ) : (
-            <div className="space-y-6">
-                            {filteredServicesByCategory.map((categoryGroup) => (
-                <Card key={categoryGroup.category.id} className="bg-white/5 border-[#FCDA89]/20 backdrop-blur-sm">
-                    <CardHeader 
-                      className="cursor-pointer hover:bg-white/5 transition-colors"
-                      onClick={() => toggleCategory(categoryGroup.category.id)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="text-2xl">
-                            {getEmojiFromIcon(categoryGroup.category.icon)}
-                          </div>
-                          <div>
-                            <CardTitle className="text-white">
-                              {categoryGroup.category.name}
-                            </CardTitle>
-                            <CardDescription className="text-white/70">
-                              {categoryGroup.services.length} service{categoryGroup.services.length > 1 ? 's' : ''} disponible{categoryGroup.services.length > 1 ? 's' : ''}
-                            </CardDescription>
-                          </div>
-                        </div>
-                        {expandedCategories.has(categoryGroup.category.id) ? (
-                          <ChevronUp className="h-5 w-5 text-white/70" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5 text-white/70" />
-                        )}
-                      </div>
-                    </CardHeader>
-                
-                {expandedCategories.has(categoryGroup.category.id) && (
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {categoryGroup.services.map((service) => (
-                        <Card 
-                          key={service.id}
-                          className="bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer group overflow-hidden"
-                          onClick={() => handleServiceSelect(service.id)}
-                        >
-                          {/* Image du service */}
-                          {service.icon ? (
-                            <div className="relative h-32 w-full overflow-hidden">
-                              <Image
-                                src={service.icon}
-                                alt={service.name}
-                                fill
-                                className="object-cover group-hover:scale-110 transition-transform duration-300"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                            </div>
-                          ) : (
-                            <div className="h-32 w-full bg-white/5 flex items-center justify-center">
-                              <ImageIcon className="h-8 w-8 text-white/30" />
-                            </div>
-                          )}
-                          
-                          <CardHeader className="pb-3">
-                            <CardTitle className="text-white text-base group-hover:text-[#FCDA89] transition-colors">
-                              {service.name}
-                            </CardTitle>
-                            {service.expressDescription && (
-                              <CardDescription className="text-white/60 text-sm">
-                                {service.expressDescription}
-                              </CardDescription>
-                            )}
-                          </CardHeader>
-                          
-                          <CardContent>
-                            <div className="flex items-center justify-between">
-                              <div className="text-lg font-bold text-[#FCDA89]">
-                                {formatPrice(service.price)}
-                              </div>
-                              <div className="flex items-center gap-1 text-white/60 text-xs">
-                                <Clock className="h-3 w-3" />
-                                {formatDuration(service.estimatedDuration)}
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </CardContent>
-                )}
-              </Card>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Besoin d&apos;un service personnalisé ?
-          </h2>
-          <p className="text-white/70 mb-8">
-            Pour des projets sur mesure, demandez un devis gratuit
-          </p>
-          <Button 
-            variant="outline" 
-            className="border-[#FCDA89]/30 bg-[#FCDA89]/10 hover:bg-[#FCDA89]/20 text-[#FCDA89] px-8 py-3"
-            asChild
-          >
-            <Link href="/create-project-ai">
-              Demander un devis personnalisé
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </section>
+          </div>
+        </section>
+      </main>
+      
+      <Footer />
+      <BottomNavbar />
     </div>
   )
-} 
+}
+
+// Service Card Component
+interface ServiceCardProps {
+  service: ExpressService
+  onSelect: (id: string) => void
+  formatPrice: (price: number) => string
+  formatDuration: (minutes?: number) => string
+  isPopular?: boolean
+}
+
+function ServiceCard({ service, onSelect, formatPrice, formatDuration, isPopular }: ServiceCardProps) {
+  return (
+    <div
+      onClick={() => onSelect(service.id)}
+      className={cn(
+        "group relative bg-white/5 rounded-2xl border border-white/10 overflow-hidden cursor-pointer transition-all duration-300",
+        "hover:bg-white/10 hover:border-[#FCDA89]/30 hover:scale-[1.02] hover:shadow-xl hover:shadow-[#FCDA89]/5"
+      )}
+    >
+      {/* Image */}
+      <div className="relative h-36 overflow-hidden">
+        {service.icon ? (
+          <>
+            <Image
+              src={service.icon}
+              alt={service.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0E261C] via-transparent to-transparent"></div>
+          </>
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
+            <ImageIcon className="w-10 h-10 text-white/20" />
+          </div>
+        )}
+        
+        {/* Badge populaire */}
+        {(isPopular || service.isPopular) && (
+          <div className="absolute top-3 left-3">
+            <Badge className="bg-orange-500 text-white text-xs px-2 py-0.5">
+              <Star className="w-3 h-3 mr-1 fill-current" />
+              Populaire
+            </Badge>
+          </div>
+        )}
+        
+        {/* Prix overlay */}
+        <div className="absolute bottom-3 right-3">
+          <div className="px-3 py-1.5 rounded-lg bg-[#0E261C]/90 backdrop-blur-sm border border-white/10">
+            <span className="text-lg font-bold text-[#FCDA89]">{formatPrice(service.price)}</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Content */}
+      <div className="p-4">
+        <h3 className="font-semibold text-white mb-1 group-hover:text-[#FCDA89] transition-colors line-clamp-1">
+          {service.name}
+        </h3>
+        
+        {service.expressDescription && (
+          <p className="text-sm text-white/50 mb-3 line-clamp-2">
+            {service.expressDescription}
+          </p>
+        )}
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 text-white/40 text-sm">
+            <Clock className="w-3.5 h-3.5" />
+            <span>{formatDuration(service.estimatedDuration)}</span>
+          </div>
+          
+          <div className="flex items-center gap-1 text-[#FCDA89] text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+            Réserver
+            <ArrowRight className="w-4 h-4" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
