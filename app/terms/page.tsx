@@ -231,8 +231,8 @@ export default function TermsPage() {
                 <div className="bg-white/5 p-4 rounded-lg mt-4 border border-[#FCDA89]/20">
                   <p className="font-medium text-[#FCDA89]">Reenove</p>
                   <p className="text-white/90">Service Juridique</p>
-                  <p className="text-white/90">Email : <a href="mailto:legal@reenove.com" className="text-[#FCDA89] hover:text-[#FCDA89]/80 transition-colors">legal@reenove.com</a></p>
-                  <p className="text-white/90">Adresse : 123 Avenue de la Rénovation, 75001 Paris</p>
+                  <p className="text-white/90">Email : <a href="mailto:contact@reenove.com" className="text-[#FCDA89] hover:text-[#FCDA89]/80 transition-colors">contact@reenove.com</a></p>
+                  <p className="text-white/90">Adresse : 123 Boulevard des Artisans, 13000 Marseille, France</p>
                 </div>
               </section>
             </div>

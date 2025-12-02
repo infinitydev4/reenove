@@ -14,7 +14,8 @@ import {
   FileText,
   BarChart3,
   Clock,
-  CreditCard
+  CreditCard,
+  MessageSquareQuote
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -46,6 +47,7 @@ export function AdminSidebar({ isOpen, closeSidebar }: AdminSidebarProps) {
   { name: "Services", href: "/admin/services", icon: Briefcase },
   { name: "Réservations Express", href: "/admin/reservations-express", icon: Clock },
   { name: "Abonnements", href: "/admin/abonnements", icon: CreditCard },
+  { name: "Témoignages", href: "/admin/temoignages", icon: MessageSquareQuote },
   { name: "Statistiques", href: "/admin/stats", icon: BarChart3 },
   { name: "Paramètres", href: "/admin/parametres", icon: Settings },
   ]

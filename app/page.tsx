@@ -10,6 +10,7 @@ import CategoriesSection from "@/components/home/CategoriesSection"
 import ArtisansSection from "@/components/home/ArtisansSection"
 import WhyReenoveSection from "@/components/home/WhyReenoveSection"
 import HowItWorksSection from "@/components/home/HowItWorksSection"
+import Testimonials from "@/components/home/Testimonials"
 import FaqSection from "@/components/home/FaqSection"
 import CtaSection from "@/components/home/CtaSection"
 import { CookieBanner } from "@/components/CookieBanner"
@@ -45,6 +46,7 @@ export default function Home() {
       {/* <ArtisansSection /> */}
       <WhyReenoveSection />
       <HowItWorksSection />
+      <Testimonials />
       <FaqSection />
       <CtaSection />
       

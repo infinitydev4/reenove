@@ -619,3 +619,20 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  companyName String?
+  role        String? // Poste/fonction
+  rating      Int // Note sur 5
+  comment     String   @db.Text
+  avatarUrl   String? // URL du logo/avatar
+  isActive    Boolean  @default(true)
+  order       Int      @default(0) // Pour trier les témoignages
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive, order])
+}
